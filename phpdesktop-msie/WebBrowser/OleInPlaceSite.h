@@ -1,10 +1,9 @@
-// not used currently... as we implemented DocHostUIHandlerDispatch()
-// and this is nore more needed.
+// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// License: New BSD License.
+// Website: http://code.google.com/p/phpdesktop/
 
-//
-// OleInPlaceSite.h
-// Copyright (c) Czarek Tomczak. All rights reserved.
-//
+// Not used currently... as we implemented DocHostUIHandlerDispatch()
+// and this is not needed anymore.
 
 #pragma once
 

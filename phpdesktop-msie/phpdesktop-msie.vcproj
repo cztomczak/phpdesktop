@@ -281,10 +281,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PhpServer.h"
-				>
-			</File>
-			<File
 				RelativePath=".\resource.h"
 				>
 			</File>

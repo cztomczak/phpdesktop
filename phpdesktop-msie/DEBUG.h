@@ -1,3 +1,7 @@
+// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// License: New BSD License.
+// Website: http://code.google.com/p/phpdesktop/
+
 #define CONCAT_NX(s1, s2) s1 ## s2
 #define CONCAT(s1, s2) CONCAT_NX(s1, s2)
 
