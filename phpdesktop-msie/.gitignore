@@ -1,0 +1,5 @@
+Release/
+*.ncb
+*.suo
+*.user
+*.aps
