@@ -24,10 +24,10 @@
 
 char* WideToAscii(wchar_t* wide)
 {
-	int asciisize = WideCharToMultiByte(CP_UTF8, 0, wide, -1, 0, 0, 0, 0);
-	char* ascii = (char*)malloc(asciisize * sizeof(char));
-	WideCharToMultiByte(CP_UTF8, 0, wide, -1, ascii, asciisize, 0, 0);
-	return ascii;
+    int asciisize = WideCharToMultiByte(CP_UTF8, 0, wide, -1, 0, 0, 0, 0);
+    char* ascii = (char*)malloc(asciisize * sizeof(char));
+    WideCharToMultiByte(CP_UTF8, 0, wide, -1, ascii, asciisize, 0, 0);
+    return ascii;
 }
 
 #define DEBUGW(A) { char tmpstr[4096]; sprintf_s(tmpstr, 4096, "%s\n\nFile: %s\nLine: %s\nFunc: %s()", WideToAscii(A), __FILE__, STRINGIZE(__LINE__), __FUNCTION__); MessageBoxA(NULL, tmpstr, "DEBUG", MB_ICONINFORMATION); }

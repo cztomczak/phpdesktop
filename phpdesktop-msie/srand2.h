@@ -7,8 +7,8 @@ unsigned long mix(unsigned long a, unsigned long b, unsigned long c);
 
 void srand2()
 {
-	unsigned long seed = mix(clock(), (unsigned long)time(NULL), GetProcessId(GetModuleHandle(NULL)));
-	srand(seed);
+    unsigned long seed = mix(clock(), (unsigned long)time(NULL), GetProcessId(GetModuleHandle(NULL)));
+    srand(seed);
 }
 
 // http://www.concentric.net/~Ttwang/tech/inthash.htm
