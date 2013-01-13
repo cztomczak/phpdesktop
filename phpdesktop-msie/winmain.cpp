@@ -108,7 +108,9 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	mainFrame.CenterWindow();
 
 	// Window title.
-	mainFrame.SetWindowTextW(L"ASD");
+  wchar_t executableName[1024];
+  GetExecutableName(executableName, 1024);
+	mainFrame.SetWindowTextW(executableName);
 
 	mainFrame.ShowWindow(nCmdShow);		
 
