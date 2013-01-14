@@ -37,6 +37,8 @@ void SetInternetFeatures()
     hres = CoInternetSetFeatureEnabled(FEATURE_WINDOW_RESTRICTIONS, SET_FEATURE_ON_PROCESS, FALSE);
     //ASSERT(SUCCEEDED(hres), "FEATURE_WINDOW_RESTRICTIONS");
 
+    // Enable applications hosting the WebBrowser Control to receive the 
+    // default Internet Explorer pop-up management behavior.
     hres = CoInternetSetFeatureEnabled(FEATURE_WEBOC_POPUPMANAGEMENT, SET_FEATURE_ON_PROCESS, FALSE);
     //ASSERT(SUCCEEDED(hres), "FEATURE_WEBOC_POPUPMANAGEMENT");
 
@@ -49,6 +51,11 @@ void SetInternetFeatures()
     ASSERT(SUCCEEDED(hres), "FEATURE_LOCALMACHINE_LOCKDOWN");
     */
 
+    // Block ActiveX controls on pages that instantiate or prompt for ActiveX 
+    // controls to be installed or when the control is an update to a control
+    // that is not installed. This feature, when enabled, can be set 
+    // differently for each security zone by using the URL action flag 
+    // URLACTION_AUTOMATIC_ACTIVEX_UI.
     hres = CoInternetSetFeatureEnabled(FEATURE_RESTRICT_ACTIVEXINSTALL, SET_FEATURE_ON_PROCESS, FALSE);
     //ASSERT(SUCCEEDED(hres), "FEATURE_RESTRICT_ACTIVEXINSTALL");
 
@@ -85,12 +92,12 @@ void SetInternetFeatures()
     //ASSERT(SUCCEEDED(hres), "FEATURE_ADDON_MANAGEMENT");
 
     // ie9
-    hres = CoInternetSetFeatureEnabled((INTERNETFEATURELIST)FEATURE_DOMSTORAGE, SET_FEATURE_ON_PROCESS, FALSE);
+    hres = CoInternetSetFeatureEnabled((INTERNETFEATURELIST)FEATURE_DOMSTORAGE, SET_FEATURE_ON_PROCESS, TRUE);
     //ASSERT(SUCCEEDED(hres), "FEATURE_DOMSTORAGE");
 
-    hres = CoInternetSetFeatureEnabled((INTERNETFEATURELIST)FEATURE_XDOMAINREQUEST, SET_FEATURE_ON_PROCESS, FALSE);
+    hres = CoInternetSetFeatureEnabled((INTERNETFEATURELIST)FEATURE_XDOMAINREQUEST, SET_FEATURE_ON_PROCESS, TRUE);
     //ASSERT(SUCCEEDED(hres), "FEATURE_XDOMAINREQUEST");
 
-    hres = CoInternetSetFeatureEnabled((INTERNETFEATURELIST)FEATURE_DATAURI, SET_FEATURE_ON_PROCESS, FALSE);
+    hres = CoInternetSetFeatureEnabled((INTERNETFEATURELIST)FEATURE_DATAURI, SET_FEATURE_ON_PROCESS, TRUE);
     //ASSERT(SUCCEEDED(hres), "FEATURE_DATAURI");
 }

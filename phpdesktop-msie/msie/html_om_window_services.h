@@ -37,7 +37,8 @@ public:
 
     HRESULT STDMETHODCALLTYPE moveTo(LONG x, LONG y)
     {
-        SetWindowPos(webFrame->GetWindowHandle(), NULL, (int) x, (int) y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        SetWindowPos(webFrame->GetWindowHandle(), NULL, (int) x, (int) y, 0, 0,
+                SWP_NOSIZE | SWP_NOZORDER);
         return S_OK;
     }
     HRESULT STDMETHODCALLTYPE moveBy(LONG x, LONG y)
@@ -46,7 +47,8 @@ public:
     }
     HRESULT STDMETHODCALLTYPE resizeTo(LONG x, LONG y)
     {
-        SetWindowPos(webFrame->GetWindowHandle(), NULL, 0, 0, (int) x, (int) y, SWP_NOMOVE | SWP_NOZORDER);
+        SetWindowPos(webFrame->GetWindowHandle(), NULL, 0, 0, (int) x, (int) y,
+                SWP_NOMOVE | SWP_NOZORDER);
         return S_OK;
     }
     HRESULT STDMETHODCALLTYPE resizeBy(LONG x, LONG y)

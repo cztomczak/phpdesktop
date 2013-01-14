@@ -22,13 +22,11 @@
 #include <string>
 
 #include "browser_frame_interface.h"
-#include "click_events.h"
-#include "dochost_uihandler_dispatch.h"
 #include "ole_client_site.h"
+#include "dochost_uihandler_dispatch.h"
+#include "click_events.h"
 
-// RootFrame - it is called "root" and not "main" as it may refer to
-//             main window or a popup window.
-
+// RootFrame can be a main window or a popup window.
 template <class RootFrame, bool t_bHasSip = true>
 class BrowserFrame
     :
@@ -39,6 +37,8 @@ public:
     OleClientSite<RootFrame> oleClientSite;
     DocHostUIHandlerDispatch<RootFrame> docHostUIHandlerDispatch;
     ClickEvents<RootFrame> clickEvents;
+    bool clickEventsAttached;
+    CComBSTR documentUniqueID;
     _variant_t clickDispatch;
     RootFrame* rootFrame;
     wchar_t allowedURL[2084]; // Default: "nohttp" - if url starts with http:// it will be opened in default browser, not in webbrowser control.
@@ -50,11 +50,11 @@ public:
         clickEvents(ClickEvents<RootFrame>(static_cast<RootFrame*>(this)))
     {
         rootFrame = static_cast<RootFrame*>(this);
-        this->oleClientSite.dispatch = &this->docHostUIHandlerDispatch;
+        oleClientSite.dispatch = (IDispatch*)&docHostUIHandlerDispatch;
 
          // _variant_t declared in <comutil.h>
-        this->clickDispatch.vt = VT_DISPATCH;
-        this->clickDispatch.pdispVal = &this->clickEvents;
+        clickDispatch.vt = VT_DISPATCH;
+        clickDispatch.pdispVal = (IDispatch*)&clickEvents;
         wcsncpy_s(allowedURL, _countof(allowedURL), L"nohttp", _TRUNCATE);
     }
 
@@ -67,36 +67,29 @@ public:
                 | WS_VSCROLL), WS_EX_CLIENTEDGE);
         ASSERT_EXIT(rootFrame->m_hWndClient, "rootFrame->m_hWndClient");
 
-        // IOleClientSite
         HRESULT hr;
 
         CComQIPtr<IOleObject> oleObject;
         int ctrlid = rootFrame->rootView.GetDlgCtrlID();
         CComQIPtr<IWebBrowser2> webBrowser2;
 
-        hr = rootFrame->GetDlgControl(ctrlid, IID_IWebBrowser2, (void**) &webBrowser2);
+        hr = rootFrame->GetDlgControl(ctrlid, IID_IWebBrowser2, (void**)&webBrowser2);
         ASSERT_EXIT(SUCCEEDED(hr), "rootFrame->GetDlgControl(IID_IWebBrowser2) failed");
+        ASSERT_EXIT(!!webBrowser2, "webBrowser2 is empty");
 
-        hr = webBrowser2->QueryInterface(IID_IOleObject, (void**) &oleObject);
+        hr = webBrowser2->QueryInterface(IID_IOleObject, (void**)&oleObject);
         ASSERT_EXIT(SUCCEEDED(hr), "webBrowser2->QueryInterface(IID_IOleObject)");
+        ASSERT_EXIT(!!oleObject, "oleObject is empty");
 
-        oleObject->SetClientSite(&this->oleClientSite);
-        rootFrame->rootView.SetExternalUIHandler(&this->docHostUIHandlerDispatch);
+        hr = oleObject->SetClientSite(&oleClientSite);
+        ASSERT_EXIT(SUCCEEDED(hr), "oleObject->SetClientSite()");
+        
+        hr = rootFrame->rootView.SetExternalUIHandler(&docHostUIHandlerDispatch);
+        ASSERT_EXIT(SUCCEEDED(hr), "rootFrame->rootView.SetExternalUIHandler()");
 
         // Do not allow displaying files dragged into the window.
-        webBrowser2->put_RegisterAsDropTarget(VARIANT_FALSE);
-
-        // Attach OnClick event - to catch clicking any external links.
-
-        CComQIPtr<IDispatch> dispatch;
-        hr = webBrowser2->get_Document(&dispatch);
-        ASSERT_EXIT(SUCCEEDED(hr), "webBrowser->get_Document(&dispatch)");
-
-        CComQIPtr<IHTMLDocument2> htmlDocument2;
-        hr = dispatch->QueryInterface(IID_IHTMLDocument2, (void**) &htmlDocument2);
-        ASSERT_EXIT(SUCCEEDED(hr), "dispatch->QueryInterface(&htmlDocument2)");
-
-        htmlDocument2->put_onclick(this->clickDispatch);
+        hr = webBrowser2->put_RegisterAsDropTarget(VARIANT_FALSE);
+        ASSERT_EXIT(SUCCEEDED(hr), "webBrowser2->put_RegisterAsDropTarget()");
 
         /*
         CComQIPtr<IHTMLWindow2> htmlWindow2;
@@ -111,9 +104,84 @@ public:
         // onunload (after initial connection is made, but before redirecting).
         CComBSTR onClick(TEXT( "onbeforeunload"));
         VARIANT_BOOL result = VARIANT_TRUE;
-        hr = htmlWindow3->attachEvent(onClick, &this->clickEvents, &result);
+        hr = htmlWindow3->attachEvent(onClick, &clickEvents, &result);
         ASSERT_EXIT((result == VARIANT_TRUE), "window3->attachEvent(onClick)");
         */
+    }
+
+    bool AttachClickEvents()
+    {
+        // Attach OnClick event - to catch clicking any external links.
+
+        // Returns whether succeeded to attach click events,
+        // it is required for the DOM to be ready, call this
+        // function in a timer until it succeeds.
+
+        // After browser navigation these click events need to be
+        // re-attached.
+
+        HRESULT hr;
+
+        int ctrlid = rootFrame->rootView.GetDlgCtrlID();
+        CComQIPtr<IWebBrowser2> webBrowser2;
+
+        hr = rootFrame->GetDlgControl(ctrlid, IID_IWebBrowser2, (void**)&webBrowser2);
+        ASSERT_EXIT(SUCCEEDED(hr), "rootFrame->GetDlgControl(IID_IWebBrowser2) failed");
+        ASSERT_EXIT(!!webBrowser2, "webBrowser2 is empty");        
+
+        VARIANT_BOOL isBusy;
+        hr = webBrowser2->get_Busy(&isBusy);
+        ASSERT_EXIT(SUCCEEDED(hr), "webBrowser2->get_Busy()");
+        if (isBusy == VARIANT_TRUE)
+            return false;
+
+        CComQIPtr<IDispatch> dispatch;
+        hr = webBrowser2->get_Document(&dispatch);
+        ASSERT_EXIT(SUCCEEDED(hr), "webBrowser2->get_Document(&dispatch)");        
+        if (!dispatch)
+            return false;
+
+        CComQIPtr<IHTMLDocument3> htmlDocument3;
+        hr = dispatch->QueryInterface(IID_IHTMLDocument3, (void**)&htmlDocument3);
+        ASSERT_EXIT(SUCCEEDED(hr), "dispatch->QueryInterface(&htmlDocument3)");
+        ASSERT_EXIT(!!htmlDocument3, "htmlDocument3 is empty");
+
+        CComQIPtr<IHTMLElement> htmlElement;
+        hr = htmlDocument3->get_documentElement(&htmlElement);
+        ASSERT_EXIT(SUCCEEDED(hr), "htmlDocument3->get_documentElement()");
+        ASSERT_EXIT(!!htmlElement, "htmlElement is empty");
+
+        CComBSTR documentID;
+        hr = htmlElement->get_id(&documentID.m_str);
+        ASSERT_EXIT(SUCCEEDED(hr), "htmlElement->get_id()");
+
+        if (documentID.Length() && documentID == this->documentUniqueID) {
+            return true;
+        } else {
+            // Document's identifier changed, browser navigated.
+            this->clickEventsAttached = false;
+            
+            CComBSTR uniqueID;
+            hr = htmlDocument3->get_uniqueID(&uniqueID.m_str);
+            ASSERT_EXIT(SUCCEEDED(hr), "htmlDocument3->get_uniqueID()");
+
+            hr = htmlElement->put_id(uniqueID.m_str);
+            ASSERT_EXIT(SUCCEEDED(hr), "htmlElement->put_id()");
+
+            this->documentUniqueID.AssignBSTR(uniqueID.m_str);
+        }
+
+        if (this->clickEventsAttached)
+            return true;
+
+        CComQIPtr<IHTMLDocument2> htmlDocument2;
+        hr = dispatch->QueryInterface(IID_IHTMLDocument2, (void**)&htmlDocument2);
+        ASSERT_EXIT(SUCCEEDED(hr), "dispatch->QueryInterface(&htmlDocument2)");
+        ASSERT_EXIT(!!htmlDocument2, "htmlDocument2 is empty");
+
+        htmlDocument2->put_onclick(clickDispatch);
+        this->clickEventsAttached = true;
+        return true;
     }
 
     virtual HWND GetWindowHandle()
@@ -128,7 +196,7 @@ public:
 
     virtual IOleClientSite* GetOleClientSite()
     {
-        return &this->oleClientSite;
+        return &oleClientSite;
     }
 
     virtual int RootView_GetDlgCtrlID()

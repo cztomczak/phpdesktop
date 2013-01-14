@@ -237,7 +237,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\DEBUG.h"
+				RelativePath=".\debug.h"
 				>
 			</File>
 			<File
@@ -266,10 +266,6 @@
 			</File>
 			<File
 				RelativePath=".\MainFrame.h"
-				>
-			</File>
-			<File
-				RelativePath=".\MainView.h"
 				>
 			</File>
 			<File
@@ -340,6 +336,10 @@
 		</Filter>
 		<File
 			RelativePath=".\.gitignore"
+			>
+		</File>
+		<File
+			RelativePath=".\icon.png"
 			>
 		</File>
 		<File

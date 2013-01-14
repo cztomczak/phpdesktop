@@ -77,7 +77,7 @@ bool IsAtLeastIE60SP2()
     LONG lRes = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Internet Explorer", 0, KEY_READ, &hKey);
     if (lRes == ERROR_SUCCESS) {
         GetStringRegKey(hKey, "Version", registryVersion, "0.0.0.0");
-        //DEBUG2("VERSION from registry", registryVersion.c_str());
+        // DEBUG_ASCII_2("VERSION from registry", registryVersion.c_str());
     }
     RegCloseKey(hKey);
 

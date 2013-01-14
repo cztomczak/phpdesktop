@@ -14,7 +14,7 @@
 #include <atlbase.h>
 #include <atlapp.h>
 
-extern CAppModule _Module;
+extern CAppModule g_Module;
 
 #include <atlcom.h>
 #include <atlhost.h>
