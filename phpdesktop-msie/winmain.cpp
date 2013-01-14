@@ -14,11 +14,11 @@
 #include "MainView.h"
 #include "MainFrame.h"
 
-#include "Shellapi.h"
+#include <Shellapi.h>
 #include "srand2.h"
-#include "WebBrowser/InternetFeatures.h"
+#include "msie/internet_features.h"
 
-#include "ExecutablePath.h"
+#include "executable.h"
 
 CAppModule _Module;
 

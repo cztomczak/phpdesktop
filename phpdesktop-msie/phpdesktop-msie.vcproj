@@ -221,7 +221,15 @@
 			Filter="h;hpp;hxx;hm;inl;inc"
 			>
 			<File
-				RelativePath=".\WebBrowser\ClickEvents.h"
+				RelativePath=".\msie\browser_frame.h"
+				>
+			</File>
+			<File
+				RelativePath=".\msie\browser_frame_interface.h"
+				>
+			</File>
+			<File
+				RelativePath=".\msie\click_events.h"
 				>
 			</File>
 			<File
@@ -233,31 +241,27 @@
 				>
 			</File>
 			<File
-				RelativePath=".\WebBrowser\DocHostUIHandlerDispatch.h"
+				RelativePath=".\msie\dochost_uihandler_dispatch.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ExecutablePath.h"
+				RelativePath=".\executable.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WebBrowser\FullScreenFrame.h"
+				RelativePath=".\msie\fullscreen_frame.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WebBrowser\HTMLOMWindowServices.h"
+				RelativePath=".\msie\html_om_window_services.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WebBrowser\InternetFeatures.h"
+				RelativePath=".\msie\internet_features.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WebBrowser\InternetSecurityManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\WebBrowser\keycodes.h"
+				RelativePath=".\msie\internet_security_manager.h"
 				>
 			</File>
 			<File
@@ -269,15 +273,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\WebBrowser\OleClientSite.h"
+				RelativePath=".\msie\ole_client_site.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WebBrowser\OleInPlaceFrame.h"
+				RelativePath=".\msie\ole_inplace_frame.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WebBrowser\OleInPlaceSite.h"
+				RelativePath=".\msie\ole_inplace_site.h"
 				>
 			</File>
 			<File
@@ -285,7 +289,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\WebBrowser\ServiceProvider.h"
+				RelativePath=".\msie\service_provider.h"
 				>
 			</File>
 			<File
@@ -297,15 +301,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\WebBrowser\SubmitEvents.h"
+				RelativePath=".\msie\submit_events.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WebBrowser\WebBrowserFrame.h"
+				RelativePath=".\msie\version.h"
 				>
 			</File>
 			<File
-				RelativePath=".\WebBrowser\WebBrowserFrameInterface.h"
+				RelativePath=".\msie\virtual_keys.h"
 				>
 			</File>
 			<File
@@ -334,6 +338,14 @@
 				</FileConfiguration>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\.gitignore"
+			>
+		</File>
+		<File
+			RelativePath=".\license.txt"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

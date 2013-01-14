@@ -5,21 +5,22 @@
 #pragma once
 
 #include "winmain.h"
-#include "WebBrowser/WebBrowserFrame.h"
-#include "WebBrowser/FullScreenFrame.h"
+#include "msie/browser_frame.h"
+#include "msie/fullscreen_frame.h"
 
 class MainFrame :
     public CFrameWindowImpl<MainFrame>,
     public CUpdateUI<MainFrame>,
     public CMessageFilter,
     public CIdleHandler,
-    public WebBrowserFrame<MainFrame>,
-    public FullScreenFrame<MainFrame>
+    public BrowserFrame<MainFrame>,
+    public FullscreenFrame<MainFrame>
 {
 public:
     DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
 
-    MainView rootview;
+    // MainView is used to block keyboard events.
+    MainView rootView;
     MainFrame() {}
 
     virtual BOOL PreTranslateMessage(MSG* pMsg)
@@ -27,7 +28,7 @@ public:
         if(CFrameWindowImpl<MainFrame>::PreTranslateMessage(pMsg))
             return TRUE;
 
-        return rootview.PreTranslateMessage(pMsg);
+        return rootView.PreTranslateMessage(pMsg);
     }
 
     virtual BOOL OnIdle()

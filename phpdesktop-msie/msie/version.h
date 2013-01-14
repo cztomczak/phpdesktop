@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include <Winreg.h>
 #pragma comment(lib, "Advapi32")
 
+#include <Winreg.h>
 #include <string>
 #include <sstream>
 
@@ -17,16 +17,16 @@ bool IsAtLeastIE60SP2();
 // ----
 
 /*
-	// 6.00.2900.2180 == IE 6.0 SP2
-	// 6.00.2800.1106 == IE 6.0 SP1
+    // 6.00.2900.2180 == IE 6.0 SP2
+    // 6.00.2800.1106 == IE 6.0 SP1
 
-	if (LessThanVersion("6.00.2800.1106", "6.00.2900.2180")) { // 1st argument is value from registry.
-		DEBUG("Version BAD");
-	} else {
-		DEBUG("Version OK");
-	}
+    if (LessThanVersion("6.00.2800.1106", "6.00.2900.2180")) { // 1st argument is value from registry.
+        // bad
+    } else {
+        // ok
+    }
 
-	exit(-1);
+    exit(-1);
 */
 
 // Parse() and LessThanVersion() taken from:
@@ -54,8 +54,8 @@ bool LessThanVersion(const std::string& a,const std::string& b)
 // GetStringRegKey() taken from here:
 // http://stackoverflow.com/questions/34065/how-to-read-a-value-from-the-windows-registry
 
-LONG GetStringRegKey(HKEY hKey, const std::string &strValueName, 
-		     std::string &strValue, const std::string &strDefaultValue)
+LONG GetStringRegKey(HKEY hKey, const std::string &strValueName,
+             std::string &strValue, const std::string &strDefaultValue)
 {
         strValue = strDefaultValue;
         char szBuffer[512];
@@ -71,20 +71,20 @@ LONG GetStringRegKey(HKEY hKey, const std::string &strValueName,
 
 bool IsAtLeastIE60SP2()
 {
-	std::string registryVersion = "0.0.0.0";
-	
-	HKEY hKey;
-	LONG lRes = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Internet Explorer", 0, KEY_READ, &hKey);
-	if (lRes == ERROR_SUCCESS) {
-		GetStringRegKey(hKey, "Version", registryVersion, "0.0.0.0");
-		//DEBUG2("VERSION from registry", registryVersion.c_str());
-	}
-	RegCloseKey(hKey);
+    std::string registryVersion = "0.0.0.0";
 
-	// Version from registry must be valid, ohterwise for example
-	// comparing "abc" will give true.
-	if (LessThanVersion(registryVersion, "6.00.2900.2180")) {
-		return false;
-	}
-	return true;
+    HKEY hKey;
+    LONG lRes = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Internet Explorer", 0, KEY_READ, &hKey);
+    if (lRes == ERROR_SUCCESS) {
+        GetStringRegKey(hKey, "Version", registryVersion, "0.0.0.0");
+        //DEBUG2("VERSION from registry", registryVersion.c_str());
+    }
+    RegCloseKey(hKey);
+
+    // Version from registry must be valid, ohterwise for example
+    // comparing "abc" will give true.
+    if (LessThanVersion(registryVersion, "6.00.2900.2180")) {
+        return false;
+    }
+    return true;
 }
