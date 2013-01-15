@@ -241,7 +241,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\msie\dochost_uihandler_dispatch.h"
+				RelativePath=".\msie\dochost_ui_handler_dispatch.h"
 				>
 			</File>
 			<File

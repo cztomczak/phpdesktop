@@ -23,7 +23,7 @@
 
 #include "browser_frame_interface.h"
 #include "ole_client_site.h"
-#include "dochost_uihandler_dispatch.h"
+#include "dochost_ui_handler_dispatch.h"
 #include "click_events.h"
 
 // RootFrame can be a main window or a popup window.
@@ -83,7 +83,7 @@ public:
 
         hr = oleObject->SetClientSite(&oleClientSite);
         ASSERT_EXIT(SUCCEEDED(hr), "oleObject->SetClientSite()");
-        
+
         hr = rootFrame->rootView.SetExternalUIHandler(&docHostUIHandlerDispatch);
         ASSERT_EXIT(SUCCEEDED(hr), "rootFrame->rootView.SetExternalUIHandler()");
 
@@ -127,7 +127,7 @@ public:
 
         hr = rootFrame->GetDlgControl(ctrlid, IID_IWebBrowser2, (void**)&webBrowser2);
         ASSERT_EXIT(SUCCEEDED(hr), "rootFrame->GetDlgControl(IID_IWebBrowser2) failed");
-        ASSERT_EXIT(!!webBrowser2, "webBrowser2 is empty");        
+        ASSERT_EXIT(!!webBrowser2, "webBrowser2 is empty");
 
         VARIANT_BOOL isBusy;
         hr = webBrowser2->get_Busy(&isBusy);
@@ -137,7 +137,7 @@ public:
 
         CComQIPtr<IDispatch> dispatch;
         hr = webBrowser2->get_Document(&dispatch);
-        ASSERT_EXIT(SUCCEEDED(hr), "webBrowser2->get_Document(&dispatch)");        
+        ASSERT_EXIT(SUCCEEDED(hr), "webBrowser2->get_Document(&dispatch)");
         if (!dispatch)
             return false;
 
@@ -160,7 +160,7 @@ public:
         } else {
             // Document's identifier changed, browser navigated.
             this->clickEventsAttached = false;
-            
+
             CComBSTR uniqueID;
             hr = htmlDocument3->get_uniqueID(&uniqueID.m_str);
             ASSERT_EXIT(SUCCEEDED(hr), "htmlDocument3->get_uniqueID()");
