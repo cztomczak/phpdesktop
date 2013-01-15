@@ -1,0 +1,2 @@
+1. Change "Version Info" in resources.rc
+2. Change RELEASE_MODE to 1 in winmain.cpp

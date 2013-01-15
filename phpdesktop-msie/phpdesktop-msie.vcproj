@@ -139,7 +139,7 @@
 				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;NDEBUG"
 				ExceptionHandling="1"
 				RuntimeLibrary="0"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="0"
 			/>
@@ -192,28 +192,32 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
-				RelativePath=".\stdafx.cpp"
+				RelativePath=".\executable.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
+						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\winmain.cpp"
+				RelativePath=".\main.cpp"
 				>
+			</File>
+			<File
+				RelativePath=".\web_server.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -265,7 +269,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\MainFrame.h"
+				RelativePath=".\log.h"
+				>
+			</File>
+			<File
+				RelativePath=".\main_frame.h"
 				>
 			</File>
 			<File
@@ -293,10 +301,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\stdafx.h"
-				>
-			</File>
-			<File
 				RelativePath=".\msie\submit_events.h"
 				>
 			</File>
@@ -309,7 +313,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\winmain.h"
+				RelativePath=".\web_server.h"
 				>
 			</File>
 		</Filter>
@@ -359,7 +363,15 @@
 			>
 		</File>
 		<File
+			RelativePath=".\resource.aps"
+			>
+		</File>
+		<File
 			RelativePath=".\www\test-controls.php"
+			>
+		</File>
+		<File
+			RelativePath=".\www\test-forms.php"
 			>
 		</File>
 		<File

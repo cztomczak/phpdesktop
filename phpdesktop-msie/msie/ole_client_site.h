@@ -48,176 +48,170 @@ public:
         } else if (riid == IID_IOleInPlaceFrame) {
             *ppvObject = &oleInPlaceFrame;
         } else {
-            /*
-            // OleIdl.h
             if (riid == IID_IOleAdviseHolder) {
-                DEBUG_ASCII("IID_IOleAdviseHolder");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IOleAdviseHolder";
             } else if (riid == IID_IOleCache) {
-                DEBUG_ASCII("IID_IOleCache");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IOleCache";
             } else if (riid == IID_IOleCache2) {
-                DEBUG_ASCII("IID_IOleCache2");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IOleCache2";
             } else if (riid == IID_IOleCacheControl) {
-                DEBUG_ASCII("IID_IOleCacheControl");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IOleCacheControl";
             } else if (riid == IID_IParseDisplayName) {
-                DEBUG_ASCII("IID_IParseDisplayName");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IParseDisplayName";
             } else if (riid == IID_IOleContainer) {
-                DEBUG_ASCII("IID_IOleContainer");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IOleContainer";
             } else if (riid == IID_IOleClientSite) {
-                DEBUG_ASCII("IID_IOleClientSite");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IOleClientSite";
             } else if (riid == IID_IOleObject) {
-                DEBUG_ASCII("IID_IOleObject");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IOleObject";
             } else if (riid == IID_IOleWindow) {
-                DEBUG_ASCII("IID_IOleWindow");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IOleWindow";
             } else if (riid == IID_IOleLink) {
-                DEBUG_ASCII("IID_IOleLink");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IOleLink";
             } else if (riid == IID_IOleItemContainer) {
-                DEBUG_ASCII("IID_IOleItemContainer");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IOleItemContainer";
             } else if (riid == IID_IOleInPlaceUIWindow) {
-                DEBUG_ASCII("IID_IOleInPlaceUIWindow");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IOleInPlaceUIWindow";
             } else if (riid == IID_IOleInPlaceActiveObject) {
-                DEBUG_ASCII("IID_IOleInPlaceActiveObject");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IOleInPlaceActiveObject";
             } else if (riid == IID_IOleInPlaceFrame) {
-                DEBUG_ASCII("IID_IOleInPlaceFrame");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IOleInPlaceFrame";
             } else if (riid == IID_IOleInPlaceObject) {
-                DEBUG_ASCII("IID_IOleInPlaceObject");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IOleInPlaceObject";
             } else if (riid == IID_IOleInPlaceSite) {
-                DEBUG_ASCII("IID_IOleInPlaceSite");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IOleInPlaceSite";
             } else if (riid == IID_IContinue) {
-                DEBUG_ASCII("IID_IContinue");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IContinue";
             } else if (riid == IID_IViewObject) {
-                DEBUG_ASCII("IID_IViewObject");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IViewObject";
             } else if (riid == IID_IViewObject2) {
-                DEBUG_ASCII("IID_IViewObject2");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IViewObject2";
             } else if (riid == IID_IDropSource) {
-                DEBUG_ASCII("IID_IDropSource");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IDropSource";
             } else if (riid == IID_IDropTarget) {
-                DEBUG_ASCII("IID_IDropTarget");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IDropTarget";
             } else if (riid == IID_IDropSourceNotify) {
-                DEBUG_ASCII("IID_IDropSourceNotify");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IDropSourceNotify";
             } else if (riid == IID_IEnumOLEVERB) {
-                DEBUG_ASCII("IID_IEnumOLEVERB");
-            }
-
-            // MsHtmHst.h
-            if (riid == IID_IHostDialogHelper) {
-                DEBUG_ASCII("IID_IHostDialogHelper");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IEnumOLEVERB";
+            } else if (riid == IID_IHostDialogHelper) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHostDialogHelper";
             } else if (riid == IID_IDocHostUIHandler) {
-                DEBUG_ASCII("IID_IDocHostUIHandler");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IDocHostUIHandler";
             } else if (riid == IID_IDocHostUIHandler2) {
-                DEBUG_ASCII("IID_IDocHostUIHandler2");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IDocHostUIHandler2";
             } else if (riid == IID_ICustomDoc) {
-                DEBUG_ASCII("IID_ICustomDoc");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_ICustomDoc";
             } else if (riid == IID_IDocHostShowUI) {
-                DEBUG_ASCII("IID_IDocHostShowUI");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IDocHostShowUI";
             } else if (riid == IID_IClassFactoryEx) {
-                DEBUG_ASCII("IID_IClassFactoryEx");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IClassFactoryEx";
             } else if (riid == IID_IHTMLOMWindowServices) {
-                DEBUG_ASCII("IID_IHTMLOMWindowServices");
-            }
-
-            // MsHTML.h
-            if (riid == IID_IHTMLWindow2) {
-                DEBUG_ASCII("IID_IHTMLWindow2");
-            } else if (riid == IID_IElementBehaviorFactory) {
-                DEBUG_ASCII("IID_IElementBehaviorFactory");
-            } else if (riid == IID_IHTMLFiltersCollection) {
-                DEBUG_ASCII("IID_IHTMLFiltersCollection");
-            } else if (riid == IID_IHTMLEventObj) {
-                DEBUG_ASCII("IID_IHTMLEventObj");
-            } else if (riid == IID_IElementBehaviorSite) {
-                DEBUG_ASCII("IID_IElementBehaviorSite");
-            } else if (riid == IID_IElementBehavior) {
-                DEBUG_ASCII("IID_IElementBehavior");
-            } else if (riid == IID_IElementBehaviorSiteOM) {
-                DEBUG_ASCII("IID_IElementBehaviorSiteOM");
-            } else if (riid == IID_IElementBehaviorRender) {
-                DEBUG_ASCII("IID_IElementBehaviorRender");
-            } else if (riid == IID_IElementBehaviorSiteRender) {
-                DEBUG_ASCII("IID_IElementBehaviorSiteRender");
-            } else if (riid == IID_IHTMLStyle) {
-                DEBUG_ASCII("IID_IHTMLStyle");
-            } else if (riid == IID_IHTMLStyle2) {
-                DEBUG_ASCII("IID_IHTMLStyle2");
-            } else if (riid == IID_IHTMLStyle3) {
-                DEBUG_ASCII("IID_IHTMLStyle3");
-            } else if (riid == IID_IHTMLStyle4) {
-                DEBUG_ASCII("IID_IHTMLStyle4");
-            } else if (riid == IID_IHTMLStyle5) {
-                DEBUG_ASCII("IID_IHTMLStyle5");
-            } else if (riid == IID_IHTMLRuleStyle) {
-                DEBUG_ASCII("IID_IHTMLRuleStyle");
-            } else if (riid == IID_IHTMLRuleStyle2) {
-                DEBUG_ASCII("IID_IHTMLRuleStyle2");
-            } else if (riid == IID_IHTMLRuleStyle3) {
-                DEBUG_ASCII("IID_IHTMLRuleStyle3");
-            } else if (riid == IID_IHTMLRuleStyle4) {
-                DEBUG_ASCII("IID_IHTMLRuleStyle4");
-            } else if (riid == IID_IHTMLRuleStyle5) {
-                DEBUG_ASCII("IID_IHTMLRuleStyle5");
-            } else if (riid == DIID_DispHTMLStyle) {
-                DEBUG_ASCII("DIID_DispHTMLStyle");
-            } else if (riid == DIID_DispHTMLRuleStyle) {
-                DEBUG_ASCII("DIID_DispHTMLRuleStyle");
-            } else if (riid == IID_IHTMLRenderStyle) {
-                DEBUG_ASCII("IID_IHTMLRenderStyle");
-            } else if (riid == DIID_DispHTMLRenderStyle) {
-                DEBUG_ASCII("DIID_DispHTMLRenderStyle");
-            } else if (riid == IID_IHTMLCurrentStyle) {
-                DEBUG_ASCII("IID_IHTMLCurrentStyle");
-            } else if (riid == IID_IHTMLCurrentStyle2) {
-                DEBUG_ASCII("IID_IHTMLCurrentStyle2");
-            } else if (riid == IID_IHTMLCurrentStyle3) {
-                DEBUG_ASCII("IID_IHTMLCurrentStyle3");
-            } else if (riid == IID_IHTMLCurrentStyle4) {
-                DEBUG_ASCII("IID_IHTMLCurrentStyle4");
-            } else if (riid == DIID_DispHTMLCurrentStyle) {
-                DEBUG_ASCII("DIID_DispHTMLCurrentStyle");
-            } else if (riid == IID_IHTMLElement) {
-                DEBUG_ASCII("IID_IHTMLElement");
-            } else if (riid == IID_IHTMLRect) {
-                DEBUG_ASCII("IID_IHTMLRect");
-            } else if (riid == IID_IHTMLRectCollection) {
-                DEBUG_ASCII("IID_IHTMLRectCollection");
-            } else if (riid == IID_IHTMLDocument) {
-                DEBUG_ASCII("IID_IHTMLDocument");
-            } else if (riid == IID_IHTMLUnknownElement) {
-                DEBUG_ASCII("IID_IHTMLUnknownElement");
-            } else if (riid == IID_IOmHistory) {
-                DEBUG_ASCII("IID_IOmHistory");
-            } else if (riid == IID_IHTMLDocument2) {
-                DEBUG_ASCII("IID_IHTMLDocument2");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLOMWindowServices";
             } else if (riid == IID_IHTMLWindow2) {
-                DEBUG_ASCII("IID_IHTMLWindow2");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLWindow2";
+            } else if (riid == IID_IElementBehaviorFactory) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IElementBehaviorFactory";
+            } else if (riid == IID_IHTMLFiltersCollection) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLFiltersCollection";
+            } else if (riid == IID_IHTMLEventObj) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLEventObj";
+            } else if (riid == IID_IElementBehaviorSite) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IElementBehaviorSite";
+            } else if (riid == IID_IElementBehavior) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IElementBehavior";
+            } else if (riid == IID_IElementBehaviorSiteOM) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IElementBehaviorSiteOM";
+            } else if (riid == IID_IElementBehaviorRender) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IElementBehaviorRender";
+            } else if (riid == IID_IElementBehaviorSiteRender) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IElementBehaviorSiteRender";
+            } else if (riid == IID_IHTMLStyle) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLStyle";
+            } else if (riid == IID_IHTMLStyle2) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLStyle2";
+            } else if (riid == IID_IHTMLStyle3) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLStyle3";
+            } else if (riid == IID_IHTMLStyle4) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLStyle4";
+            } else if (riid == IID_IHTMLStyle5) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLStyle5";
+            } else if (riid == IID_IHTMLRuleStyle) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLRuleStyle";
+            } else if (riid == IID_IHTMLRuleStyle2) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLRuleStyle2";
+            } else if (riid == IID_IHTMLRuleStyle3) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLRuleStyle3";
+            } else if (riid == IID_IHTMLRuleStyle4) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLRuleStyle4";
+            } else if (riid == IID_IHTMLRuleStyle5) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLRuleStyle5";
+            } else if (riid == DIID_DispHTMLStyle) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=DIID_DispHTMLStyle";
+            } else if (riid == DIID_DispHTMLRuleStyle) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=DIID_DispHTMLRuleStyle";
+            } else if (riid == IID_IHTMLRenderStyle) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLRenderStyle";
+            } else if (riid == DIID_DispHTMLRenderStyle) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=DIID_DispHTMLRenderStyle";
+            } else if (riid == IID_IHTMLCurrentStyle) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLCurrentStyle";
+            } else if (riid == IID_IHTMLCurrentStyle2) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLCurrentStyle2";
+            } else if (riid == IID_IHTMLCurrentStyle3) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLCurrentStyle3";
+            } else if (riid == IID_IHTMLCurrentStyle4) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLCurrentStyle4";
+            } else if (riid == DIID_DispHTMLCurrentStyle) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=DIID_DispHTMLCurrentStyle";
+            } else if (riid == IID_IHTMLElement) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLElement";
+            } else if (riid == IID_IHTMLRect) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLRect";
+            } else if (riid == IID_IHTMLRectCollection) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLRectCollection";
+            } else if (riid == IID_IHTMLDocument) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLDocument";
+            } else if (riid == IID_IHTMLUnknownElement) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLUnknownElement";
+            } else if (riid == IID_IOmHistory) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IOmHistory";
+            } else if (riid == IID_IHTMLDocument2) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLDocument2";
+            } else if (riid == IID_IHTMLWindow2) {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLWindow2";
             } else if (riid == IID_IHTMLWindow3) {
-                DEBUG_ASCII("IID_IHTMLWindow3");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLWindow3";
             } else if (riid == IID_IHTMLScreen) {
-                DEBUG_ASCII("IID_IHTMLScreen");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLScreen";
             } else if (riid == IID_IHTMLScreen2) {
-                DEBUG_ASCII("IID_IHTMLScreen2");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLScreen2";
             } else if (riid == IID_IHTMLWindow4) {
-                DEBUG_ASCII("IID_IHTMLWindow4");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLWindow4";
             } else if (riid == IID_IHTMLWindow5) {
-                DEBUG_ASCII("IID_IHTMLWindow5");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLWindow5";
             } else if (riid == IID_IHTMLDocument3) {
-                DEBUG_ASCII("IID_IHTMLDocument3");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLDocument3";
             } else if (riid == IID_IHTMLDocument4) {
-                DEBUG_ASCII("IID_IHTMLDocument4");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLDocument4";
             } else if (riid == IID_IHTMLDocument5) {
-                DEBUG_ASCII("IID_IHTMLDocument5");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLDocument5";
             } else if (riid == IID_IIMEServices) {
-                DEBUG_ASCII("IID_IIMEServices");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IIMEServices";
             } else if (riid == IID_IWPCBlockedUrls) {
-                DEBUG_ASCII("IID_IWPCBlockedUrls");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IWPCBlockedUrls";
             } else if (riid == IID_IHTMLDialog) {
-                DEBUG_ASCII("IID_IHTMLDialog");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLDialog";
             } else if (riid == IID_IHTMLDialog2) {
-                DEBUG_ASCII("IID_IHTMLDialog2");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLDialog2";
             } else if (riid == IID_IHTMLDialog3) {
-                DEBUG_ASCII("IID_IHTMLDialog3");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLDialog3";
             } else if (riid == IID_IHTMLPopup) {
-                DEBUG_ASCII("IID_IHTMLPopup");
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): riid=IID_IHTMLPopup";
+            } else {
+                LOG(logDEBUG) << "OleClientSite::QueryInterface(): unknown interface, "
+                              << "riid = " << &riid;
             }
-            */
 
             *ppvObject = 0;
             return E_NOINTERFACE;

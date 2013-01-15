@@ -218,16 +218,12 @@ public:
             // <input type=date> also selectbox
             // Inputs that are certain to be text: (checked in fifefox, chrome, opera)
             // - text, search, email, tel, url, number, time.
-            wchar_t* tag = new wchar_t[50];
-            wchar_t* typeattr = new wchar_t[50];
+            wchar_t tag[50];
+            wchar_t typeattr[50];
             if (webFrame->GetActiveElement(tag, typeattr)) {
 
                 _wcsupr_s(tag, 50);
                 _wcsupr_s(typeattr, 50);
-
-                // ASSERT((wcscmp(tag, L"INPUT") == 0), "tag != INPUT");
-                // DEBUG_WIDE(tag);
-                // DEBUG_INT(wcslen(tag));
 
                 if (wcscmp(tag, L"INPUT") == 0
                     && (wcscmp(typeattr, L"TEXT") == 0
@@ -248,10 +244,7 @@ public:
                 else {
                     hr = S_OK;
                 }
-                // DEBUG_WIDE_2(tag, typeattr);
             }
-            delete[] tag;
-            delete[] typeattr;
         }
 
         // This seem to work, others are just to be sure:

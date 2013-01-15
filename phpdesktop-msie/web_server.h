@@ -2,5 +2,5 @@
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
-void TerminatePHPShell();
-wchar_t* GetHttpAddressPort();
+bool StartWebServer();
+void TerminateWebServer();

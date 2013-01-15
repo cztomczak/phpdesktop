@@ -10,25 +10,6 @@
 #include <string>
 #include <sstream>
 
-// ---- api
-
-bool IsAtLeastIE60SP2();
-
-// ----
-
-/*
-    // 6.00.2900.2180 == IE 6.0 SP2
-    // 6.00.2800.1106 == IE 6.0 SP1
-
-    if (LessThanVersion("6.00.2800.1106", "6.00.2900.2180")) { // 1st argument is value from registry.
-        // bad
-    } else {
-        // ok
-    }
-
-    exit(-1);
-*/
-
 // Parse() and LessThanVersion() taken from:
 // http://stackoverflow.com/questions/2941491/compare-versions-as-strings
 
@@ -62,9 +43,8 @@ LONG GetStringRegKey(HKEY hKey, const std::string &strValueName,
         DWORD dwBufferSize = sizeof(szBuffer);
         ULONG nError;
         nError = RegQueryValueExA(hKey, strValueName.c_str(), 0, NULL, (LPBYTE)szBuffer, &dwBufferSize);
-        if (ERROR_SUCCESS == nError)
-        {
-                strValue = szBuffer;
+        if (ERROR_SUCCESS == nError) {
+            strValue = szBuffer;
         }
         return nError;
 }
@@ -77,13 +57,17 @@ bool IsAtLeastIE60SP2()
     LONG lRes = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Internet Explorer", 0, KEY_READ, &hKey);
     if (lRes == ERROR_SUCCESS) {
         GetStringRegKey(hKey, "Version", registryVersion, "0.0.0.0");
-        // DEBUG_ASCII_2("VERSION from registry", registryVersion.c_str());
+        LOG(logINFO) << "IE version from registry: " << registryVersion.c_str();
     }
     RegCloseKey(hKey);
 
     // Version from registry must be valid, ohterwise for example
     // comparing "abc" will give true.
+    // 6.00.2900.2180 == IE 6.0 SP2
+    // 6.00.2800.1106 == IE 6.0 SP1
     if (LessThanVersion(registryVersion, "6.00.2900.2180")) {
+        LOG(logERROR) << "IE 6.0 SP2 (6.00.2900.2180) is required for the"
+                         "program to run correctly";
         return false;
     }
     return true;

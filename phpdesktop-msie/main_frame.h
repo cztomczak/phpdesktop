@@ -6,9 +6,11 @@
 
 #define CLICK_EVENTS_TIMER 1
 
-#include "winmain.h"
+extern CAppModule g_appModule;
+
 #include "msie/browser_frame.h"
 #include "msie/fullscreen_frame.h"
+#include "web_server.h"
 
 class MainView : public CWindowImpl<MainView, CAxWindow>
 {
@@ -41,7 +43,9 @@ public:
 
     MainView rootView;
 
-    MainFrame() {}
+    MainFrame() 
+    {
+    }
 
     virtual BOOL PreTranslateMessage(MSG* pMsg)
     {
@@ -72,15 +76,13 @@ public:
 
     LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
     {
-        wchar_t* httpaddr = GetHttpAddressPort();
-        ASSERT_EXIT((wcslen(httpaddr) > 10), "httpaddr length <= 10");
-        CreateBrowser(httpaddr);
+        CreateBrowser(L"http://127.0.0.1:54007/");
         // CreateBrowser(L"c:\\phpdesktop\\phpdesktop-src\\phpdesktop-msie\\Release\\www\\test.html");
 
         this->SetTimer(CLICK_EVENTS_TIMER, 10, NULL);
         this->SetAllowedURL(L"http://127.0.0.1:54007/");
 
-        CMessageLoop* pLoop = g_Module.GetMessageLoop();
+        CMessageLoop* pLoop = g_appModule.GetMessageLoop();
         ATLASSERT(pLoop != NULL);
         pLoop->AddMessageFilter(this);
         pLoop->AddIdleHandler(this);
@@ -112,7 +114,7 @@ public:
 
     LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
     {
-        TerminatePHPShell();
+        TerminateWebServer();
         if (isfullscreen) {
             ShowTaskBar(true);
         }
@@ -122,7 +124,7 @@ public:
 
     LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
     {
-        CMessageLoop* pLoop = g_Module.GetMessageLoop();
+        CMessageLoop* pLoop = g_appModule.GetMessageLoop();
         ATLASSERT(pLoop != NULL);
         pLoop->RemoveMessageFilter(this);
         pLoop->RemoveIdleHandler(this);
