@@ -339,11 +339,31 @@
 			>
 		</File>
 		<File
+			RelativePath=".\_before_release.txt"
+			>
+		</File>
+		<File
 			RelativePath=".\icon.png"
 			>
 		</File>
 		<File
+			RelativePath=".\www\index.php"
+			>
+		</File>
+		<File
 			RelativePath=".\license.txt"
+			>
+		</File>
+		<File
+			RelativePath=".\www\phpinfo.php"
+			>
+		</File>
+		<File
+			RelativePath=".\www\test-controls.php"
+			>
+		</File>
+		<File
+			RelativePath=".\www\test-links.php"
 			>
 		</File>
 	</Files>

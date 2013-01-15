@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by phpdesktop.rc
+// Used by resource.rc
 //
 #define IDR_MAINFRAME                   128
 

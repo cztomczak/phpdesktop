@@ -1,0 +1,1 @@
+1. Change "Version Info" in resources.rc
