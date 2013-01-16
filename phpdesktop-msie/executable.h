@@ -6,8 +6,8 @@
 
 #pragma once
 
-bool GetExecutablePath(wchar_t* outpath, int outpath_length);
-bool GetExecutablePathQuoted(wchar_t* outpath, int outpath_length);
-bool GetExecutableFilename(wchar_t* outdir, int outdir_length);
-bool GetExecutableName(wchar_t* outdir, int outdir_length);
-bool GetExecutableDir(wchar_t* outdir, int outdir_length);
+bool GetExecutablePath(wchar_t* outPath, int outPathSize);
+bool GetExecutablePathQuoted(wchar_t* outPath, int outPathSize);
+bool GetExecutableFilename(wchar_t* outFilename, int outFilenameSize);
+bool GetExecutableName(wchar_t* outName, int outNameSize);
+bool GetExecutableDirectory(wchar_t* outDirectory, int outDirectorySize);

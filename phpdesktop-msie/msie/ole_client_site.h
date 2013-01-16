@@ -212,7 +212,6 @@ public:
                 LOG(logDEBUG) << "OleClientSite::QueryInterface(): unknown interface, "
                               << "riid = " << &riid;
             }
-
             *ppvObject = 0;
             return E_NOINTERFACE;
         }

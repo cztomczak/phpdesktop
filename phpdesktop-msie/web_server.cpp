@@ -11,13 +11,13 @@
 
 SHELLEXECUTEINFO g_phpShell;
 
-bool StartWebServer()
-{
-    wchar_t shellparams[2048]; // shellparams must be calculated before mainFrame.CreateEx() is called.
-    wchar_t wwwDir[1024];
-    GetExecutableDir(wwwDir, 1024);
-    swprintf_s(wwwDir, 1024, L"%s\\www", wwwDir);
-    swprintf_s(shellparams, 2048, L"-S %s -t %s", L"127.0.0.1:54007", wwwDir);
+bool StartWebServer() {
+    wchar_t shellParams[2048];
+    wchar_t wwwDirectory[1024];
+    GetExecutableDirectory(wwwDirectory, _countof(wwwDirectory));
+    swprintf_s(wwwDirectory, _countof(wwwDirectory), L"%s\\www", wwwDirectory);
+    swprintf_s(shellParams, _countof(shellParams), L"-S %s -t %s", 
+               L"127.0.0.1:54007", wwwDirectory);
 
     // Run php 5.4 built-in webserver
     // Server must be ready before creating window.
@@ -29,13 +29,14 @@ bool StartWebServer()
     g_phpShell.hwnd = NULL;
     g_phpShell.lpVerb = L"open";
 
-    wchar_t executableDir[1024];
+    wchar_t executableDirectory[1024];
     wchar_t phpExecutable[1024];
-    GetExecutableDir(executableDir, 1024);
-    swprintf_s(phpExecutable, 1024, L"%s\\php\\php.exe", executableDir);
+    GetExecutableDirectory(executableDirectory, _countof(executableDirectory));
+    swprintf_s(phpExecutable, _countof(phpExecutable), L"%s\\php\\php.exe",
+            executableDirectory);
 
     g_phpShell.lpFile = phpExecutable;
-    g_phpShell.lpParameters = shellparams;
+    g_phpShell.lpParameters = shellParams;
     g_phpShell.lpDirectory = NULL;
     g_phpShell.nShow = SW_HIDE;
     g_phpShell.hInstApp = NULL;
@@ -43,8 +44,6 @@ bool StartWebServer()
         return false;
     return true;
 }
-
-void TerminateWebServer() 
-{
+void TerminateWebServer() {
     TerminateProcess(g_phpShell.hProcess, 0);
 }

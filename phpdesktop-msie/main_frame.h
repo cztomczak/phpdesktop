@@ -12,17 +12,14 @@ extern CAppModule g_appModule;
 #include "msie/fullscreen_frame.h"
 #include "web_server.h"
 
-class MainView : public CWindowImpl<MainView, CAxWindow>
-{
-public:
+class MainView : public CWindowImpl<MainView, CAxWindow> {
+  public:
     DECLARE_WND_SUPERCLASS(NULL, CAxWindow::GetWndClassName())
-
-    BOOL PreTranslateMessage(MSG* pMsg)
-    {
+    
+    BOOL PreTranslateMessage(MSG* pMsg) {
         if((pMsg->message < WM_KEYFIRST || pMsg->message > WM_KEYLAST) &&
            (pMsg->message < WM_MOUSEFIRST || pMsg->message > WM_MOUSELAST))
             return FALSE;
-
         return (BOOL)SendMessage(WM_FORWARDMSG, 0, (LPARAM)pMsg);
     }
 
@@ -36,29 +33,21 @@ class MainFrame :
     public CMessageFilter,
     public CIdleHandler,
     public BrowserFrame<MainFrame>,
-    public FullscreenFrame<MainFrame>
-{
-public:
+    public FullscreenFrame<MainFrame> {
+  public:
     DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
-
+    
     MainView rootView;
+    MainFrame() {}
 
-    MainFrame() 
-    {
-    }
-
-    virtual BOOL PreTranslateMessage(MSG* pMsg)
-    {
+    virtual BOOL PreTranslateMessage(MSG* pMsg) {
         if(CFrameWindowImpl<MainFrame>::PreTranslateMessage(pMsg))
             return TRUE;
         return rootView.PreTranslateMessage(pMsg);
     }
-
-    virtual BOOL OnIdle()
-    {
+    virtual BOOL OnIdle() {
         return FALSE;
     }
-
 
     BEGIN_UPDATE_UI_MAP(MainFrame)
     END_UPDATE_UI_MAP()
@@ -73,9 +62,8 @@ public:
         CHAIN_MSG_MAP(CFrameWindowImpl<MainFrame>)
     END_MSG_MAP()
 
-
-    LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-    {
+    LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
+                     BOOL& /*bHandled*/) {
         CreateBrowser(L"http://127.0.0.1:54007/");
         // CreateBrowser(L"c:\\phpdesktop\\phpdesktop-src\\phpdesktop-msie\\Release\\www\\test.html");
 
@@ -86,19 +74,14 @@ public:
         ATLASSERT(pLoop != NULL);
         pLoop->AddMessageFilter(this);
         pLoop->AddIdleHandler(this);
-
         return 0;
     }
-
-    LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-    {
+    LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
         // Need to re-attach after each browser navigation.
         this->AttachClickEvents();
         return 0;
     }
-
-    LRESULT OnGetMinMaxInfo(UINT, WPARAM, LPARAM lParam, BOOL&)
-    {
+    LRESULT OnGetMinMaxInfo(UINT, WPARAM, LPARAM lParam, BOOL&) {
         // Load size structure with lParam values
         LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
 
@@ -111,9 +94,8 @@ public:
 
         return 0;
     }
-
-    LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-    {
+    LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
+                    BOOL& bHandled) {
         TerminateWebServer();
         if (isfullscreen) {
             ShowTaskBar(true);
@@ -121,9 +103,8 @@ public:
         bHandled = FALSE;
         return 0;
     }
-
-    LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-    {
+    LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
+                      BOOL& bHandled) {
         CMessageLoop* pLoop = g_appModule.GetMessageLoop();
         ATLASSERT(pLoop != NULL);
         pLoop->RemoveMessageFilter(this);
@@ -131,5 +112,4 @@ public:
         bHandled = FALSE;
         return 1;
     }
-
 };

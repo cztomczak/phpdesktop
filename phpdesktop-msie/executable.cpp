@@ -1,90 +1,86 @@
 #include <windows.h>
 #include <wchar.h>
 
-bool GetExecutablePath(wchar_t* outpath, int outpath_length)
-{
-    // This path is longer than MAX_PATH, do not use it with
-    // windows api functions as you might get buffer overflows.
-    wchar_t shortpath[1024];
-    wchar_t longpath[1024];
-    if (!GetModuleFileName(NULL, shortpath, 1024)) 
+bool GetExecutablePath(wchar_t* outPath, int outPathSize) {
+    wchar_t path[1024];
+    if (!GetModuleFileName(NULL, path, _countof(path)))
         return false;
-    if (!GetLongPathName(shortpath, longpath, 1024))
+    if (!GetLongPathName(path, path, _countof(path)))
         return false;
-    swprintf_s(outpath, outpath_length, L"%s", longpath);
+    swprintf_s(outPath, outPathSize, L"%s", path);
     return true;
 }
-
-bool GetExecutablePathQuoted(wchar_t* outpath, int outpath_length)
-{
-    wchar_t* temppath = new wchar_t[outpath_length];
-    GetExecutablePath(temppath, outpath_length);
-    int result = swprintf_s(outpath, outpath_length, L"\"%s\"", temppath);
-    delete[] temppath;
-    temppath = 0;
+bool GetExecutablePathQuoted(wchar_t* outPath, int outPathSize) {
+    wchar_t* tempPath = new wchar_t[outPathSize];
+    GetExecutablePath(tempPath, outPathSize);
+    int result = swprintf_s(outPath, outPathSize, L"\"%s\"", tempPath);
+    delete[] tempPath;
+    tempPath = 0;
     if (result == -1)
         return false;
     return true;
 }
-
-bool GetExecutableFilename(wchar_t* outdir, int outdir_length)
-{
-    // Filename with extension.
-    wchar_t longpath[1024];
-    if (!GetExecutablePath(longpath, _countof(longpath)))
+bool GetExecutableFilename(wchar_t* outFilename, int outFilenameSize) {
+    wchar_t path[1024];
+    if (!GetExecutablePath(path, _countof(path)))
         return false;
     wchar_t drive[3];
-    wchar_t dir[768];
-    wchar_t fname[256];
-    wchar_t ext[32];
-    errno_t result = _wsplitpath_s(longpath, drive, _countof(drive), dir, 
-            _countof(dir), fname, _countof(fname), ext, _countof(ext));
+    wchar_t directory[768];
+    wchar_t filename[256];
+    wchar_t extension[32];
+    errno_t result = _wsplitpath_s(path, 
+            drive, _countof(drive), 
+            directory, _countof(directory), 
+            filename, _countof(filename), 
+            extension, _countof(extension));
     if (result != 0)
         return false;
-    if (swprintf_s(outdir, outdir_length, L"%s%s", fname, ext) == -1)
+    if (swprintf_s(outFilename, outFilenameSize, L"%s%s", filename, 
+            extension) == -1) {
         return false;
-    return true;
-}
-
-bool GetExecutableName(wchar_t* outdir, int outdir_length)
-{
-    wchar_t longpath[1024];
-    if (!GetExecutablePath(longpath, _countof(longpath)))
-        return false;
-    wchar_t drive[3];
-    wchar_t dir[768];
-    wchar_t fname[256];
-    wchar_t ext[32];
-    errno_t result = _wsplitpath_s(longpath, drive, _countof(drive), dir, 
-            _countof(dir), fname, _countof(fname), ext, _countof(ext));
-    if (result != 0)
-        return false;
-    if (swprintf_s(outdir, outdir_length, L"%s", fname) == -1)
-        return false;
-    return true;
-}
-
-bool GetExecutableDir(wchar_t* outdir, int outdir_length)
-{
-    // Returns directory without slash at the end.
-    // This path is longer than MAX_PATH, do not use it with
-    // windows api functions as you might get buffer overflows.
-    wchar_t longpath[1024];
-    GetExecutablePath(longpath, _countof(longpath));
-    wchar_t drive[3];
-    wchar_t dir[768];
-    wchar_t fname[256];
-    wchar_t ext[32];
-    errno_t result = _wsplitpath_s(longpath, drive, _countof(drive), dir, 
-            _countof(dir), fname, _countof(fname), ext, _countof(ext));
-    if (result != 0)
-        return false;
-    if (swprintf_s(outdir, outdir_length, L"%s%s", drive, dir) == -1)
-        return false;
-    int len = wcslen(outdir);
-    // Remove slash at the end.
-    if (outdir[len-1] == '\\' || outdir[len-1] == '/') {
-        outdir[len-1] = 0;
     }
+    return true;
+}
+bool GetExecutableName(wchar_t* outName, int outNameSize) {
+    wchar_t path[1024];
+    if (!GetExecutablePath(path, _countof(path)))
+        return false;
+    wchar_t drive[3];
+    wchar_t directory[768];
+    wchar_t filename[256];
+    wchar_t extension[32];
+    errno_t result = _wsplitpath_s(path,
+            drive, _countof(drive), 
+            directory, _countof(directory), 
+            filename, _countof(filename), 
+            extension, _countof(extension));
+    if (result != 0)
+        return false;
+    if (swprintf_s(outName, outNameSize, L"%s", filename) == -1)
+        return false;
+    return true;
+}
+bool GetExecutableDirectory(wchar_t* outDirectory, int outDirectorySize) {
+    /* Returns directory without slash at the end. */
+    wchar_t path[1024];
+    GetExecutablePath(path, _countof(path));
+    wchar_t drive[3];
+    wchar_t directory[768];
+    wchar_t filename[256];
+    wchar_t extension[32];
+    errno_t result = _wsplitpath_s(path, 
+            drive, _countof(drive),
+            directory, _countof(directory), 
+            filename, _countof(filename),
+            extension, _countof(extension));
+    if (result != 0)
+        return false;
+    if (swprintf_s(outDirectory, outDirectorySize, L"%s%s", drive, 
+            directory) == -1) {
+        return false;
+    }
+    int len = wcslen(outDirectory);
+    if (outDirectory[len-1] == '\\' || outDirectory[len-1] == '/')
+        outDirectory[len-1] = 0;
     return true;
 }

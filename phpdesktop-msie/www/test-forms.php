@@ -5,6 +5,7 @@
 <h2>Input</h2>
 
 type=text: <input type=text><br>
+type=(empty) <input><br>
 type=password: <input type=password><br>
 type=checkbox: <input type=checkbox><br>
 type=submit: <input type=submit><br>

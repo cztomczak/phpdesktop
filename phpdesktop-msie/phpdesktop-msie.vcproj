@@ -204,7 +204,19 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\json.c"
+				>
+			</File>
+			<File
 				RelativePath=".\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\mongoose.c"
+				>
+			</File>
+			<File
+				RelativePath=".\string_utils.cpp"
 				>
 			</File>
 			<File
@@ -269,11 +281,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\json.h"
+				>
+			</File>
+			<File
 				RelativePath=".\log.h"
 				>
 			</File>
 			<File
 				RelativePath=".\main_frame.h"
+				>
+			</File>
+			<File
+				RelativePath=".\mongoose.h"
 				>
 			</File>
 			<File
@@ -298,6 +318,10 @@
 			</File>
 			<File
 				RelativePath=".\srand2.h"
+				>
+			</File>
+			<File
+				RelativePath=".\string_utils.h"
 				>
 			</File>
 			<File
@@ -343,7 +367,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\_before_release.txt"
+			RelativePath=".\before_release.txt"
 			>
 		</File>
 		<File
@@ -364,6 +388,10 @@
 		</File>
 		<File
 			RelativePath=".\resource.aps"
+			>
+		</File>
+		<File
+			RelativePath=".\run.js"
 			>
 		</File>
 		<File
