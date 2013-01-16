@@ -2,8 +2,6 @@
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
-#define RELEASE_MODE 0
-
 #pragma comment(linker, "/manifestdependency:\"type='win32' "\
     "name='Microsoft.Windows.Common-Controls' version='6.0.0.0' "\
     "processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' "\
@@ -38,7 +36,7 @@ void InitLogging();
 int Run(LPTSTR, int);
 json_value* GetApplicationSettings();
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, 
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPTSTR lpstrCmdLine, int nCmdShow) {
     InitLogging();
     LOG(logINFO) << "--------------------------------------------------------";
@@ -56,15 +54,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,
     LOG(logINFO) << "Log level = "\
             << FILELog::ToString(FILELog::ReportingLevel());
 
-
     HRESULT hRes = ::CoInitialize(NULL);
     ATLASSERT(SUCCEEDED(hRes));
 
-    // This resolves ATL window thunking problem when Microsoft Layer
-    // for Unicode (MSLU) is used.
+    // This resolves ATL window thunking problem when Microsoft 
+    // Layer for Unicode (MSLU) is used.
     ::DefWindowProc(NULL, 0, 0, 0L);
 
-    // Support for some of the common controls.
+    // Support some of the common controls.
     AtlInitCommonControls(ICC_BAR_CLASSES); 
 
     hRes = g_appModule.Init(NULL, hInstance);
@@ -80,7 +77,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,
 
     return nRet;
 }
-int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT) {
+int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT) {
     CMessageLoop theLoop;
     g_appModule.AddMessageLoop(&theLoop);
 

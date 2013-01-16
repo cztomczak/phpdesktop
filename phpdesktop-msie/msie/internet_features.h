@@ -92,13 +92,13 @@
 // FEATURE_FEEDS
 // FEATURE_BLOCK_INPUT_PROMPTS
 
-// Additional features found in Wine 1.1.3:
-// http://source.winehq.org/source/include/urlmon.idl?v=wine-1.1.3
-
-#define FEATURE_DOMSTORAGE 28
-#define FEATURE_XDOMAINREQUEST 29 
-#define FEATURE_DATAURI 30 
-#define FEATURE_AJAX_CONNECTIONSERVICES 31
+// Following features found in Wine 1.1.3, but setting them
+// per process fails:
+// (http://source.winehq.org/source/include/urlmon.idl?v=wine-1.1.3)
+// FEATURE_DOMSTORAGE
+// FEATURE_XDOMAINREQUEST
+// FEATURE_DATAURI
+// FEATURE_AJAX_CONNECTIONSERVICES
 
 void SetInternetFeatures() {
     // We must check IE version, it needs to be at least 6.0 SP2,
@@ -207,6 +207,13 @@ void SetInternetFeatures() {
     LOG(logDEBUG) << "FEATURE_ADDON_MANAGEMENT succeeded: " 
                   << SUCCEEDED(hres);
     
+    /*
+    Setting these features fails:
+    
+    FEATURE_DOMSTORAGE
+    FEATURE_XDOMAINREQUEST
+    FEATURE_DATAURI
+
     // Internet Explorer 8. When enabled, the FEATURE_DOMSTORAGE 
     // feature allows Internet Explorer and applications hosting 
     // the WebBrowser Control to use the Web Storage API.
@@ -231,4 +238,5 @@ void SetInternetFeatures() {
             SET_FEATURE_ON_PROCESS, TRUE);
     LOG(logDEBUG) << "FEATURE_DATAURI succeeded: " 
                   << SUCCEEDED(hres);
+    */
 }

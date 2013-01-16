@@ -301,6 +301,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\msie\ole_control_site.h"
+				>
+			</File>
+			<File
 				RelativePath=".\msie\ole_inplace_frame.h"
 				>
 			</File>

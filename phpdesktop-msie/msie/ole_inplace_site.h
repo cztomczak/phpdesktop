@@ -2,8 +2,9 @@
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
-// Not used currently... as we implemented DocHostUIHandlerDispatch()
-// and this is not needed anymore.
+// This interface IS NOT used, see OleClientSite::QueryInterface().
+// When using DocHostUIHandlerDispatch() you do not need to
+// implement: IOleInPlaceFrame, IOleInPlaceSite, IOleControlSite.
 
 #pragma once
 

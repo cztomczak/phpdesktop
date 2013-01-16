@@ -109,3 +109,12 @@ char* WCHAR_TO_CHAR(wchar_t* wide) {
                 STRINGIZE(__LINE__), __FUNCTION__);\
         MessageBoxA(NULL, tmpstr, "DEBUG", MB_ICONINFORMATION);\
     }
+
+void GUID_TO_CHAR(const GUID* guid, char* outString, size_t outStringSize)
+{
+    sprintf_s(outString, outStringSize, 
+              "{%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x}",
+              guid->Data1, guid->Data2, guid->Data3,
+              guid->Data4[0], guid->Data4[1], guid->Data4[2], guid->Data4[3],
+              guid->Data4[4], guid->Data4[5], guid->Data4[6], guid->Data4[7]);
+}

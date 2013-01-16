@@ -49,8 +49,10 @@ template <typename T>
 Log<T>::~Log()
 {
     os << std::endl;
-    fprintf(stderr, "%s", os.str().c_str());
-    fflush(stderr);
+    if (T::Stream() != stderr) {
+        fprintf(stderr, "%s", os.str().c_str());
+        fflush(stderr);
+    }
     T::Output(os.str());
 }
 
