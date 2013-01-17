@@ -116,12 +116,25 @@ class MainFrame :
         // Load size structure with lParam values
         LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
 
-        // Change the values in the size structure to desired values
-        lpMMI->ptMinTrackSize.x = 800; // min width
-        lpMMI->ptMinTrackSize.y = 600; // min height
-        
-        // lpMMI->ptMaxTrackSize.x = 0; // max width, cannot set to 0!
-        // lpMMI->ptMaxTrackSize.y = 0; // max height
+        json_value* settings = GetApplicationSettings();
+        static long minimum_width = 
+                (*settings)["main_window"]["minimum_size"][0];
+        static long minimum_height = 
+                (*settings)["main_window"]["minimum_size"][1];
+        static long maximum_width = 
+                (*settings)["main_window"]["maximum_size"][0];
+        static long maximum_height = 
+                (*settings)["main_window"]["maximum_size"][1];
+
+        if (minimum_width)
+            lpMMI->ptMinTrackSize.x = minimum_width;
+        if (minimum_height)
+            lpMMI->ptMinTrackSize.y = minimum_height;
+
+        if (maximum_width)        
+            lpMMI->ptMaxTrackSize.x = maximum_width;
+        if (maximum_height)
+            lpMMI->ptMaxTrackSize.y = maximum_height;
 
         return 0;
     }
