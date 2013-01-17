@@ -7,9 +7,11 @@
 #define CLICK_EVENTS_TIMER 1
 
 extern CAppModule g_appModule;
+extern wchar_t* g_singleInstanceApplicationGuid;
 
 #include "msie/browser_frame.h"
 #include "msie/fullscreen_frame.h"
+#include "string_utils.h"
 #include "web_server.h"
 
 class MainView : public CWindowImpl<MainView, CAxWindow> {
@@ -35,7 +37,7 @@ class MainFrame :
     public BrowserFrame<MainFrame>,
     public FullscreenFrame<MainFrame> {
   public:
-    DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
+    DECLARE_FRAME_WND_CLASS(g_singleInstanceApplicationGuid, IDR_MAINFRAME)
     
     MainView rootView;
     MainFrame() {}
@@ -62,8 +64,37 @@ class MainFrame :
         CHAIN_MSG_MAP(CFrameWindowImpl<MainFrame>)
     END_MSG_MAP()
 
+    void SetIconFromSettings() {
+        json_value* settings = GetApplicationSettings();
+        const char* iconPath = (*settings)["main_window"]["icon"];
+        if (iconPath && iconPath[0] != 0) {
+            wchar_t iconPathW[4096];
+            Utf8ToWide(iconPath, iconPathW, _countof(iconPathW));
+
+            int bigX = GetSystemMetrics(SM_CXICON);
+            int bigY = GetSystemMetrics(SM_CYICON);
+            HANDLE bigIcon = LoadImage(0, iconPathW, IMAGE_ICON, bigX, bigY, 
+                                       LR_LOADFROMFILE);
+            if (bigIcon)
+                SendMessage(m_hWnd, WM_SETICON, ICON_BIG, (LPARAM)bigIcon);
+            else
+                LOG(logWARNING) << "Setting icon from settings file failed "
+                                   "(ICON_BIG)";
+            int smallX = GetSystemMetrics(SM_CXSMICON);
+            int smallY = GetSystemMetrics(SM_CYSMICON);
+            HANDLE smallIcon = LoadImage(0, iconPathW, IMAGE_ICON, smallX, 
+                                         smallY, LR_LOADFROMFILE);
+            if (smallIcon)
+                SendMessage(m_hWnd, WM_SETICON, ICON_SMALL, (LPARAM)smallIcon);
+            else
+                LOG(logWARNING) << "Setting icon from settings file failed "
+                                   "(ICON_SMALL)";
+        }
+    }
     LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
                      BOOL& /*bHandled*/) {
+        SetIconFromSettings();
+
         CreateBrowser(L"http://127.0.0.1:54007/");
         // CreateBrowser(L"c:\\phpdesktop\\phpdesktop-src\\phpdesktop-msie\\Release\\www\\test.html");
 

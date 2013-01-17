@@ -62,7 +62,7 @@ public:
         } else {
             if (FILELog::ReportingLevel() >= logDEBUG) {
                 char riid_name[128];
-                GUID_TO_CHAR(&riid, &riid_name[0], _countof(riid_name));
+                GUID_TO_CHAR(&riid, riid_name, _countof(riid_name));
                 LOG(logDEBUG) << "OleClientSite::QueryInterface(): "
                                  "unknown interface, riid = " << riid_name;
             }

@@ -321,6 +321,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\single_instance_application.h"
+				>
+			</File>
+			<File
 				RelativePath=".\srand2.h"
 				>
 			</File>

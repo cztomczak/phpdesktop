@@ -2,7 +2,7 @@
 #include <wchar.h>
 
 bool GetExecutablePath(wchar_t* outPath, int outPathSize) {
-    wchar_t path[1024];
+    wchar_t path[4096];
     if (!GetModuleFileName(NULL, path, _countof(path)))
         return false;
     if (!GetLongPathName(path, path, _countof(path)))
@@ -21,13 +21,13 @@ bool GetExecutablePathQuoted(wchar_t* outPath, int outPathSize) {
     return true;
 }
 bool GetExecutableFilename(wchar_t* outFilename, int outFilenameSize) {
-    wchar_t path[1024];
+    wchar_t path[4096];
     if (!GetExecutablePath(path, _countof(path)))
         return false;
     wchar_t drive[3];
-    wchar_t directory[768];
-    wchar_t filename[256];
-    wchar_t extension[32];
+    wchar_t directory[2941];
+    wchar_t filename[1024];
+    wchar_t extension[128];
     errno_t result = _wsplitpath_s(path, 
             drive, _countof(drive), 
             directory, _countof(directory), 
@@ -42,13 +42,13 @@ bool GetExecutableFilename(wchar_t* outFilename, int outFilenameSize) {
     return true;
 }
 bool GetExecutableName(wchar_t* outName, int outNameSize) {
-    wchar_t path[1024];
+    wchar_t path[4096];
     if (!GetExecutablePath(path, _countof(path)))
         return false;
     wchar_t drive[3];
-    wchar_t directory[768];
-    wchar_t filename[256];
-    wchar_t extension[32];
+    wchar_t directory[2941];
+    wchar_t filename[1024];
+    wchar_t extension[128];
     errno_t result = _wsplitpath_s(path,
             drive, _countof(drive), 
             directory, _countof(directory), 
@@ -62,12 +62,12 @@ bool GetExecutableName(wchar_t* outName, int outNameSize) {
 }
 bool GetExecutableDirectory(wchar_t* outDirectory, int outDirectorySize) {
     /* Returns directory without slash at the end. */
-    wchar_t path[1024];
+    wchar_t path[4096];
     GetExecutablePath(path, _countof(path));
     wchar_t drive[3];
-    wchar_t directory[768];
-    wchar_t filename[256];
-    wchar_t extension[32];
+    wchar_t directory[2941];
+    wchar_t filename[1024];
+    wchar_t extension[128];
     errno_t result = _wsplitpath_s(path, 
             drive, _countof(drive),
             directory, _countof(directory), 

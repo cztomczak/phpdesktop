@@ -13,7 +13,7 @@ SHELLEXECUTEINFO g_phpShell;
 
 bool StartWebServer() {
     wchar_t shellParams[2048];
-    wchar_t wwwDirectory[1024];
+    wchar_t wwwDirectory[4096];
     GetExecutableDirectory(wwwDirectory, _countof(wwwDirectory));
     swprintf_s(wwwDirectory, _countof(wwwDirectory), L"%s\\www", wwwDirectory);
     swprintf_s(shellParams, _countof(shellParams), L"-S %s -t %s", 
@@ -29,8 +29,8 @@ bool StartWebServer() {
     g_phpShell.hwnd = NULL;
     g_phpShell.lpVerb = L"open";
 
-    wchar_t executableDirectory[1024];
-    wchar_t phpExecutable[1024];
+    wchar_t executableDirectory[4096];
+    wchar_t phpExecutable[4096];
     GetExecutableDirectory(executableDirectory, _countof(executableDirectory));
     swprintf_s(phpExecutable, _countof(phpExecutable), L"%s\\php\\php.exe",
             executableDirectory);

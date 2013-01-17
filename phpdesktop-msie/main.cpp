@@ -20,21 +20,26 @@
 #include <iostream>
 #include <fstream>
 
+#include "json.h"
+
+void InitLogging();
+int Run(LPTSTR lpstrCmdLine, int nCmdShow, wchar_t* main_window_title_w);
+json_value* GetApplicationSettings();
+
 #include "resource.h"
 
 #include "debug.h"
 #include "executable.h"
-#include "json.h"
 #include "log.h"
 #include "main_frame.h"
 #include "msie/internet_features.h"
+#include "single_instance_application.h"
 #include "string_utils.h"
 #include "web_server.h"
 
 CAppModule g_appModule;
-void InitLogging();
-int Run(LPTSTR, int);
-json_value* GetApplicationSettings();
+SingleInstanceApplication g_singleInstanceApplication;
+wchar_t* g_singleInstanceApplicationGuid = 0;
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPTSTR lpstrCmdLine, int nCmdShow) {
@@ -42,6 +47,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     LOG(logINFO) << "--------------------------------------------------------";
     LOG(logINFO) << "Started application";
     
+    // Debugging options.
     json_value* settings = GetApplicationSettings();
     const char* log_level = 
             (*settings)["application"]["debugging"]["log_level"];
@@ -53,6 +59,38 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         LOG(logINFO) << "No logging file set";
     LOG(logINFO) << "Log level = "\
             << FILELog::ToString(FILELog::ReportingLevel());
+
+    // Main window title option.
+    const char* main_window_title = (*settings)["main_window"]["title"];
+    wchar_t main_window_title_w[128];
+    Utf8ToWide(main_window_title, main_window_title_w, 
+               _countof(main_window_title_w));
+    if (main_window_title_w[0] == 0)
+        GetExecutableName(main_window_title_w, _countof(main_window_title_w));
+
+    // Single instance guid option.
+    const char* single_instance_guid = 
+            (*settings)["application"]["single_instance_guid"];
+    if (single_instance_guid && single_instance_guid[0]) {
+        int guidSize = strlen(single_instance_guid)+1;
+        g_singleInstanceApplicationGuid = new wchar_t[guidSize];
+        Utf8ToWide(single_instance_guid, g_singleInstanceApplicationGuid,
+                   guidSize);
+    }
+    if (g_singleInstanceApplicationGuid 
+            && g_singleInstanceApplicationGuid[0] != 0) {
+        g_singleInstanceApplication.Initialize(
+                g_singleInstanceApplicationGuid);
+	    if (g_singleInstanceApplication.IsRunning()) {
+            HWND hwnd = FindWindowW(g_singleInstanceApplicationGuid, NULL);
+            if (hwnd) {
+                if (IsIconic(hwnd))
+                    ShowWindow(hwnd, SW_RESTORE);
+                SetForegroundWindow(hwnd);
+                return 0;
+            }
+        }
+    }
 
     HRESULT hRes = ::CoInitialize(NULL);
     ATLASSERT(SUCCEEDED(hRes));
@@ -68,7 +106,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     ATLASSERT(SUCCEEDED(hRes));
 
     AtlAxWinInit();
-    int nRet = Run(lpstrCmdLine, nCmdShow);
+    int nRet = Run(lpstrCmdLine, nCmdShow, main_window_title_w);
     g_appModule.Term();
     
     ::CoUninitialize();
@@ -77,18 +115,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
     return nRet;
 }
-int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT) {
+int Run(LPTSTR lpstrCmdLine, int nCmdShow, wchar_t* main_window_title_w) {
     CMessageLoop theLoop;
     g_appModule.AddMessageLoop(&theLoop);
 
     json_value* settings = GetApplicationSettings();
-    
-    const char* main_window_title = (*settings)["main_window"]["title"];
-    wchar_t main_window_title_w[128];
-    Utf8ToWide(main_window_title, &main_window_title_w[0],
-               _countof(main_window_title_w));
-    if (main_window_title_w[0] == 0)
-        GetExecutableName(main_window_title_w, _countof(main_window_title_w));
     
     long default_width = (*settings)["main_window"]["default_size"][0];
     long default_height = (*settings)["main_window"]["default_size"][1];
@@ -153,7 +184,7 @@ void InitLogging() {
 
     if (log_file && log_file[0] != 0) {
         FILE* pFile;    
-        wchar_t debug_file[1024];
+        wchar_t debug_file[4096];
         GetExecutableDirectory(debug_file, _countof(debug_file));
         swprintf_s(debug_file, _countof(debug_file), L"%s\\debug.log", debug_file);
         if (0 == _wfopen_s(&pFile, debug_file, L"a"))
@@ -168,7 +199,7 @@ json_value* GetApplicationSettings() {
     settings_fetched = true;
     LOG(logDEBUG) << "Fetching settings from settings.json file";
 
-    wchar_t settingsFile[1024];
+    wchar_t settingsFile[4096];
     GetExecutableDirectory(settingsFile, _countof(settingsFile));
     swprintf_s(settingsFile, _countof(settingsFile), L"%s\\settings.json",
                settingsFile);
@@ -190,7 +221,7 @@ json_value* GetApplicationSettings() {
     memset(&settings, 0, sizeof(json_settings));
     char error[256];
     json_value* json_parsed = json_parse_ex(&settings, json_data.c_str(), 
-            &error[0]);
+                                            &error[0]);
     if (json_parsed == 0) {
         LOG(logWARNING) << "Error while parsing settings.json file: " << error;
         return ret;
