@@ -11,7 +11,8 @@
 
 inline std::string NowTime();
 
-enum TLogLevel {logERROR, logWARNING, logINFO, logDEBUG, logDEBUG1, logDEBUG2, logDEBUG3, logDEBUG4};
+enum TLogLevel {logERROR, logWARNING, logINFO, logDEBUG, 
+                logDEBUG1, logDEBUG2, logDEBUG3, logDEBUG4};
 
 template <typename T>
 class Log
@@ -66,7 +67,8 @@ TLogLevel& Log<T>::ReportingLevel()
 template <typename T>
 std::string Log<T>::ToString(TLogLevel level)
 {
-	static const char* const buffer[] = {"ERROR", "WARNING", "INFO", "DEBUG", "DEBUG1", "DEBUG2", "DEBUG3", "DEBUG4"};
+	static const char* const buffer[] = {"ERROR", "WARNING", "INFO", "DEBUG",
+            "DEBUG1", "DEBUG2", "DEBUG3", "DEBUG4"};
     return buffer[level];
 }
 
@@ -89,7 +91,8 @@ TLogLevel Log<T>::FromString(const std::string& level)
         return logWARNING;
     if (level == "ERROR")
         return logERROR;
-    Log<T>().Get(logWARNING) << "Unknown logging level '" << level << "'. Using INFO level as default.";
+    Log<T>().Get(logWARNING) << "Unknown logging level '" << level 
+                             << "'. Using INFO level as default.";
     return logINFO;
 }
 
@@ -154,7 +157,7 @@ inline std::string NowTime()
     char result[100] = {0};
     static DWORD first = GetTickCount();
     #pragma warning(suppress: 4996)
-    std::sprintf(result, "%s.%03ld", buffer, (long)(GetTickCount() - first) % 1000); 
+    sprintf(result, "%s.%03ld", buffer, (long)(GetTickCount() - first) % 1000); 
     return result;
 }
 

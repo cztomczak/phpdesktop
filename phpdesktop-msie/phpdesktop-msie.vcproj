@@ -216,6 +216,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\settings.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\string_utils.cpp"
 				>
 			</File>
@@ -318,6 +322,10 @@
 			</File>
 			<File
 				RelativePath=".\msie\service_provider.h"
+				>
+			</File>
+			<File
+				RelativePath=".\settings.h"
 				>
 			</File>
 			<File

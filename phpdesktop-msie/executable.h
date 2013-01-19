@@ -2,12 +2,12 @@
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
-// Dependency: debug.h (macro ASSERT_EXIT).
-
 #pragma once
 
-bool GetExecutablePath(wchar_t* outPath, int outPathSize);
-bool GetExecutablePathQuoted(wchar_t* outPath, int outPathSize);
-bool GetExecutableFilename(wchar_t* outFilename, int outFilenameSize);
-bool GetExecutableName(wchar_t* outName, int outNameSize);
-bool GetExecutableDirectory(wchar_t* outDirectory, int outDirectorySize);
+#include <string>
+
+std::string GetExecutablePath();
+std::string GetExecutablePathQuoted();
+std::string GetExecutableFilename();
+std::string GetExecutableName();
+std::string GetExecutableDirectory();

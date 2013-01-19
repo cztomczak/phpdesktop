@@ -8,9 +8,11 @@
 
 extern CAppModule g_appModule;
 extern wchar_t* g_singleInstanceApplicationGuid;
+extern std::string g_webServerUrl;
 
 #include "msie/browser_frame.h"
 #include "msie/fullscreen_frame.h"
+#include "settings.h"
 #include "string_utils.h"
 #include "web_server.h"
 
@@ -68,7 +70,7 @@ class MainFrame :
         json_value* settings = GetApplicationSettings();
         const char* iconPath = (*settings)["main_window"]["icon"];
         if (iconPath && iconPath[0] != 0) {
-            wchar_t iconPathW[4096];
+            wchar_t iconPathW[MAX_PATH];
             Utf8ToWide(iconPath, iconPathW, _countof(iconPathW));
 
             int bigX = GetSystemMetrics(SM_CXICON);
@@ -95,11 +97,11 @@ class MainFrame :
                      BOOL& /*bHandled*/) {
         SetIconFromSettings();
 
-        CreateBrowser(L"http://127.0.0.1:54007/");
+        CreateBrowser(Utf8ToWide(g_webServerUrl).c_str());
         // CreateBrowser(L"c:\\phpdesktop\\phpdesktop-src\\phpdesktop-msie\\Release\\www\\test.html");
 
         this->SetTimer(CLICK_EVENTS_TIMER, 10, NULL);
-        this->SetAllowedURL(L"http://127.0.0.1:54007/");
+        this->SetAllowedURL(Utf8ToWide(g_webServerUrl).c_str());
 
         CMessageLoop* pLoop = g_appModule.GetMessageLoop();
         ATLASSERT(pLoop != NULL);

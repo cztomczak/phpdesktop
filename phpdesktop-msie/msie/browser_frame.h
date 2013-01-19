@@ -58,7 +58,7 @@ public:
         wcsncpy_s(allowedURL, _countof(allowedURL), L"nohttp", _TRUNCATE);
     }
 
-    void CreateBrowser(wchar_t* navigateurl)
+    void CreateBrowser(const wchar_t* navigateurl)
     {
         // m_hWndClient is of WTL::CFrameWindowImplBase
         rootFrame->m_hWndClient = rootFrame->rootView.Create(rootFrame->m_hWnd,
@@ -277,7 +277,7 @@ public:
         return false;
     }
 
-    void SetAllowedURL(wchar_t* inURL)
+    void SetAllowedURL(const wchar_t* inURL)
     {
         // * Call this function in OnCreate().
         // * Links that do not start with outURL will not be allowed to open

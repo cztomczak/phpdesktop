@@ -1,3 +1,5 @@
+// Modified by Czarek Tomczak <czarek.tomczak@gmail.com>
+// for the PHP Desktop project (http://code.google.com/p/phpdesktop/).
 
 /* vim: set et ts=3 sw=3 ft=c:
  *
@@ -38,6 +40,8 @@
 #ifdef __cplusplus
 
    #include <string.h>
+   #include <string>
+   #include "string_utils.h"   
 
    extern "C"
    {
@@ -160,6 +164,30 @@ typedef struct _json_value
                default:
                   return "";
             };
+         }
+
+         inline operator std::string () const
+         {
+            switch (type)
+            {
+               case json_string:
+                   return std::string(u.string.ptr);
+
+               default:
+                   return std::string();
+            }
+         }
+
+         inline operator std::wstring () const
+         {
+            std::string string;
+            switch (type)
+            {
+               case json_string:
+                  string = u.string.ptr;
+                  break;
+            }
+            return Utf8ToWide(string);
          }
 
          inline operator long () const

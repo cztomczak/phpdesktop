@@ -17,15 +17,6 @@
 #include <atlapp.h>
 #include <atlframe.h>
 
-#include <iostream>
-#include <fstream>
-
-#include "json.h"
-
-void InitLogging();
-int Run(LPTSTR lpstrCmdLine, int nCmdShow, wchar_t* main_window_title_w);
-json_value* GetApplicationSettings();
-
 #include "resource.h"
 
 #include "debug.h"
@@ -33,6 +24,7 @@ json_value* GetApplicationSettings();
 #include "log.h"
 #include "main_frame.h"
 #include "msie/internet_features.h"
+#include "settings.h"
 #include "single_instance_application.h"
 #include "string_utils.h"
 #include "web_server.h"
@@ -40,6 +32,9 @@ json_value* GetApplicationSettings();
 CAppModule g_appModule;
 SingleInstanceApplication g_singleInstanceApplication;
 wchar_t* g_singleInstanceApplicationGuid = 0;
+
+void InitLogging();
+int Run(LPTSTR lpstrCmdLine, int nCmdShow, std::string main_window_title);
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPTSTR lpstrCmdLine, int nCmdShow) {
@@ -49,30 +44,25 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     
     // Debugging options.
     json_value* settings = GetApplicationSettings();
-    const char* log_level = 
-            (*settings)["application"]["debugging"]["log_level"];
-    const char* log_file = 
-            (*settings)["application"]["debugging"]["log_file"];
+    const char* log_level = (*settings)["debugging"]["log_level"];
+    const char* log_file = (*settings)["debugging"]["log_file"];
     if (log_file && log_file[0] != 0)
         LOG(logINFO) << "Logging to " << log_file;
     else
         LOG(logINFO) << "No logging file set";
-    LOG(logINFO) << "Log level = "\
+    LOG(logINFO) << "Log level = "
             << FILELog::ToString(FILELog::ReportingLevel());
 
     // Main window title option.
-    const char* main_window_title = (*settings)["main_window"]["title"];
-    wchar_t main_window_title_w[128];
-    Utf8ToWide(main_window_title, main_window_title_w, 
-               _countof(main_window_title_w));
-    if (main_window_title_w[0] == 0)
-        GetExecutableName(main_window_title_w, _countof(main_window_title_w));
+    std::string main_window_title = (*settings)["main_window"]["title"];
+    if (main_window_title.empty())
+        main_window_title = GetExecutableName();
 
     // Single instance guid option.
     const char* single_instance_guid = 
             (*settings)["application"]["single_instance_guid"];
-    if (single_instance_guid && single_instance_guid[0]) {
-        int guidSize = strlen(single_instance_guid)+1;
+    if (single_instance_guid && single_instance_guid[0] != 0) {
+        int guidSize = strlen(single_instance_guid) + 1;
         g_singleInstanceApplicationGuid = new wchar_t[guidSize];
         Utf8ToWide(single_instance_guid, g_singleInstanceApplicationGuid,
                    guidSize);
@@ -82,7 +72,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         g_singleInstanceApplication.Initialize(
                 g_singleInstanceApplicationGuid);
 	    if (g_singleInstanceApplication.IsRunning()) {
-            HWND hwnd = FindWindowW(g_singleInstanceApplicationGuid, NULL);
+            HWND hwnd = FindWindow(g_singleInstanceApplicationGuid, NULL);
             if (hwnd) {
                 if (IsIconic(hwnd))
                     ShowWindow(hwnd, SW_RESTORE);
@@ -106,7 +96,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     ATLASSERT(SUCCEEDED(hRes));
 
     AtlAxWinInit();
-    int nRet = Run(lpstrCmdLine, nCmdShow, main_window_title_w);
+    int nRet = Run(lpstrCmdLine, nCmdShow, main_window_title);
     g_appModule.Term();
     
     ::CoUninitialize();
@@ -115,7 +105,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
     return nRet;
 }
-int Run(LPTSTR lpstrCmdLine, int nCmdShow, wchar_t* main_window_title_w) {
+int Run(LPTSTR lpstrCmdLine, int nCmdShow, std::string main_window_title) {
     CMessageLoop theLoop;
     g_appModule.AddMessageLoop(&theLoop);
 
@@ -129,8 +119,9 @@ int Run(LPTSTR lpstrCmdLine, int nCmdShow, wchar_t* main_window_title_w) {
 
     SetInternetFeatures();
     if (!StartWebServer()) {
-        MessageBox(NULL, L"Could not start internal web-server",
-                   main_window_title_w, MB_ICONERROR);
+        MessageBox(NULL, L"Could not start internal web-server.\n"
+                   L"Exiting application.",
+                   Utf8ToWide(main_window_title).c_str(), MB_ICONERROR);
         exit(-1);
     }
 
@@ -146,7 +137,7 @@ int Run(LPTSTR lpstrCmdLine, int nCmdShow, wchar_t* main_window_title_w) {
         return 0;
     }
 
-    mainFrame.SetWindowTextW(main_window_title_w);
+    mainFrame.SetWindowTextW(Utf8ToWide(main_window_title).c_str());
     if (disable_maximize_button) {
         mainFrame.SetWindowLongW(GWL_STYLE, 
                 mainFrame.GetWindowLongW(GWL_STYLE) & ~WS_MAXIMIZEBOX);
@@ -162,12 +153,9 @@ int Run(LPTSTR lpstrCmdLine, int nCmdShow, wchar_t* main_window_title_w) {
 }
 void InitLogging() {
     json_value* settings = GetApplicationSettings();
-    const bool show_console = 
-            (*settings)["application"]["debugging"]["show_console"];
-    const char* log_level = 
-            (*settings)["application"]["debugging"]["log_level"];
-    const char* log_file = 
-            (*settings)["application"]["debugging"]["log_file"];
+    const bool show_console = (*settings)["debugging"]["show_console"];
+    const char* log_level = (*settings)["debugging"]["log_level"];
+    const char* log_file = (*settings)["debugging"]["log_file"];
 
     if (show_console) {
         AllocConsole();
@@ -184,48 +172,8 @@ void InitLogging() {
 
     if (log_file && log_file[0] != 0) {
         FILE* pFile;    
-        wchar_t debug_file[4096];
-        GetExecutableDirectory(debug_file, _countof(debug_file));
-        swprintf_s(debug_file, _countof(debug_file), L"%s\\debug.log", debug_file);
-        if (0 == _wfopen_s(&pFile, debug_file, L"a"))
+        std::string debug_file = GetExecutableDirectory() + "\\debug.log";
+        if (0 == _wfopen_s(&pFile, Utf8ToWide(debug_file).c_str(), L"a"))
             Output2FILE::Stream() = pFile;
     }
-}
-json_value* GetApplicationSettings() {
-    static json_value* ret = new json_value();
-    static bool settings_fetched = false;
-    if (settings_fetched)
-        return ret;
-    settings_fetched = true;
-    LOG(logDEBUG) << "Fetching settings from settings.json file";
-
-    wchar_t settingsFile[4096];
-    GetExecutableDirectory(settingsFile, _countof(settingsFile));
-    swprintf_s(settingsFile, _countof(settingsFile), L"%s\\settings.json",
-               settingsFile);
-
-    std::ifstream inFile;
-    inFile.open(settingsFile, std::ios::in);
-    if (!inFile) {
-        LOG(logWARNING) << "Error while opening settings.json file";
-        return ret;
-    }
-    std::string json_data;
-    inFile.seekg(0, std::ios::end);
-    json_data.resize(inFile.tellg());
-    inFile.seekg(0, std::ios::beg);
-    inFile.read(&json_data[0], json_data.size());
-    inFile.close();
-
-    json_settings settings;
-    memset(&settings, 0, sizeof(json_settings));
-    char error[256];
-    json_value* json_parsed = json_parse_ex(&settings, json_data.c_str(), 
-                                            &error[0]);
-    if (json_parsed == 0) {
-        LOG(logWARNING) << "Error while parsing settings.json file: " << error;
-        return ret;
-    }
-    ret = json_parsed;
-    return ret;
 }
