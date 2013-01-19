@@ -4,7 +4,7 @@
 
 <?php
 
-$files = glob("./*.php");
+$files = glob("./*");
 foreach ($files as $file) {
 	$file = basename($file);
 	printf("<a href='%s'>%s</a><br>", $file, $file);

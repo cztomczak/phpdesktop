@@ -8,6 +8,6 @@
 
 std::string GetExecutablePath();
 std::string GetExecutablePathQuoted();
+std::string GetExecutableDirectory();
 std::string GetExecutableFilename();
 std::string GetExecutableName();
-std::string GetExecutableDirectory();

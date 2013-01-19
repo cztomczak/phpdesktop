@@ -1,4 +1,4 @@
-// Copyright (c) 2004-2012 Sergey Lyubka
+// Copyright (c) 2004-2013 Sergey Lyubka
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,8 +30,10 @@
 #endif
 
 #if defined (_MSC_VER)
-#pragma warning (disable : 4127)    // conditional expression is constant: introduced by FD_SET(..)
-#pragma warning (disable : 4204)    // non-constant aggregate initializer: issued due to missing C99 support
+// conditional expression is constant: introduced by FD_SET(..)
+#pragma warning (disable : 4127)
+// non-constant aggregate initializer: issued due to missing C99 support
+#pragma warning (disable : 4204)
 #endif
 
 // Disable WIN32_LEAN_AND_MEAN.
@@ -149,9 +151,7 @@ typedef DWORD pthread_t;
 
 static int pthread_mutex_lock(pthread_mutex_t *);
 static int pthread_mutex_unlock(pthread_mutex_t *);
-
 static void to_unicode(const char *path, wchar_t *wbuf, size_t wbuf_len);
-
 struct file;
 static char *mg_fgets(char *buf, size_t size, struct file *filep, char **p);
 
@@ -176,13 +176,23 @@ typedef struct DIR {
   struct dirent  result;
 } DIR;
 
+#ifndef HAS_POLL
+struct pollfd {
+  int fd;
+  short events;
+  short revents;
+};
+#define POLLIN 1
+#endif
+
+
 // Mark required libraries
 #pragma comment(lib, "Ws2_32.lib")
 
 #else    // UNIX  specific
 #include <sys/wait.h>
 #include <sys/socket.h>
-#include <sys/select.h>
+#include <sys/poll.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/time.h>
@@ -231,7 +241,7 @@ typedef int SOCKET;
 #include <lauxlib.h>
 #endif
 
-#define MONGOOSE_VERSION "3.5"
+#define MONGOOSE_VERSION "3.6"
 #define PASSWORDS_FILE_NAME ".htpasswd"
 #define CGI_ENVIRONMENT_SIZE 4096
 #define MAX_CGI_ENVIR_VARS 64
@@ -435,11 +445,11 @@ struct file {
 // Describes listening socket, or socket which was accept()-ed by the master
 // thread and queued for future handling by the worker thread.
 struct socket {
-  struct socket *next;  // Linkage
   SOCKET sock;          // Listening socket
   union usa lsa;        // Local socket address
   union usa rsa;        // Remote socket address
-  int is_ssl;           // Is socket SSL-ed
+  unsigned is_ssl:1;    // Is port SSL-ed
+  unsigned ssl_redir:1; // Is port supposed to redirect everything to SSL port
 };
 
 // NOTE(lsm): this enum shoulds be in sync with the config_options below.
@@ -456,7 +466,7 @@ enum {
 static const char *config_options[] = {
   "C", "cgi_pattern", "**.cgi$|**.pl$|**.php$",
   "E", "cgi_environment", NULL,
-  "G", "put_delete_passwords_file", NULL,
+  "G", "put_delete_auth_file", NULL,
   "I", "cgi_interpreter", NULL,
   "P", "protect_uri", NULL,
   "R", "authentication_domain", "mydomain.com",
@@ -465,7 +475,7 @@ static const char *config_options[] = {
   "a", "access_log_file", NULL,
   "d", "enable_directory_listing", "yes",
   "e", "error_log_file", NULL,
-  "g", "global_passwords_file", NULL,
+  "g", "global_auth_file", NULL,
   "i", "index_files", "index.html,index.htm,index.cgi,index.shtml,index.php",
   "k", "enable_keep_alive", "no",
   "l", "access_control_list", NULL,
@@ -490,6 +500,7 @@ struct mg_context {
   void *user_data;              // User-defined data
 
   struct socket *listening_sockets;
+  int num_listening_sockets;
 
   volatile int num_threads;  // Number of threads
   pthread_mutex_t mutex;     // Protects (max|num)_threads
@@ -1158,7 +1169,7 @@ static int mg_mkdir(const char *path, int mode) {
   mg_strlcpy(buf, path, sizeof(buf));
   change_slashes_to_backslashes(buf);
 
-  (void) MultiByteToWideChar(CP_UTF8, 0, buf, -1, wbuf, sizeof(wbuf));
+  (void) MultiByteToWideChar(CP_UTF8, 0, buf, -1, wbuf, ARRAY_SIZE(wbuf));
 
   return CreateDirectoryW(wbuf, NULL) ? 0 : -1;
 }
@@ -1230,6 +1241,33 @@ static struct dirent *readdir(DIR *dir) {
 
   return result;
 }
+
+#ifndef HAVE_POLL
+static int poll(struct pollfd *pfd, int n, int milliseconds) {
+  struct timeval tv;
+  fd_set set;
+  int i, result;
+
+  tv.tv_sec = milliseconds / 1000;
+  tv.tv_usec = (milliseconds % 1000) * 1000;
+  FD_ZERO(&set);
+
+  for (i = 0; i < n; i++) {
+    FD_SET((SOCKET) pfd[i].fd, &set);
+    pfd[i].revents = 0;
+  }
+
+  if ((result = select(0, &set, NULL, NULL, &tv)) > 0) {
+    for (i = 0; i < n; i++) {
+      if (FD_ISSET(pfd[i].fd, &set)) {
+        pfd[i].revents = POLLIN;
+      }
+    }
+  }
+
+  return result;
+}
+#endif // HAVE_POLL
 
 #define set_close_on_exec(x) // No FD_CLOEXEC on Windows
 
@@ -1470,17 +1508,14 @@ static int64_t push(FILE *fp, SOCKET sock, SSL *ssl, const char *buf,
 // reading, must give up and close the connection and exit serving thread.
 static int wait_until_socket_is_readable(struct mg_connection *conn) {
   int result;
-  struct timeval tv;
-  fd_set set;
+  struct pollfd pfd;
 
   do {
-    tv.tv_sec = 0;
-    tv.tv_usec = 300 * 1000;
-    FD_ZERO(&set);
-    FD_SET(conn->client.sock, &set);
-    result = select(conn->client.sock + 1, &set, NULL, NULL, &tv);
-    if(result == 0 && conn->ssl != NULL) {
-        result = SSL_pending(conn->ssl);
+    pfd.fd = conn->client.sock;
+    pfd.events = POLLIN;
+    result = poll(&pfd, 1, 200);
+    if (result == 0 && conn->ssl != NULL) {
+      result = SSL_pending(conn->ssl);
     }
   } while ((result == 0 || (result < 0 && ERRNO == EINTR)) &&
            conn->ctx->stop_flag == 0);
@@ -1609,7 +1644,8 @@ int mg_printf(struct mg_connection *conn, const char *fmt, ...) {
     // vsnprintf() error, give up
     len = -1;
     cry(conn, "%s(%s, ...): vsnprintf() error", __func__, fmt);
-  } else if (len > (int) sizeof(mem) && (buf = (char *) malloc(len + 1)) != NULL) {
+  } else if (len > (int) sizeof(mem) &&
+             (buf = (char *) malloc(len + 1)) != NULL) {
     // Local buffer is not large enough, allocate big buffer on heap
     va_start(ap, fmt);
     vsnprintf(buf, len + 1, fmt, ap);
@@ -4141,9 +4177,9 @@ int mg_upload(struct mg_connection *conn, const char *destination_dir) {
     if ((s = strrchr(fname, '/')) == NULL) {
       s = fname;
     }
-    // Open file in binary mode with exclusive lock set
+    // Open file in binary mode. TODO: set an exclusive lock.
     snprintf(path, sizeof(path), "%s/%s", destination_dir, s);
-    if ((fp = fopen(path, "wbx")) == NULL) {
+    if ((fp = fopen(path, "wb")) == NULL) {
       break;
     }
 
@@ -4272,12 +4308,11 @@ static void handle_request(struct mg_connection *conn) {
 }
 
 static void close_all_listening_sockets(struct mg_context *ctx) {
-  struct socket *sp, *tmp;
-  for (sp = ctx->listening_sockets; sp != NULL; sp = tmp) {
-    tmp = sp->next;
-    (void) closesocket(sp->sock);
-    free(sp);
+  int i;
+  for (i = 0; i < ctx->num_listening_sockets; i++) {
+    closesocket(ctx->listening_sockets[i].sock);
   }
+  free(ctx->listening_sockets);
 }
 
 // Valid listening port specification is: [ip_address:]port[s]
@@ -4297,11 +4332,13 @@ static int parse_port_string(const struct vec *vec, struct socket *so) {
   } else if (sscanf(vec->ptr, "%d%n", &port, &len) != 1 ||
              len <= 0 ||
              len > (int) vec->len ||
-             (vec->ptr[len] && vec->ptr[len] != 's' && vec->ptr[len] != ',')) {
+             (vec->ptr[len] && vec->ptr[len] != 's' &&
+              vec->ptr[len] != 'r' && vec->ptr[len] != ',')) {
     return 0;
   }
 
   so->is_ssl = vec->ptr[len] == 's';
+  so->ssl_redir = vec->ptr[len] == 'r';
 #if defined(USE_IPV6)
   so->lsa.sin6.sin6_family = AF_INET6;
   so->lsa.sin6.sin6_port = htons((uint16_t) port);
@@ -4316,9 +4353,8 @@ static int parse_port_string(const struct vec *vec, struct socket *so) {
 static int set_ports_option(struct mg_context *ctx) {
   const char *list = ctx->config[LISTENING_PORTS];
   int on = 1, success = 1;
-  SOCKET sock;
   struct vec vec;
-  struct socket so, *listener;
+  struct socket so;
 
   while (success && (list = next_option(list, &vec, NULL)) != NULL) {
     if (!parse_port_string(&vec, &so)) {
@@ -4329,11 +4365,11 @@ static int set_ports_option(struct mg_context *ctx) {
                (ctx->ssl_ctx == NULL || ctx->config[SSL_CERTIFICATE] == NULL)) {
       cry(fc(ctx), "Cannot add SSL socket, is -ssl_certificate option set?");
       success = 0;
-    } else if ((sock = socket(so.lsa.sa.sa_family, SOCK_STREAM, 6)) ==
+    } else if ((so.sock = socket(so.lsa.sa.sa_family, SOCK_STREAM, 6)) ==
                INVALID_SOCKET ||
                // On Windows, SO_REUSEADDR is recommended only for
                // broadcast UDP sockets
-               setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char *) &on,
+               setsockopt(so.sock, SOL_SOCKET, SO_REUSEADDR, (const char *) &on,
                           sizeof(on)) != 0 ||
                // Set TCP keep-alive. This is needed because if HTTP-level
                // keep-alive is enabled, and client resets the connection,
@@ -4342,27 +4378,22 @@ static int set_ports_option(struct mg_context *ctx) {
                // handshake will figure out that the client is down and
                // will close the server end.
                // Thanks to Igor Klopov who suggested the patch.
-               setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char *) &on,
+               setsockopt(so.sock, SOL_SOCKET, SO_KEEPALIVE, (char *) &on,
                           sizeof(on)) != 0 ||
-               bind(sock, &so.lsa.sa, sizeof(so.lsa)) != 0 ||
-               listen(sock, SOMAXCONN) != 0) {
-      closesocket(sock);
+               bind(so.sock, &so.lsa.sa, sizeof(so.lsa)) != 0 ||
+               listen(so.sock, SOMAXCONN) != 0) {
+      closesocket(so.sock);
       cry(fc(ctx), "%s: cannot bind to %.*s: %s", __func__,
           (int) vec.len, vec.ptr, strerror(ERRNO));
       success = 0;
-    } else if ((listener = (struct socket *)
-                calloc(1, sizeof(*listener))) == NULL) {
-      // NOTE(lsm): order is important: call cry before closesocket(),
-      // cause closesocket() alters the errno.
-      cry(fc(ctx), "%s: %s", __func__, strerror(ERRNO));
-      closesocket(sock);
-      success = 0;
     } else {
-      *listener = so;
-      listener->sock = sock;
-      set_close_on_exec(listener->sock);
-      listener->next = ctx->listening_sockets;
-      ctx->listening_sockets = listener;
+      set_close_on_exec(so.sock);
+      // TODO: handle realloc failure
+      ctx->listening_sockets = realloc(ctx->listening_sockets,
+                                       (ctx->num_listening_sockets + 1) *
+                                       sizeof(ctx->listening_sockets[0]));
+      ctx->listening_sockets[ctx->num_listening_sockets] = so;
+      ctx->num_listening_sockets++;
     }
   }
 
@@ -4441,13 +4472,6 @@ static int check_acl(struct mg_context *ctx, uint32_t remote_ip) {
   }
 
   return allowed == '+';
-}
-
-static void add_to_set(SOCKET fd, fd_set *set, int *max_fd) {
-  FD_SET(fd, set);
-  if (fd > (SOCKET) *max_fd) {
-    *max_fd = (int) fd;
-  }
 }
 
 #if !defined(_WIN32)
@@ -4826,6 +4850,7 @@ static void process_new_connection(struct mg_connection *conn) {
       }
       conn->birth_time = time(NULL);
       handle_request(conn);
+      conn->request_info.ev_data = (void *) conn->status_code;
       call_user(conn, MG_REQUEST_COMPLETE);
       log_access(conn);
     }
@@ -4884,7 +4909,8 @@ static int consume_socket(struct mg_context *ctx, struct socket *sp) {
   return !ctx->stop_flag;
 }
 
-static void worker_thread(struct mg_context *ctx) {
+static void *worker_thread(void *thread_func_param) {
+  struct mg_context *ctx = thread_func_param;
   struct mg_connection *conn;
 
   conn = (struct mg_connection *) calloc(1, sizeof(*conn) + MAX_REQUEST_SIZE);
@@ -4929,6 +4955,7 @@ static void worker_thread(struct mg_context *ctx) {
   (void) pthread_mutex_unlock(&ctx->mutex);
 
   DEBUG_TRACE(("exiting"));
+  return NULL;
 }
 
 // Master thread adds accepted socket to a queue
@@ -4977,11 +5004,10 @@ static void accept_new_connection(const struct socket *listener,
   }
 }
 
-static void master_thread(struct mg_context *ctx) {
-  fd_set read_set;
-  struct timeval tv;
-  struct socket *sp;
-  int max_fd;
+static void *master_thread(void *thread_func_param) {
+  struct mg_context *ctx = thread_func_param;
+  struct pollfd *pfd;
+  int i;
 
   // Increase priority of the master thread
 #if defined(_WIN32)
@@ -4994,33 +5020,22 @@ static void master_thread(struct mg_context *ctx) {
   pthread_setschedparam(pthread_self(), SCHED_RR, &sched_param);
 #endif
 
+  pfd = calloc(ctx->num_listening_sockets, sizeof(pfd[0]));
   while (ctx->stop_flag == 0) {
-    FD_ZERO(&read_set);
-    max_fd = -1;
-
-    // Add listening sockets to the read set
-    for (sp = ctx->listening_sockets; sp != NULL; sp = sp->next) {
-      add_to_set(sp->sock, &read_set, &max_fd);
+    for (i = 0; i < ctx->num_listening_sockets; i++) {
+      pfd[i].fd = ctx->listening_sockets[i].sock;
+      pfd[i].events = POLLIN;
     }
 
-    tv.tv_sec = 0;
-    tv.tv_usec = 200 * 1000;
-
-    if (select(max_fd + 1, &read_set, NULL, NULL, &tv) < 0) {
-#ifdef _WIN32
-      // On windows, if read_set and write_set are empty,
-      // select() returns "Invalid parameter" error
-      // (at least on my Windows XP Pro). So in this case, we sleep here.
-      mg_sleep(1000);
-#endif // _WIN32
-    } else {
-      for (sp = ctx->listening_sockets; sp != NULL; sp = sp->next) {
-        if (ctx->stop_flag == 0 && FD_ISSET(sp->sock, &read_set)) {
-          accept_new_connection(sp, ctx);
+    if (poll(pfd, ctx->num_listening_sockets, 200) > 0) {
+      for (i = 0; i < ctx->num_listening_sockets; i++) {
+        if (ctx->stop_flag == 0 && pfd[i].revents == POLLIN) {
+          accept_new_connection(&ctx->listening_sockets[i], ctx);
         }
       }
     }
   }
+  free(pfd);
   DEBUG_TRACE(("stopping workers"));
 
   // Stop signal received: somebody called mg_stop. Quit.
@@ -5051,6 +5066,7 @@ static void master_thread(struct mg_context *ctx) {
   // WARNING: This must be the very last thing this
   // thread does, as ctx becomes invalid after this line.
   ctx->stop_flag = 2;
+  return NULL;
 }
 
 static void free_context(struct mg_context *ctx) {
@@ -5172,11 +5188,11 @@ struct mg_context *mg_start(mg_callback_t user_callback, void *user_data,
   (void) pthread_cond_init(&ctx->sq_full, NULL);
 
   // Start master (listening) thread
-  mg_start_thread((mg_thread_func_t) master_thread, ctx);
+  mg_start_thread(master_thread, ctx);
 
   // Start worker threads
   for (i = 0; i < atoi(ctx->config[NUM_THREADS]); i++) {
-    if (mg_start_thread((mg_thread_func_t) worker_thread, ctx) != 0) {
+    if (mg_start_thread(worker_thread, ctx) != 0) {
       cry(fc(ctx), "Cannot start worker thread: %d", ERRNO);
     } else {
       ctx->num_threads++;

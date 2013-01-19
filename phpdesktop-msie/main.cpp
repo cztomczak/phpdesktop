@@ -21,6 +21,7 @@
 
 #include "debug.h"
 #include "executable.h"
+#include "file_utils.h"
 #include "log.h"
 #include "main_frame.h"
 #include "msie/internet_features.h"
@@ -33,21 +34,29 @@ CAppModule g_appModule;
 SingleInstanceApplication g_singleInstanceApplication;
 wchar_t* g_singleInstanceApplicationGuid = 0;
 
-void InitLogging();
+void InitLogging(bool show_console, std::string log_level, 
+                 std::string log_file);
 int Run(LPTSTR lpstrCmdLine, int nCmdShow, std::string main_window_title);
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPTSTR lpstrCmdLine, int nCmdShow) {
-    InitLogging();
-    LOG(logINFO) << "--------------------------------------------------------";
-    LOG(logINFO) << "Started application";
-    
-    // Debugging options.
     json_value* settings = GetApplicationSettings();
-    const char* log_level = (*settings)["debugging"]["log_level"];
-    const char* log_file = (*settings)["debugging"]["log_file"];
-    if (log_file && log_file[0] != 0)
-        LOG(logINFO) << "Logging to " << log_file;
+    
+    // Debugging options.    
+    bool show_console = (*settings)["debugging"]["show_console"];
+    std::string log_level = (*settings)["debugging"]["log_level"];
+    std::string log_file = (*settings)["debugging"]["log_file"];
+    if (log_file.length()) {
+        log_file = GetExecutableDirectory() + "\\" + log_file;
+        log_file = GetRealPath(log_file);
+    }
+
+    InitLogging(show_console, log_level, log_file);
+    LOG(logINFO) << "--------------------------------------------------------";
+    LOG(logINFO) << "Started application";    
+    
+    if (log_file.length())
+        LOG(logINFO) << "Logging to: " << log_file;
     else
         LOG(logINFO) << "No logging file set";
     LOG(logINFO) << "Log level = "
@@ -151,12 +160,8 @@ int Run(LPTSTR lpstrCmdLine, int nCmdShow, std::string main_window_title) {
 
     return nRet;
 }
-void InitLogging() {
-    json_value* settings = GetApplicationSettings();
-    const bool show_console = (*settings)["debugging"]["show_console"];
-    const char* log_level = (*settings)["debugging"]["log_level"];
-    const char* log_file = (*settings)["debugging"]["log_file"];
-
+void InitLogging(bool show_console, std::string log_level, 
+                 std::string log_file) {
     if (show_console) {
         AllocConsole();
         FILE* freopen_file;
@@ -165,15 +170,16 @@ void InitLogging() {
         freopen_s(&freopen_file, "CONOUT$", "wb", stderr);
     }
     
-    if (log_level && log_level[0] != 0)
+    if (log_level.length())
         FILELog::ReportingLevel() = FILELog::FromString(log_level);
     else
         FILELog::ReportingLevel() = logINFO;
 
-    if (log_file && log_file[0] != 0) {
-        FILE* pFile;    
-        std::string debug_file = GetExecutableDirectory() + "\\debug.log";
-        if (0 == _wfopen_s(&pFile, Utf8ToWide(debug_file).c_str(), L"a"))
+    if (log_file.length()) {
+        FILE* pFile;
+        if (0 == _wfopen_s(&pFile, Utf8ToWide(log_file).c_str(), L"a"))
             Output2FILE::Stream() = pFile;
+        else
+            LOG(logINFO) << "Opening log file for writing failed";
     }
 }

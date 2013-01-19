@@ -19,6 +19,29 @@ std::string GetExecutablePathQuoted() {
     std::string path = GetExecutablePath();
     return path.insert(0, "\"").append("\"");
 }
+std::string GetExecutableDirectory() {
+    std::string path = GetExecutablePath();
+    wchar_t drive[_MAX_DRIVE];
+    wchar_t directory[_MAX_DIR];
+    wchar_t filename[_MAX_FNAME];
+    wchar_t extension[_MAX_EXT];
+    errno_t result = _wsplitpath_s(Utf8ToWide(path).c_str(),
+            drive, _countof(drive),
+            directory, _countof(directory), 
+            filename, _countof(filename),
+            extension, _countof(extension));
+    char utf8Drive[_MAX_DRIVE * 2];
+    WideToUtf8(drive, utf8Drive, _countof(utf8Drive));
+    char utf8Directory[_MAX_DIR * 2];
+    WideToUtf8(directory, utf8Directory, _countof(utf8Directory));
+    path.assign(utf8Drive).append(utf8Directory);
+    if (path.length()) {
+        char lastCharacter = path[path.length() - 1];
+        if (lastCharacter == '\\' || lastCharacter == '/')
+            path.erase(path.length() - 1);
+    }
+    return path;
+}
 std::string GetExecutableFilename() {
     std::string path = GetExecutablePath();
     wchar_t drive[_MAX_DRIVE];
@@ -52,27 +75,4 @@ std::string GetExecutableName() {
     char utf8Filename[_MAX_FNAME * 2];
     WideToUtf8(filename, utf8Filename, _countof(utf8Filename));
     return path.assign(utf8Filename);
-}
-std::string GetExecutableDirectory() {
-    std::string path = GetExecutablePath();
-    wchar_t drive[_MAX_DRIVE];
-    wchar_t directory[_MAX_DIR];
-    wchar_t filename[_MAX_FNAME];
-    wchar_t extension[_MAX_EXT];
-    errno_t result = _wsplitpath_s(Utf8ToWide(path).c_str(),
-            drive, _countof(drive),
-            directory, _countof(directory), 
-            filename, _countof(filename),
-            extension, _countof(extension));
-    char utf8Drive[_MAX_DRIVE * 2];
-    WideToUtf8(drive, utf8Drive, _countof(utf8Drive));
-    char utf8Directory[_MAX_DIR * 2];
-    WideToUtf8(directory, utf8Directory, _countof(utf8Directory));
-    path.assign(utf8Drive).append(utf8Directory);
-    if (path.length()) {
-        char lastCharacter = path[path.length() - 1];
-        if (lastCharacter == '\\' || lastCharacter == '/')
-            path.erase(path.length() - 1);
-    }
-    return path;
 }

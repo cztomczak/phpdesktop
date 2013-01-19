@@ -204,6 +204,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\file_utils.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\json.c"
 				>
 			</File>
@@ -266,6 +270,10 @@
 			</File>
 			<File
 				RelativePath=".\executable.h"
+				>
+			</File>
+			<File
+				RelativePath=".\file_utils.h"
 				>
 			</File>
 			<File

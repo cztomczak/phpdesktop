@@ -8,30 +8,43 @@
 #include <wchar.h>
 
 #include "executable.h"
+#include "file_utils.h"
 #include "log.h"
+#include "mongoose.h"
 #include "settings.h"
 #include "string_utils.h"
 #include "web_server.h"
 
-SHELLEXECUTEINFO g_phpShell;
 std::string g_webServerUrl;
+struct mg_context* g_mongooseContext = 0;
 
+void* MongooseEvent(enum mg_event ev, struct mg_connection* conn) {
+    if (ev == MG_REQUEST_COMPLETE) {
+        struct mg_request_info* request = mg_get_request_info(conn);
+        std::string message;
+        message.append(request->request_method);
+        message.append(" ");
+        message.append(request->uri);
+        if (request->query_string) {
+            message.append("?");
+            message.append(request->query_string);
+        }
+        LOG(logINFO) << message;
+    }
+    return NULL;
+}
 bool StartWebServer() {
-    // Run php 5.4 built-in webserver
-    // Server must be ready before creating window.
-    // Must use ShellExecuteEx() to execute command synchronously.
-
-    LOG(logINFO) << "Starting web-server";
+    LOG(logINFO) << "Starting Mongoose web-server";
     json_value* settings = GetApplicationSettings();
 
     // Web-server url from settings.
     std::string ipAddress = (*settings)["web_server"]["listen_on"][0];
-    long port = (*settings)["web_server"]["listen_on"][1];
-    if (ipAddress.empty() || !port) {
+    std::string port = (*settings)["web_server"]["listen_on"][1];
+    if (ipAddress.empty() || port.empty()) {
         ipAddress = "127.0.0.1";
-        port = 80;
+        port = "54007";
     }
-    g_webServerUrl = "http://" + ipAddress + ":" + IntToString(port) + "/";
+    g_webServerUrl = "http://" + ipAddress + ":" + port + "/";
     LOG(logINFO) << "Web-server url: " << g_webServerUrl;
 
     // WWW directory from settings.
@@ -39,41 +52,68 @@ bool StartWebServer() {
     if (wwwDirectory.empty())
         wwwDirectory = "www";
     wwwDirectory = GetExecutableDirectory().append("\\").append(wwwDirectory);
+    // Mongoose won't accept "..\\" in a path, need a real path.
+    wwwDirectory = GetRealPath(wwwDirectory);
     LOG(logINFO) << "WWW directory: " << wwwDirectory;
 
-    // PHP executable from settings.
-    std::string phpExecutable = (*settings)["web_server"]["php_executable"];
-    if (phpExecutable.empty())
-        phpExecutable = "php\\php.exe";
-    phpExecutable.insert(0, GetExecutableDirectory() + "\\");
-    LOG(logINFO) << "PHP executable: " << phpExecutable;
+    // Index files from settings.
+    const json_value indexFilesArray = (*settings)["web_server"]["index_files"];
+    std::string indexFiles;
+    for (int i = 0; i < 32; i++) {
+        const char* file = indexFilesArray[i];
+        if (strlen(file)) {
+            if (indexFiles.length())
+                indexFiles.append(",");
+            indexFiles.append(file);
+        }
+    }
+    if (indexFiles.empty())
+        indexFiles = "index.html,index.php";
+    LOG(logINFO) << "Index files: " << indexFiles;
 
-    // Shell params.
-    std::string shellParams;
-    shellParams = "-S " + ipAddress + ":" + IntToString(port) + " -t "
-                  + wwwDirectory;
-    LOG(logDEBUG) << "Shell params: " << shellParams;
+    // CGI interpreter from settings.
+    std::string cgiInterpreter = (*settings)["web_server"]["cgi_interpreter"];
+    if (cgiInterpreter.empty())
+        cgiInterpreter = "php\\php-cgi.exe";
+    cgiInterpreter.insert(0, GetExecutableDirectory() + "\\");
+    cgiInterpreter = GetRealPath(cgiInterpreter);
+    LOG(logINFO) << "CGI interpreter: " << cgiInterpreter;
 
-    g_phpShell.cbSize = sizeof(SHELLEXECUTEINFO);
-    // SEE_MASK_NOCLOSEPROCESS - so "g_phpShell.hProcess" is set.
-    g_phpShell.fMask = SEE_MASK_NOASYNC | SEE_MASK_NOCLOSEPROCESS;
-    g_phpShell.hwnd = NULL;
-    g_phpShell.lpVerb = L"open";
+    // CGI extensions from settings.
+    const json_value cgiExtensions = 
+            (*settings)["web_server"]["cgi_extensions"];
+    std::string cgiPattern;
+    for (int i = 0; i < 32; i++) {
+        const char* extension = cgiExtensions[i];
+        if (strlen(extension)) {
+            if (cgiPattern.length())
+                cgiPattern.append("|");
+            cgiPattern.append("**.").append(extension).append("$");
+        }
+    }
+    if (cgiPattern.empty())
+        cgiPattern = "**.php$";
+    LOG(logINFO) << "CGI pattern: " << cgiPattern;
 
-    // Lifetime of c_str() must outlast until ShellExecuteEx() is called.
-    std::wstring phpExecutableWide = Utf8ToWide(phpExecutable);
-    std::wstring shellParamsWide = Utf8ToWide(shellParams);
-
-    g_phpShell.lpFile = phpExecutableWide.c_str();
-    g_phpShell.lpParameters = shellParamsWide.c_str();
-    g_phpShell.lpDirectory = NULL;
-    g_phpShell.nShow = SW_HIDE;
-    g_phpShell.hInstApp = NULL;
-    
-    if (ShellExecuteEx(&g_phpShell))
+    // Mongoose web-server.
+    std::string listening_ports = ipAddress + ":" + port;
+    const char* options[] = {
+        "document_root", wwwDirectory.c_str(),
+        "listening_ports", listening_ports.c_str(),
+        "index_files", indexFiles.c_str(),
+        "cgi_interpreter", cgiInterpreter.c_str(),
+        "cgi_pattern", cgiPattern.c_str(),
+        NULL
+    };
+    g_mongooseContext = mg_start(&MongooseEvent, NULL, options);
+    if (g_mongooseContext)
         return true;
-    return false;
+    else
+        return false;
 }
 void TerminateWebServer() {
-    TerminateProcess(g_phpShell.hProcess, 0);
+    if (g_mongooseContext) {
+        LOG(logINFO) << "Stopping Mongoose web-server";
+        mg_stop(g_mongooseContext);
+    }
 }
