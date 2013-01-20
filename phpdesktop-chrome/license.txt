@@ -1,4 +1,8 @@
-Copyright (c) 2012-2013 Czarek Tomczak. All rights reserved.
+Copyright (c) 2012-2013 Czarek Tomczak. Portions Copyright 
+(c) 2008-2013 Marshall A.Greenblatt, 2006-2013 Google Inc. 
+All rights reserved.
+
+Project website: <http://code.google.com/p/phpdesktop/>.
 
 Redistribution and use in source and binary forms, with
 or without modification, are permitted provided that the
@@ -13,10 +17,11 @@ following conditions are met:
   following disclaimer in the documentation and/or other
   materials provided with the distribution.
 
-* Neither the name of PHP Desktop nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior 
-  written permission.
+* Neither the name of PHP Desktop, nor the name Google Inc.
+  nor the name Chromium Embedded Framework nor the names of
+  its contributors may be used to endorse or promote products
+  derived from this software without specific prior written
+  permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
 CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
