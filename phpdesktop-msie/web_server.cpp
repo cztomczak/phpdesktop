@@ -30,6 +30,8 @@ void* MongooseEvent(enum mg_event ev, struct mg_connection* conn) {
             message.append(request->query_string);
         }
         LOG(logINFO) << message;
+    } else if (ev == MG_EVENT_LOG) {
+        LOG(logWARNING) << (const char *) mg_get_request_info(conn)->ev_data;
     }
     return NULL;
 }
