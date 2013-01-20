@@ -11,21 +11,25 @@ void Utf8ToWide(const char* utf8String, wchar_t* wideString, int wideSize) {
             wideString, wideSize);
 }
 std::wstring Utf8ToWide(const char* utf8String) {
-    std::wstring wideString;
     int requiredSize = MultiByteToWideChar(CP_UTF8, 0, utf8String, -1, 0, 0);
-    wideString.resize(requiredSize);
+    wchar_t* wideString = new wchar_t[requiredSize];
     int copiedCharacters = MultiByteToWideChar(CP_UTF8, 0, utf8String, -1,
-            &wideString[0], wideString.capacity());
-    return wideString;
+                                               wideString, requiredSize);
+    std::wstring returnedString(wideString);
+    delete[] wideString;
+    wideString = 0;
+    return returnedString;
 }
 std::wstring Utf8ToWide(const std::string utf8String) {
-    std::wstring wideString;
-    int requiredSize = MultiByteToWideChar(CP_UTF8, 0, &utf8String[0], -1, 
+    int requiredSize = MultiByteToWideChar(CP_UTF8, 0, utf8String.c_str(), -1, 
                                            0, 0);
-    wideString.resize(requiredSize);
-    int copiedCharacters = MultiByteToWideChar(CP_UTF8, 0, &utf8String[0], -1,
-            &wideString[0], wideString.capacity());
-    return wideString;
+    wchar_t* wideString = new wchar_t[requiredSize];
+    int copiedCharacters = MultiByteToWideChar(CP_UTF8, 0, utf8String.c_str(),
+            -1, wideString, requiredSize);
+    std::wstring returnedString(wideString);
+    delete[] wideString;
+    wideString = 0;
+    return returnedString;
 }
 void WideToUtf8(const wchar_t* wideString, char* utf8String, int utf8Size) {
     int copiedBytes = WideCharToMultiByte(CP_UTF8, 0, wideString, -1,

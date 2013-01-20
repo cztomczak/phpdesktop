@@ -1,7 +1,6 @@
 // Modified by Czarek Tomczak <czarek.tomczak@gmail.com>
 // for the PHP Desktop project (http://code.google.com/p/phpdesktop/).
-// Changes: added string, wstring, double operators and fixed
-// long operator - the C++ operator sugar.
+// Changes: added string & wstring operators to the C++ oprator sugar.
 
 /* vim: set et ts=3 sw=3 ft=c:
  *
@@ -176,7 +175,7 @@ typedef struct _json_value
                    return std::string(u.string.ptr);
 
                default:
-                   return std::string();
+                   return "";
             }
          }
 
@@ -194,20 +193,40 @@ typedef struct _json_value
 
          inline operator long () const
          {  
-            if (type == json_integer)
-               return u.integer;
-            return 0;
-         }
+            switch (type)
+            {
+               case json_integer:
+                  return u.integer;
 
-         inline operator double () const
-         {
-            if (type == json_double)
-                return u.dbl;
-            return 0;
+               case json_double:
+                  return (long) u.dbl;
+
+               default:
+                  return 0;
+            };
          }
 
          inline operator bool () const
-         {  return u.boolean != 0;
+         {  
+            if (type != json_boolean)
+               return false;
+
+            return u.boolean != 0;
+         }
+
+         inline operator double () const
+         {  
+            switch (type)
+            {
+               case json_integer:
+                  return u.integer;
+
+               case json_double:
+                  return u.dbl;
+
+               default:
+                  return 0;
+            };
          }
 
    #endif
