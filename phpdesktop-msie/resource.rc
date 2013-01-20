@@ -61,8 +61,8 @@ IDR_MAINFRAME           ICON                    "icon.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,8
- PRODUCTVERSION 1,0,0,8
+ FILEVERSION 1,0,0,9
+ PRODUCTVERSION 1,0,0,9
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -78,12 +78,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "PHP Desktop"
-            VALUE "FileVersion", "1, 0, 0, 8"
+            VALUE "FileVersion", "1, 0, 0, 9"
             VALUE "InternalName", "phpdesktop"
             VALUE "LegalCopyright", "(c) Czarek Tomczak 2012-2013"
             VALUE "OriginalFilename", "PHP Desktop.exe"
             VALUE "ProductName", "PHP Desktop"
-            VALUE "ProductVersion", "1, 0, 0, 8"
+            VALUE "ProductVersion", "1, 0, 0, 9"
         END
     END
     BLOCK "VarFileInfo"

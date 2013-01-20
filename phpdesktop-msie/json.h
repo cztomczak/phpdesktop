@@ -1,5 +1,7 @@
 // Modified by Czarek Tomczak <czarek.tomczak@gmail.com>
 // for the PHP Desktop project (http://code.google.com/p/phpdesktop/).
+// Changes: added string, wstring, double operators and fixed
+// long operator - the C++ operator sugar.
 
 /* vim: set et ts=3 sw=3 ft=c:
  *
@@ -191,7 +193,17 @@ typedef struct _json_value
          }
 
          inline operator long () const
-         {  return u.integer;
+         {  
+            if (type == json_integer)
+               return u.integer;
+            return 0;
+         }
+
+         inline operator double () const
+         {
+            if (type == json_double)
+                return u.dbl;
+            return 0;
          }
 
          inline operator bool () const

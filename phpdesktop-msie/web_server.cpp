@@ -42,6 +42,9 @@ bool StartWebServer() {
     // Web-server url from settings.
     std::string ipAddress = (*settings)["web_server"]["listen_on"][0];
     std::string port = (*settings)["web_server"]["listen_on"][1];
+    long portInt = (*settings)["web_server"]["listen_on"][1];
+    if (portInt)
+        port = IntToString(portInt);
     if (ipAddress.empty() || port.empty()) {
         ipAddress = "127.0.0.1";
         port = "54007";
