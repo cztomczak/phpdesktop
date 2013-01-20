@@ -106,12 +106,14 @@ public:
 
     HRESULT STDMETHODCALLTYPE ShowObject( void)
     {
+        // LOG(logDEBUG) << "OleClientSite::ShowObject()";
         return NOERROR;
     }
 
     HRESULT STDMETHODCALLTYPE OnShowWindow(
             /* [in] */ BOOL fShow)
     {
+        // LOG(logDEBUG) << "OleClientSite::OnShowWindow()";
         return E_NOTIMPL;
     }
 

@@ -117,6 +117,9 @@ public:
         // URLACTION_ACTIVEX_OVERRIDE_DOMAINLIST // ie9, not sure what this does
         // URLACTION_INPRIVATE_BLOCKING // no idea
 
+        //LOG(logDEBUG) << "InternetSecurityManager::ProcessUrlAction(): "
+        //        << "dwAction = " << dwAction;
+
         switch (dwAction) {
             case URLACTION_ACTIVEX_CONFIRM_NOOBJECTSAFETY:
             case URLACTION_ACTIVEX_OVERRIDE_DATA_SAFETY:

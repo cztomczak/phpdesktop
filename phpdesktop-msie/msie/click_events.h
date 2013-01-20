@@ -186,7 +186,7 @@ public:
         hr = htmlElement->getAttribute(hrefAttr, 0, &attrValue);
         ASSERT_EXIT(SUCCEEDED(hr), "htmlElement->getAttribute()");
 
-        if (attrValue.vt == VT_BSTR) {
+        if (attrValue.vt == VT_BSTR && attrValue.bstrVal) {
             // Href attribute found, this is VT_NULL when not found,
             // when this check was missing a crash happened on Windows 7
             // while clicking on something else than a link.

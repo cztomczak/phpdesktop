@@ -319,9 +319,11 @@ public:
         //*ppDispatch = 0;
         //return E_NOTIMPL;
 
-        // Returning IDispatch* is not enough, you also need to return this object in QueryInterface(),
-        // when asked for IID_IDispatch, this function is just to say that "window.external" exists,
-        // but it does not provide the real interface.
+        // Returning IDispatch* is not enough, you also need to 
+        // return this object in QueryInterface(), when asked for
+        // IID_IDispatch, this function is just to say that 
+        // "window.external" exists, but it does not provide the
+        // real interface.
         *ppDispatch = (IDispatch*) this;
         return S_OK;
     }
