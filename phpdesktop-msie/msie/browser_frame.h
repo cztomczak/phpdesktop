@@ -23,7 +23,7 @@
 
 #include "browser_frame_interface.h"
 #include "ole_client_site.h"
-#include "dochost_ui_handler_dispatch.h"
+#include "doc_host_ui_handler_dispatch.h"
 #include "click_events.h"
 
 // RootFrame can be a main window or a popup window.
