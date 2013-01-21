@@ -12,13 +12,14 @@ template <class RootFrame>
 class OleInPlaceFrame : public IOleInPlaceFrame
 {
 public:
-    IOleClientSite* oleClientSite;
-    BrowserFrameInterface<RootFrame>* webFrame;
+    IOleClientSite* oleClientSite_;
+    BrowserFrameInterface<RootFrame>* webFrame_;
 
-    OleInPlaceFrame(IOleClientSite* oleClientSite, BrowserFrameInterface<RootFrame>* inWebFrame)
+    OleInPlaceFrame(IOleClientSite* inOleClientSite,
+                    BrowserFrameInterface<RootFrame>* inWebFrame)
     {
-        oleClientSite = oleClientSite;
-        webFrame = inWebFrame;
+        oleClientSite_ = inOleClientSite;
+        webFrame_ = inWebFrame;
     }
 public:
 
@@ -26,7 +27,7 @@ public:
 
     HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR* ppvObj)
     {
-        return oleClientSite->QueryInterface(riid, ppvObj);
+        return oleClientSite_->QueryInterface(riid, ppvObj);
     }
     ULONG STDMETHODCALLTYPE AddRef(void)
     {
@@ -41,7 +42,7 @@ public:
 
     HRESULT STDMETHODCALLTYPE GetWindow(HWND FAR* lphwnd)
     {
-        *lphwnd = webFrame->RootView_GetWindowHandle();
+        *lphwnd = webFrame_->RootView_GetWindowHandle();
         return S_OK;
     }
     HRESULT STDMETHODCALLTYPE ContextSensitiveHelp(BOOL fEnterMode)

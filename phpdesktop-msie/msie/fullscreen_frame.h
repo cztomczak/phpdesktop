@@ -26,33 +26,33 @@ template <class T, bool t_bHasSip = true>
 class FullscreenFrame
 {
 public:
-    bool isfullscreen;
-    LONG windowstyles;
-    WINDOWPLACEMENT windowplacement;
+    bool isFullscreen_;
+    LONG windowStyles_;
+    WINDOWPLACEMENT windowPlacement_;
 
     FullscreenFrame()
         :
-        isfullscreen(false),
-        windowstyles(0)
+        isFullscreen_(false),
+        windowStyles_(0)
     {
-        ZeroMemory(&windowplacement, sizeof WINDOWPLACEMENT);
+        ZeroMemory(&windowPlacement_, sizeof WINDOWPLACEMENT);
     }
 
     /*
-        If you call this function you have to call ShowTaskBar(true) in your WM_CLOSE message,
+        If you call this function you have to call ShowTaskbar(true) in your WM_CLOSE message,
         otherwise after closing application user will have no access to the taskbar.
     */
-    void SetFullScreen(bool setfullscreen)
+    void SetFullscreen(bool setFullscreen)
     {
-        ShowTaskBar(!setfullscreen);
+        ShowTaskbar(!setFullscreen);
 
         T* self = static_cast<T*>(this);
         ASSERT_EXIT(self->IsWindow(), "self->IsWindow()");
 
-        if (setfullscreen) {
-            if (!isfullscreen) {
-                windowstyles = self->GetWindowLongW(GWL_STYLE);
-                self->GetWindowPlacement(&windowplacement);
+        if (setFullscreen) {
+            if (!isFullscreen_) {
+                windowStyles_ = self->GetWindowLongW(GWL_STYLE);
+                self->GetWindowPlacement(&windowPlacement_);
             }
 
         }
@@ -61,26 +61,26 @@ public:
         RECT fullrect = { 0 };
         SetRect(&fullrect, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
 
-        WINDOWPLACEMENT newplacement = windowplacement;
+        WINDOWPLACEMENT newplacement = windowPlacement_;
         newplacement.showCmd = SW_SHOWNORMAL;
         newplacement.rcNormalPosition = fullrect;
 
-        if (setfullscreen) {
+        if (setFullscreen) {
             self->SetWindowPlacement(&newplacement);
             self->SetWindowLongW(GWL_STYLE,  WS_VISIBLE);
             self->UpdateWindow();
         } else {
-            if (isfullscreen) {
-                self->SetWindowPlacement(&windowplacement);
-                self->SetWindowLongW(GWL_STYLE, windowstyles);
+            if (isFullscreen_) {
+                self->SetWindowPlacement(&windowPlacement_);
+                self->SetWindowLongW(GWL_STYLE, windowStyles_);
                 self->UpdateWindow();
             }
         }
 
-        isfullscreen = setfullscreen;
+        isFullscreen_ = setFullscreen;
     }
 
-    void ShowTaskBar(bool show)
+    void ShowTaskbar(bool show)
     {
         HWND taskbar = FindWindow(_T("Shell_TrayWnd"), NULL);
         HWND start = FindWindow(_T("Button"), NULL);

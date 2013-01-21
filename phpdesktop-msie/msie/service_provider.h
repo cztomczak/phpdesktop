@@ -14,12 +14,12 @@ template <class RootFrame>
 class ServiceProvider : public IServiceProvider
 {
 public:
-    InternetSecurityManager internetSecurityManager;
-    HTMLOMWindowServices<RootFrame> htmlOMWindowServices;
+    InternetSecurityManager internetSecurityManager_;
+    HTMLOMWindowServices<RootFrame> htmlOMWindowServices_;
 
     ServiceProvider(BrowserFrameInterface<RootFrame>* inWebFrame)
         :
-        htmlOMWindowServices(HTMLOMWindowServices<RootFrame>(inWebFrame))
+        htmlOMWindowServices_(HTMLOMWindowServices<RootFrame>(inWebFrame))
     {
     }
 
@@ -40,9 +40,9 @@ public:
     HRESULT STDMETHODCALLTYPE QueryService(REFGUID guidService, REFIID riid, void **ppvObject)
     {
         if (riid == IID_IInternetSecurityManager) {
-            *ppvObject = &internetSecurityManager;
+            *ppvObject = &internetSecurityManager_;
         } else if(riid == IID_IHTMLOMWindowServices) {
-            *ppvObject = &htmlOMWindowServices;
+            *ppvObject = &htmlOMWindowServices_;
         } else {
             *ppvObject = 0;
             return E_NOINTERFACE;

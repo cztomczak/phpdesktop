@@ -14,20 +14,22 @@ template <class RootFrame>
 class OleClientSite : public IOleClientSite
 {
 public:
-    BrowserFrameInterface<RootFrame>* webFrame;
-    ServiceProvider<RootFrame> serviceProvider;
-    IDispatch* dispatch;
+    BrowserFrameInterface<RootFrame>* webFrame_;
+    ServiceProvider<RootFrame> serviceProvider_;
+    IDispatch* dispatch_;
     // OleInPlaceFrame<RootFrame> oleInPlaceFrame;
     // OleInPlaceSite<RootFrame> oleInPlaceSite;
     // OleControlSite<RootFrame> oleControlSite;
 
     OleClientSite(BrowserFrameInterface<RootFrame>* inWebFrame)
         :
-        webFrame(inWebFrame),
-        serviceProvider(webFrame),
-        dispatch(0)
-        // oleInPlaceFrame(OleInPlaceFrame<RootFrame>((IOleClientSite*)this, webFrame)),
-        // oleInPlaceSite(OleInPlaceSite<RootFrame>((IOleClientSite*)this, (IOleInPlaceFrame*)&oleInPlaceFrame, webFrame)),
+        webFrame_(inWebFrame),
+        serviceProvider_(webFrame_),
+        dispatch_(0)
+        // oleInPlaceFrame(OleInPlaceFrame<RootFrame>(
+                //(IOleClientSite*)this, webFrame_)),
+        // oleInPlaceSite(OleInPlaceSite<RootFrame>((IOleClientSite*)this, 
+                //(IOleInPlaceFrame*)&oleInPlaceFrame, webFrame_)),
         // oleControlSite()        
     {}
 
@@ -41,9 +43,9 @@ public:
         if (riid == IID_IUnknown || riid == IID_IOleClientSite) {
             *ppvObject = (IOleClientSite*)this;
         } else if (riid == IID_IServiceProvider) {
-            *ppvObject = &serviceProvider;
-        } else if (riid == IID_IDispatch && dispatch) {
-            *ppvObject = dispatch;
+            *ppvObject = &serviceProvider_;
+        } else if (riid == IID_IDispatch && dispatch_) {
+            *ppvObject = dispatch_;
         } else if (riid == IID_IOleInPlaceSite) {
             // Off: *ppvObject = &oleInPlaceSite;
             *ppvObject = 0;

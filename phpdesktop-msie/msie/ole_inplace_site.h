@@ -14,18 +14,18 @@ template <class RootFrame>
 class OleInPlaceSite : public IOleInPlaceSite
 {
 public:
-    IOleClientSite* oleClientSite;
-    IOleInPlaceFrame* oleInPlaceFrame;
-    BrowserFrameInterface<RootFrame>* webFrame;
+    IOleClientSite* oleClientSite_;
+    IOleInPlaceFrame* oleInPlaceFrame_;
+    BrowserFrameInterface<RootFrame>* webFrame_;
 
     OleInPlaceSite(
         IOleClientSite* inOleClientSite,
         IOleInPlaceFrame* inOleInPlaceFrame,
         BrowserFrameInterface<RootFrame>* inWebFrame)
     {
-        oleClientSite = inOleClientSite;
-        webFrame = inWebFrame;
-        oleInPlaceFrame = inOleInPlaceFrame;
+        oleClientSite_ = inOleClientSite;
+        webFrame_ = inWebFrame;
+        oleInPlaceFrame_ = inOleInPlaceFrame;
     }
 public:
 
@@ -33,7 +33,7 @@ public:
 
     HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR* ppvObj)
     {
-        return oleClientSite->QueryInterface(riid, ppvObj);
+        return oleClientSite_->QueryInterface(riid, ppvObj);
     }
     ULONG STDMETHODCALLTYPE AddRef(void)
     {
@@ -48,7 +48,7 @@ public:
 
     HRESULT STDMETHODCALLTYPE GetWindow(HWND FAR* lphwnd)
     {
-        *lphwnd = webFrame->RootView_GetWindowHandle();
+        *lphwnd = webFrame_->RootView_GetWindowHandle();
         return S_OK;
     }
     HRESULT STDMETHODCALLTYPE ContextSensitiveHelp(BOOL fEnterMode)
@@ -74,10 +74,10 @@ public:
         LPOLEINPLACEUIWINDOW FAR* lplpDoc, LPRECT lprcPosRect, LPRECT lprcClipRect,
         LPOLEINPLACEFRAMEINFO lpFrameInfo)
     {
-        *lplpFrame = oleInPlaceFrame;
+        *lplpFrame = oleInPlaceFrame_;
         *lplpDoc = 0;
         lpFrameInfo->fMDIApp = FALSE;
-        lpFrameInfo->hwndFrame = webFrame->GetWindowHandle();
+        lpFrameInfo->hwndFrame = webFrame_->GetWindowHandle();
         lpFrameInfo->haccel = 0;
         lpFrameInfo->cAccelEntries = 0;
         return (S_OK);
@@ -114,17 +114,22 @@ public:
 
         CComQIPtr<IOleObject> oleObject;
         CComQIPtr<IWebBrowser2> webBrowser;
-        int ctrlid = webFrame->RootView_GetDlgCtrlID();
+        int ctrlid = webFrame_->RootView_GetDlgCtrlID();
 
-        hr = webFrame->RootFrame_GetDlgControl(ctrlid, IID_IWebBrowser2, (void**) &webBrowser);
-        ASSERT_EXIT(SUCCEEDED(hr), "webFrame->RootFrame_GetDlgControl(IID_IWebBrowser2) failed");
+        hr = webFrame_->RootFrame_GetDlgControl(ctrlid, IID_IWebBrowser2, 
+                                                (void**) &webBrowser);
+        ASSERT_EXIT(SUCCEEDED(hr), 
+                "webFrame_->RootFrame_GetDlgControl(IID_IWebBrowser2) failed");
 
         hr = webBrowser->QueryInterface(IID_IOleObject, (void**) &oleObject);
-        ASSERT_EXIT(SUCCEEDED(hr), "webBrowser->QueryInterface(IID_IOleObject)");
+        ASSERT_EXIT(SUCCEEDED(hr), 
+                "webBrowser->QueryInterface(IID_IOleObject)");
 
         CComQIPtr<IOleInPlaceObject> oleInPlaceObject;
-        hr = oleObject->QueryInterface(IID_IOleInPlaceObject, (void**) &oleInPlaceObject);
-        ASSERT_EXIT(SUCCEEDED(hr), "webBrowser->QueryInterface(IID_IOleINPlaceObject)");
+        hr = oleObject->QueryInterface(IID_IOleInPlaceObject, 
+                                       (void**) &oleInPlaceObject);
+        ASSERT_EXIT(SUCCEEDED(hr), 
+                "webBrowser->QueryInterface(IID_IOleINPlaceObject)");
 
         oleInPlaceObject->SetObjectRects(lprcPosRect, lprcPosRect);
 

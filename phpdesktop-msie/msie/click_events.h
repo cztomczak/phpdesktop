@@ -87,10 +87,10 @@ template <class RootFrame>
 class ClickEvents : public IDispatch
 {
 public:
-    RootFrame* rootFrame;
+    RootFrame* rootFrame_;
 
     ClickEvents(RootFrame* inRootFrame) {
-        rootFrame = inRootFrame;
+        rootFrame_ = inRootFrame;
     }
 
     //
@@ -152,10 +152,10 @@ public:
         HRESULT hr;
 
         CComQIPtr<IWebBrowser2> webBrowser2;
-        hr = rootFrame->GetDlgControl(rootFrame->rootView.GetDlgCtrlID(),
+        hr = rootFrame_->GetDlgControl(rootFrame_->rootView.GetDlgCtrlID(),
                 IID_IWebBrowser2, (void**) &webBrowser2);
         ASSERT_EXIT(SUCCEEDED(hr),
-                "rootFrame->GetDlgControl(IID_IWebBrowser2) failed");
+                "rootFrame_->GetDlgControl(IID_IWebBrowser2) failed");
 
         CComQIPtr<IDispatch> dispatch;
         hr = webBrowser2->get_Document(&dispatch);
@@ -196,7 +196,7 @@ public:
             wchar_t href[2084];
             wcsncpy_s(href, _countof(href), attrValue.bstrVal, _TRUNCATE);
 
-            if (!rootFrame->IsURLAllowed(href, 2084)) {
+            if (!rootFrame_->IsUrlAllowed(href, 2084)) {
                 VARIANT variant;
                 variant.vt = VT_BOOL;
                 variant.boolVal = VARIANT_FALSE;

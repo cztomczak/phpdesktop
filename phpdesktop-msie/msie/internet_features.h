@@ -106,7 +106,7 @@ void SetInternetFeatures() {
     // versions:
     // http://support.microsoft.com/kb/969393
     
-    if (!IsAtLeastIE60SP2())
+    if (!IsAtLeastInternetExplorer60ServicePack2())
         return;
 
     HRESULT hres;

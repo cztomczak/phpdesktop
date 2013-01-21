@@ -16,15 +16,15 @@ template <class RootFrame>
 class DocHostUIHandlerDispatch : public IDocHostUIHandlerDispatch
 {
 public:
-    IOleClientSite* oleClientSite;
-    BrowserFrameInterface<RootFrame>* webFrame;
-    RootFrame* rootFrame;
+    IOleClientSite* oleClientSite_;
+    BrowserFrameInterface<RootFrame>* webFrame_;
+    RootFrame* rootFrame_;
 
     DocHostUIHandlerDispatch(IOleClientSite* inOleClientSite,
             BrowserFrameInterface<RootFrame>* inWebFrame) {
-        oleClientSite = inOleClientSite;
-        webFrame = inWebFrame;
-        rootFrame = static_cast<RootFrame*>(webFrame);
+        oleClientSite_ = inOleClientSite;
+        webFrame_ = inWebFrame;
+        rootFrame_ = static_cast<RootFrame*>(webFrame_);
     }
 
     //
@@ -32,7 +32,7 @@ public:
     //
 
     HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR* ppvObj) {
-        return oleClientSite->QueryInterface(riid, ppvObj);
+        return oleClientSite_->QueryInterface(riid, ppvObj);
     }
 
     ULONG STDMETHODCALLTYPE AddRef(void) {
@@ -61,8 +61,8 @@ public:
             UINT cNames, LCID lcid, DISPID *rgDispId) {
         if (riid != IID_NULL)
             return ResultFromScode(DISP_E_UNKNOWNINTERFACE);
-        ASSERT_EXIT(rootFrame->IsWindow(), "rootFrame->IsWindow()");
-        int id = rootFrame->ExternalID(rgszNames[0]);
+        ASSERT_EXIT(rootFrame_->IsWindow(), "rootFrame_->IsWindow()");
+        int id = rootFrame_->ExternalIdentifier(rgszNames[0]);
         if (id) {
             rgDispId[0] = id;
             return S_OK;
@@ -123,8 +123,8 @@ public:
             pVarResult->bstrVal = SysAllocString(L"Returned value");
         */
 
-        ASSERT_EXIT(rootFrame->IsWindow(), "rootFrame->IsWindow()");
-        bool result = rootFrame->ExternalCall(dispIdMember);
+        ASSERT_EXIT(rootFrame_->IsWindow(), "rootFrame_->IsWindow()");
+        bool result = rootFrame_->ExternalCall(dispIdMember);
         if (result)
             return S_OK;
 
@@ -220,7 +220,7 @@ public:
             // - text, search, email, tel, url, number, time.
             wchar_t tag[50];
             wchar_t typeattr[50];
-            if (webFrame->GetActiveElement(tag, typeattr)) {
+            if (webFrame_->GetActiveElement(tag, typeattr)) {
 
                 _wcsupr_s(tag, 50);
                 _wcsupr_s(typeattr, 50);

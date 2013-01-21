@@ -10,7 +10,7 @@
 #include <string>
 #include <sstream>
 
-// Parse() and LessThanVersion() taken from:
+// Parse() and IsLessThanVersion() taken from:
 // http://stackoverflow.com/questions/2941491/compare-versions-as-strings
 
 void Parse(int result[4], const std::string& input)
@@ -24,7 +24,7 @@ void Parse(int result[4], const std::string& input)
     }
 }
 
-bool LessThanVersion(const std::string& a,const std::string& b)
+bool IsLessThanVersion(const std::string& a,const std::string& b)
 {
     int parsedA[4], parsedB[4];
     Parse(parsedA, a);
@@ -49,7 +49,7 @@ LONG GetStringRegKey(HKEY hKey, const std::string &strValueName,
         return nError;
 }
 
-bool IsAtLeastIE60SP2()
+bool IsAtLeastInternetExplorer60ServicePack2()
 {
     std::string registryVersion = "0.0.0.0";
 
@@ -65,7 +65,7 @@ bool IsAtLeastIE60SP2()
     // comparing "abc" will give true.
     // 6.00.2900.2180 == IE 6.0 SP2
     // 6.00.2800.1106 == IE 6.0 SP1
-    if (LessThanVersion(registryVersion, "6.00.2900.2180")) {
+    if (IsLessThanVersion(registryVersion, "6.00.2900.2180")) {
         LOG(logERROR) << "IE 6.0 SP2 (6.00.2900.2180) is required for the"
                          "program to run correctly";
         return false;

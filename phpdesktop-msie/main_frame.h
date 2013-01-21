@@ -101,7 +101,7 @@ class MainFrame :
         // CreateBrowser(L"c:\\phpdesktop\\phpdesktop-src\\phpdesktop-msie\\Release\\www\\test.html");
 
         this->SetTimer(CLICK_EVENTS_TIMER, 10, NULL);
-        this->SetAllowedURL(Utf8ToWide(g_webServerUrl).c_str());
+        this->SetAllowedUrl(Utf8ToWide(g_webServerUrl).c_str());
 
         CMessageLoop* pLoop = g_appModule.GetMessageLoop();
         ATLASSERT(pLoop != NULL);
@@ -143,8 +143,8 @@ class MainFrame :
     LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
                     BOOL& bHandled) {
         TerminateWebServer();
-        if (isfullscreen) {
-            ShowTaskBar(true);
+        if (isFullscreen_) {
+            ShowTaskbar(true);
         }
         bHandled = FALSE;
         return 0;
