@@ -13,36 +13,18 @@ extern CAppModule g_appModule;
 #include "string_utils.h"
 #include "web_server.h"
 
-class PopupView : public CWindowImpl<PopupView, CAxWindow> {
-  public:
-    DECLARE_WND_SUPERCLASS(NULL, CAxWindow::GetWndClassName())    
-    BOOL PreTranslateMessage(MSG* pMsg) {
-        if((pMsg->message < WM_KEYFIRST || pMsg->message > WM_KEYLAST) &&
-           (pMsg->message < WM_MOUSEFIRST || pMsg->message > WM_MOUSELAST))
-            return FALSE;
-        return (BOOL)SendMessage(WM_FORWARDMSG, 0, (LPARAM)pMsg);
-    }
-    BEGIN_MSG_MAP(PopupView)
-    END_MSG_MAP()
-};
-
 class PopupFrame :
     public CFrameWindowImpl<PopupFrame>,
     public CUpdateUI<PopupFrame>,
     public CMessageFilter,
-    public CIdleHandler,
     public BrowserFrame<PopupFrame> {
   public:
     DECLARE_FRAME_WND_CLASS(NULL, IDR_POPUPFRAME)
-    PopupView topView_;
     PopupFrame() {}
 
     virtual BOOL PreTranslateMessage(MSG* pMsg) {
         if(CFrameWindowImpl<PopupFrame>::PreTranslateMessage(pMsg))
             return TRUE;
-        return topView_.PreTranslateMessage(pMsg);
-    }
-    virtual BOOL OnIdle() {
         return FALSE;
     }
 
@@ -109,7 +91,7 @@ class PopupFrame :
         SetAllowedUrl(Utf8ToWide(g_webServerUrl).c_str());
 
         CMessageLoop* pLoop = g_appModule.GetMessageLoop();
-        ATLASSERT(pLoop != NULL);
+        _ASSERT(pLoop != NULL);
         pLoop->AddMessageFilter(this);
         // pLoop->AddIdleHandler(this);
         return 0;
@@ -128,7 +110,7 @@ class PopupFrame :
     LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
                       BOOL& bHandled) {
         CMessageLoop* pLoop = g_appModule.GetMessageLoop();
-        ATLASSERT(pLoop != NULL);
+        _ASSERT(pLoop != NULL);
         pLoop->RemoveMessageFilter(this);
         // pLoop->RemoveIdleHandler(this);
         // When bHandled is false return value doesn't matter.

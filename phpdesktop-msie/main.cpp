@@ -92,8 +92,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         }
     }
 
-    HRESULT hRes = ::CoInitialize(NULL);
-    ATLASSERT(SUCCEEDED(hRes));
+    HRESULT hRes = ::OleInitialize(NULL);
+    _ASSERT(SUCCEEDED(hRes));
 
     // This resolves ATL window thunking problem when Microsoft 
     // Layer for Unicode (MSLU) is used.
@@ -103,13 +103,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     AtlInitCommonControls(ICC_BAR_CLASSES); 
 
     hRes = g_appModule.Init(NULL, hInstance);
-    ATLASSERT(SUCCEEDED(hRes));
+    _ASSERT(SUCCEEDED(hRes));
 
     AtlAxWinInit();
     int nRet = Run(lpstrCmdLine, nCmdShow, main_window_title);
     g_appModule.Term();
     
-    ::CoUninitialize();
+    ::OleUninitialize();
     LOG(logINFO) << "Ended application";
     LOG(logINFO) << "--------------------------------------------------------";
 

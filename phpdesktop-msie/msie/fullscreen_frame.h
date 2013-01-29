@@ -47,7 +47,7 @@ public:
         ShowTaskbar(!setFullscreen);
 
         TopFrame* self = static_cast<TopFrame*>(this);
-        ASSERT_EXIT(self->IsWindow(), "self->IsWindow()");
+        _ASSERT(self->IsWindow());
 
         if (setFullscreen) {
             if (!isFullscreen_) {

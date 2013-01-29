@@ -9,7 +9,6 @@ class BrowserFrameInterface
 {
 public:
     virtual HWND GetWindowHandle() = 0;
-    virtual HWND GetBrowserHandle() = 0;
     virtual IOleClientSite* GetOleClientSite() = 0;
     virtual CComQIPtr<IWebBrowser2> GetBrowser() = 0;
     virtual bool GetActiveHtmlElement(wchar_t* outTag, int outTagSize,

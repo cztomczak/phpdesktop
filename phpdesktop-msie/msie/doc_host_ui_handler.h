@@ -50,17 +50,16 @@ public:
         // Do not show context menus by default with S_OK.
         HRESULT hr(S_OK);
 
-        if (dwID == CONTEXT_MENU_TEXTSELECT) {
-            // If text select, then return S_FALSE to show menu.
-            hr = S_FALSE;
-        } else {
-            // Notify a frame window that the user clicked the
-            // right mouse button in the window.
-            POINT pt;
-    	    GetCursorPos(&pt);
-            PostMessage(browserFrame_->GetWindowHandle(), WM_CONTEXTMENU, 
-                        pt.x, pt.y);
-        }
+        // We could allow context menu on text selection, but
+        // it also displays Print/Print preview options.
+        // dwID == CONTEXT_MENU_TEXTSELECT & return S_FALSE
+            
+        // Notify a frame window that the user clicked the
+        // right mouse button in the window.
+        POINT pt;
+    	GetCursorPos(&pt);
+        PostMessage(browserFrame_->GetWindowHandle(), WM_CONTEXTMENU, 
+                    pt.x, pt.y);
 
         return hr;
     }    
@@ -161,6 +160,9 @@ public:
         // Passes a keystroke to the control site for processing.
         // Return S_OK if message was handled, S_FALSE for the
         // default behavior.
+
+        return S_FALSE;
+        // LOG(logDEBUG) << "IDocHostUIHandler::TranslateAccelerator()";
         
         json_value* settings = GetApplicationSettings();
         HRESULT hr = S_FALSE;
@@ -195,10 +197,12 @@ public:
             }
         }
 
-        if (lpMsg->wParam == VK_F5) {
+        if (lpMsg->message == WM_KEYDOWN && lpMsg->wParam == VK_F5) {
             bool enable_f5_refresh = (*settings)["msie"]["enable_f5_refresh"];
             if (enable_f5_refresh)
                 hr = S_FALSE;
+            else
+                hr = S_OK;
         }
 
         if (lpMsg->message == WM_KEYDOWN && 
@@ -282,7 +286,7 @@ public:
         wchar_t registryPath[200] =
                 L"Software\\PHP Desktop\\WebBrowser2 settings";
         LOG(logDEBUG) << "DocHostUiHandler::GetOptionKeyPath(): "
-                         "registry path: " << registryPath;
+                         "registry path: " << WideToUtf8(registryPath);
         int registrySize = wcslen(registryPath) + 1;
         int memorySize = registrySize * sizeof(registryPath[0]);
         *pchKey = reinterpret_cast<LPOLESTR>(CoTaskMemAlloc(memorySize));

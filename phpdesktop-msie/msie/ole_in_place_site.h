@@ -32,8 +32,8 @@ public:
     }
     // IOleWindow
     HRESULT STDMETHODCALLTYPE GetWindow(HWND FAR* lphwnd) {
-        ATLASSERT(browserFrame_->GetBrowserHandle());
-        *lphwnd = browserFrame_->GetBrowserHandle();
+        _ASSERT(browserFrame_->GetWindowHandle());
+        *lphwnd = browserFrame_->GetWindowHandle();
         return S_OK;
     }
     HRESULT STDMETHODCALLTYPE ContextSensitiveHelp(BOOL fEnterMode) {
@@ -55,14 +55,14 @@ public:
             /* [out] */ LPRECT lprcPosRect,
             /* [out] */ LPRECT lprcClipRect,
             /* [out][in] */ LPOLEINPLACEFRAMEINFO lpFrameInfo) {
-        ATLASSERT(oleInPlaceFrame_);
-        ATLASSERT(browserFrame_->GetBrowserHandle());
+        _ASSERT(oleInPlaceFrame_);
+        _ASSERT(browserFrame_->GetWindowHandle());
         *ppFrame = oleInPlaceFrame_;
         *ppDoc = 0;
-        GetClientRect(browserFrame_->GetBrowserHandle(), lprcPosRect);
-        GetClientRect(browserFrame_->GetBrowserHandle(), lprcClipRect);
+        GetClientRect(browserFrame_->GetWindowHandle(), lprcPosRect);
+        GetClientRect(browserFrame_->GetWindowHandle(), lprcClipRect);
         lpFrameInfo->fMDIApp = FALSE;
-        lpFrameInfo->hwndFrame = browserFrame_->GetBrowserHandle();
+        lpFrameInfo->hwndFrame = browserFrame_->GetWindowHandle();
         lpFrameInfo->haccel = 0;
         lpFrameInfo->cAccelEntries = 0;
         return S_OK;

@@ -24,10 +24,6 @@ public:
     HRESULT STDMETHODCALLTYPE QueryInterface( 
             /* [in] */ REFIID riid,
             /* [out] */ void **ppvObject) {
-        if (riid == DIID_DWebBrowserEvents2) {
-            *ppvObject = static_cast<DWebBrowserEvents2*>(this);
-            return S_OK;
-        }
         return browserFrame_->GetOleClientSite()->QueryInterface(
                 riid, ppvObject);
     }    
@@ -67,7 +63,6 @@ public:
             /* [out] */ VARIANT *pVarResult,
             /* [out] */ EXCEPINFO *pExcepInfo,
             /* [out] */ UINT *puArgErr) {
-        LOG(logWARNING) << "BrowserEvents2::Invoke() !!!!!!!!!!!";
         // When returning a result, you must check whether pVarResult
         // is not NULL and initialize it using VariantInit(). If it's
         // NULL then it doesn't expect a result.
@@ -143,7 +138,7 @@ public:
         } else if (dispId == DISPID_TITLECHANGE) {
             if (browserFrame_->IsPopup()
                     && browserFrame_->IsUsingMetaTitle()) {
-                ATLASSERT(pDispParams->rgvarg[0].vt == VT_BSTR);
+                _ASSERT(pDispParams->rgvarg[0].vt == VT_BSTR);
                 BSTR title = pDispParams->rgvarg[0].bstrVal;
                 LOG(logDEBUG) << "BrowserEvents2::TitleChange(): "
                                  "setting popup title = " << title;

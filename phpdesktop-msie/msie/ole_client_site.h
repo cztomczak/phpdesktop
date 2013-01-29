@@ -29,8 +29,6 @@ public:
     DocHostShowUi<TopFrame> docHostShowUi_;
     ExternalDispatch<TopFrame> externalDispatch_;
     DocHostUiHandler<TopFrame> docHostUiHandler_;
-    CComQIPtr<IWebBrowser2> webBrowser2_;
-    CComQIPtr<IDispatch> documentDispatch_;
     
     OleClientSite(TopFrame* inTopFrame, 
                   BrowserFrameInterface<TopFrame>* inBrowserFrame)
@@ -48,43 +46,78 @@ public:
     HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppvObject) {
         if (ppvObject == 0)
             return E_POINTER;
-        if (riid == IID_IDispatch) {
-            webBrowser2_ = browserFrame_->GetBrowser();
-            webBrowser2_->get_Document(&documentDispatch_);
-            *ppvObject = documentDispatch_;
-        } else if (riid == IID_IUnknown) {
+        if (riid == IID_IUnknown) {
             *ppvObject = static_cast<IUnknown*>(this);
-            LOG(logDEBUG) << "QueryInterface(): IUnkown";
+            static bool logged = false;
+            if (!logged) {
+                LOG(logDEBUG) << "QueryInterface(): IUnknown";
+                logged = true;
+            }
         } else if (riid == IID_IOleClientSite) {
             *ppvObject = static_cast<IOleClientSite*>(this);
-            LOG(logDEBUG) << "QueryInterface(): IOleClientSite";
+            static bool logged = false;
+            if (!logged) {
+                LOG(logDEBUG) << "QueryInterface(): IOleClientSite";
+                logged = true;
+            }
         } else if (riid == IID_IOleInPlaceSite) {
             *ppvObject = static_cast<IOleInPlaceSite*>(&oleInPlaceSite_);
-            LOG(logDEBUG) << "QueryInterface(): IOleInPlaceSite";
+            static bool logged = false;
+            if (!logged) {
+                LOG(logDEBUG) << "QueryInterface(): IOleInPlaceSite";
+                logged = true;
+            }
         } else if (riid == IID_IOleInPlaceFrame) {
+            // This interface is retrieved in 
+            // IOleInPlaceSite::GetWindowContext().
             *ppvObject = static_cast<IOleInPlaceFrame*>(&oleInPlaceFrame_);
-            LOG(logDEBUG) << "QueryInterface(): IOleInPlaceFrame";
+            static bool logged = false;
+            if (!logged) {
+                LOG(logDEBUG) << "QueryInterface(): IOleInPlaceFrame";
+                logged = true;
+            }
         } else if (riid == IID_IOleControlSite) {
             *ppvObject = static_cast<IOleControlSite*>(&oleControlSite_);
-            LOG(logDEBUG) << "QueryInterface(): IOleControlSite";
+            static bool logged = false;
+            if (!logged) {
+                LOG(logDEBUG) << "QueryInterface(): IOleControlSite";
+                logged = true;
+            }
         } else if (riid == IID_IServiceProvider) {
             *ppvObject = static_cast<IServiceProvider*>(&serviceProvider_);
-            //LOG(logDEBUG) << "QueryInterface(): IServiceProvider";
+            static bool logged = false;
+            if (!logged) {
+                LOG(logDEBUG) << "QueryInterface(): IServiceProvider";
+                logged = true;
+            }
         } else if (riid == DIID_DWebBrowserEvents2) {
             *ppvObject = static_cast<DWebBrowserEvents2*>(&browserEvents2_);
-            LOG(logDEBUG) << "QueryInterface(): DWebBrowserEvents2";
+            static bool logged = false;
+            if (!logged) {
+                LOG(logDEBUG) << "QueryInterface(): DWebBrowserEvents2";
+                logged = true;
+            }
         } else if (riid == IID_IDocHostShowUI) {
             *ppvObject = static_cast<IDocHostShowUI*>(&docHostShowUi_);
-            LOG(logDEBUG) << "QueryInterface(): IDocHostShowUI";
+            static bool logged = false;
+            if (!logged) {
+                LOG(logDEBUG) << "QueryInterface(): IDocHostShowUI";
+                logged = true;
+            }
         } else if (riid == IID_IDocHostUIHandler) {
             *ppvObject = static_cast<IDocHostUIHandler*>(&docHostUiHandler_);
-            LOG(logDEBUG) << "QueryInterface(): IDocHostUIHandler";
+            static bool logged = false;
+            if (!logged) {
+                LOG(logDEBUG) << "QueryInterface(): IDocHostUIHandler";
+                logged = true;
+            }
         } else if (riid == IID_IAxWinHostWindow) {
             *ppvObject = 0;
             return E_NOINTERFACE;
         } else if (   riid == IID_IDocHostUIHandler2
                    || riid == IID_IOleInPlaceSiteEx
-                   || riid == IID_IOleCommandTarget) {
+                   || riid == IID_IOleCommandTarget
+                   || riid == IID_IDispatch) {
             *ppvObject = 0;
             return E_NOINTERFACE;
         } else {

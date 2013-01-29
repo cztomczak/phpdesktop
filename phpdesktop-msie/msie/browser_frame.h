@@ -80,12 +80,6 @@ public:
         BOOL b;
         json_value* settings = GetApplicationSettings();
 
-        topFrame_->m_hWndClient = topFrame_->topView_.Create(
-                topFrame_->m_hWnd, topFrame_->rcDefault, 
-                0, (WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
-                | WS_HSCROLL | WS_VSCROLL), 0);
-        ATLASSERT(topFrame_->m_hWndClient);
-
         // Create browser control.
         hr = CoCreateInstance(CLSID_WebBrowser, NULL, CLSCTX_INPROC,
                               IID_IWebBrowser2, (void**)&webBrowser2_);
@@ -116,7 +110,7 @@ public:
         }
         hr = oleObject->DoVerb(OLEIVERB_INPLACEACTIVATE, NULL, 
                                static_cast<IOleClientSite*>(&oleClientSite_), 
-                               0, GetBrowserHandle(), &rect);
+                               0, GetWindowHandle(), &rect);
         if (FAILED(hr)) {
             LOG(logERROR) << "BrowserFrame::CreateBrowser() failed: "
                              "DoVerb(OLEIVERB_INPLACEACTIVATE) failed";
@@ -253,9 +247,8 @@ public:
                              "FindConnectionPoint() failed";
             return false;
         }
-        // TODO!!!!! ERROR: IDispatch == unknown?????
-        CComQIPtr<IDispatch> unknown;
-        hr = webBrowser2_->QueryInterface(IID_IUnknown, (void**)&unknown);
+        CComPtr<IUnknown> unknown;
+        hr = oleClientSite_.QueryInterface(IID_IUnknown, (void**)&unknown);
         if (FAILED(hr) || !unknown) {
             LOG(logWARNING) << "BrowserFrame::AdviseEvent() failed: "
                                "QueryInterface(IUnknown) failed";
@@ -296,24 +289,20 @@ public:
         return true;
     }
     HWND GetWindowHandle() {
-        ATLASSERT(topFrame_->m_hWnd);
+        _ASSERT(topFrame_->m_hWnd);
         return topFrame_->m_hWnd;
-    }
-    HWND GetBrowserHandle() {
-        ATLASSERT(topFrame_->m_hWndClient);
-        return topFrame_->m_hWndClient;
     }
     IOleClientSite* GetOleClientSite() {
         return static_cast<IOleClientSite*>(&oleClientSite_);
     }
     CComQIPtr<IWebBrowser2> GetBrowser() {
-        ATLASSERT(webBrowser2_);
+        _ASSERT(webBrowser2_);
         return webBrowser2_;
     }
     bool GetActiveHtmlElement(wchar_t* outTag, int outTagSize,
                               wchar_t* outType, int outTypeSize) {
-        ATLASSERT(outTagSize);
-        ATLASSERT(outTypeSize);
+        _ASSERT(outTagSize);
+        _ASSERT(outTypeSize);
         // In case this function fails & returns false.
         if (outTagSize) outTag[0] = 0; else outTag = 0;
         if (outTypeSize) outType[0] = 0; else outType = 0;

@@ -10,40 +10,6 @@
 #define STRINGIZE_NX(A) #A
 #define STRINGIZE(A) STRINGIZE_NX(A)
 
-#define ASSERT(expr, message)\
-    if (!expr)\
-        MessageBoxA(NULL, CONCAT(message,\
-                CONCAT("\n\nFile: ",\
-                    CONCAT(__FILE__,\
-                        CONCAT("\nLine: ",\
-                            CONCAT(STRINGIZE(__LINE__),\
-                                CONCAT("\nFunc: ", __FUNCTION__)))))),\
-        "Assertion failed", MB_ICONERROR);
-
-#define ASSERT_EXIT(expr, message)\
-    if (!expr) {\
-        MessageBoxA(NULL, CONCAT(message,\
-                CONCAT("\n\nFile: ",\
-                    CONCAT(__FILE__,\
-                        CONCAT("\nLine: ",\
-                            CONCAT(STRINGIZE(__LINE__),\
-                                CONCAT("\nFunc: ", __FUNCTION__)))))),\
-        "Assertion failed - exiting", MB_ICONERROR);\
-        exit(-1);\
-    }
-
-#define FATAL_ERROR(message)\
-    {\
-        MessageBoxA(NULL, CONCAT(message,\
-                CONCAT("\n\nFile: ",\
-                    CONCAT(__FILE__,\
-                        CONCAT("\nLine: ",\
-                            CONCAT(STRINGIZE(__LINE__),\
-                                CONCAT("\nFunc: ", __FUNCTION__)))))),\
-        "Fatal error", MB_ICONERROR);\
-        exit(-1);\
-    }
-
 #define DEBUG_INT(A)\
     {\
         char tmpstr[4096];\

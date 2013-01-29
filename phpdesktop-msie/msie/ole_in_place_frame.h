@@ -29,8 +29,8 @@ public:
     // IOleWindow
     HRESULT STDMETHODCALLTYPE GetWindow(
             /* [out] */ HWND FAR* lphwnd) {
-        ATLASSERT(browserFrame_->GetBrowserHandle());
-        *lphwnd = browserFrame_->GetBrowserHandle();
+        _ASSERT(browserFrame_->GetWindowHandle());
+        *lphwnd = browserFrame_->GetWindowHandle();
         return S_OK;
     }
     HRESULT STDMETHODCALLTYPE ContextSensitiveHelp(

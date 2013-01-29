@@ -20,3 +20,6 @@
 <a href="javascript:void(0)" onclick="window.alert(1)">
     window.alert(1)
 </a>
+
+<p>Set "hide_dialog_boxes" to true in settings.json to disable
+    alerts.</p>

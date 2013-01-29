@@ -19,42 +19,47 @@ extern std::string g_webServerUrl;
 #include "string_utils.h"
 #include "web_server.h"
 
-class MainView : public CWindowImpl<MainView, CAxWindow> {
-  public:
-    DECLARE_WND_SUPERCLASS(NULL, CAxWindow::GetWndClassName())    
-    BOOL PreTranslateMessage(MSG* pMsg) {
-        if((pMsg->message < WM_KEYFIRST || pMsg->message > WM_KEYLAST) &&
-           (pMsg->message < WM_MOUSEFIRST || pMsg->message > WM_MOUSELAST))
-            return FALSE;
-        return (BOOL)SendMessage(WM_FORWARDMSG, 0, (LPARAM)pMsg);
-    }
-    BEGIN_MSG_MAP(MainView)
-    END_MSG_MAP()
-};
-
 class MainFrame :
     public CFrameWindowImpl<MainFrame>,
-    public CUpdateUI<MainFrame>,
-    //public CMessageFilter,
+    //public CUpdateUI<MainFrame>,
+    public CMessageFilter,
     //public CIdleHandler,
     public BrowserFrame<MainFrame> {
-  public:
+public:
     DECLARE_FRAME_WND_CLASS(g_singleInstanceApplicationGuid, IDR_MAINFRAME)
-    MainView topView_;
     MainFrame() {}
 
-    
-    virtual BOOL PreTranslateMessage(MSG* pMsg) {
-        if(CFrameWindowImpl<MainFrame>::PreTranslateMessage(pMsg))
+    //BEGIN_UPDATE_UI_MAP(MainFrame)
+    //END_UPDATE_UI_MAP()
+
+    virtual BOOL PreTranslateMessage(MSG* msg) {
+        if(CFrameWindowImpl<MainFrame>::PreTranslateMessage(msg))
             return TRUE;
-        return topView_.PreTranslateMessage(pMsg);
-    }
-    virtual BOOL OnIdle() {
+        if (0 && msg->message == WM_KEYDOWN) {
+            CComQIPtr<IWebBrowser2> browser = GetBrowser();
+            if (1 && browser) {
+                CComQIPtr<IOleInPlaceActiveObject> activeObject;
+                HRESULT hr = browser->QueryInterface(IID_IOleInPlaceActiveObject, 
+                                                     (void**)&activeObject);
+                if (SUCCEEDED(hr)) {
+                    hr = activeObject->TranslateAccelerator(msg);
+                    if (SUCCEEDED(hr))
+                        return TRUE;
+                    else
+                        return FALSE;
+                } else {
+                    static bool logged = false;
+                    if (!logged) {
+                        LOG(logWARNING) << "MainFrame::PreTranslateMessage() failed: "
+                                "QueryInterface(IOleInPlaceActiveObject) failed";
+                        logged = true;
+                    }
+                    return FALSE;
+                }
+            }
+        }
         return FALSE;
     }
-
-    BEGIN_UPDATE_UI_MAP(MainFrame)
-    END_UPDATE_UI_MAP()
 
     BEGIN_MSG_MAP(MainFrame)
         MESSAGE_HANDLER(WM_CREATE, OnCreate)
@@ -62,7 +67,7 @@ class MainFrame :
         MESSAGE_HANDLER(WM_CLOSE, OnClose)
         MESSAGE_HANDLER(WM_GETMINMAXINFO, OnGetMinMaxInfo)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
-        CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
+        //CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
         CHAIN_MSG_MAP(CFrameWindowImpl<MainFrame>)
     END_MSG_MAP()
 
@@ -104,8 +109,8 @@ class MainFrame :
         SetAllowedUrl(Utf8ToWide(g_webServerUrl).c_str());
 
         CMessageLoop* pLoop = g_appModule.GetMessageLoop();
-        ATLASSERT(pLoop != NULL);
-        //pLoop->AddMessageFilter(this);
+        _ASSERT(pLoop != NULL);
+        pLoop->AddMessageFilter(this);
         // pLoop->AddIdleHandler(this);
         return 0;
     }
@@ -150,8 +155,8 @@ class MainFrame :
     LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
                       BOOL& bHandled) {
         CMessageLoop* pLoop = g_appModule.GetMessageLoop();
-        ATLASSERT(pLoop != NULL);
-        //pLoop->RemoveMessageFilter(this);
+        _ASSERT(pLoop != NULL);
+        pLoop->RemoveMessageFilter(this);
         // pLoop->RemoveIdleHandler(this);
         // When bHandled is false return value doesn't matter.
         bHandled = FALSE;
