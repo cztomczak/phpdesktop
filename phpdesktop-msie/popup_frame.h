@@ -7,19 +7,13 @@
 #define CLICK_EVENTS_TIMER 1
 
 extern CAppModule g_appModule;
-extern wchar_t* g_singleInstanceApplicationGuid;
-extern std::string g_webServerUrl;
 
-#include <string>
-
-#include "fatal_error.h"
 #include "msie/browser_frame.h"
-#include "popup_frame.h"
 #include "settings.h"
 #include "string_utils.h"
 #include "web_server.h"
 
-class MainView : public CWindowImpl<MainView, CAxWindow> {
+class PopupView : public CWindowImpl<PopupView, CAxWindow> {
   public:
     DECLARE_WND_SUPERCLASS(NULL, CAxWindow::GetWndClassName())    
     BOOL PreTranslateMessage(MSG* pMsg) {
@@ -28,24 +22,23 @@ class MainView : public CWindowImpl<MainView, CAxWindow> {
             return FALSE;
         return (BOOL)SendMessage(WM_FORWARDMSG, 0, (LPARAM)pMsg);
     }
-    BEGIN_MSG_MAP(MainView)
+    BEGIN_MSG_MAP(PopupView)
     END_MSG_MAP()
 };
 
-class MainFrame :
-    public CFrameWindowImpl<MainFrame>,
-    public CUpdateUI<MainFrame>,
-    //public CMessageFilter,
-    //public CIdleHandler,
-    public BrowserFrame<MainFrame> {
+class PopupFrame :
+    public CFrameWindowImpl<PopupFrame>,
+    public CUpdateUI<PopupFrame>,
+    public CMessageFilter,
+    public CIdleHandler,
+    public BrowserFrame<PopupFrame> {
   public:
-    DECLARE_FRAME_WND_CLASS(g_singleInstanceApplicationGuid, IDR_MAINFRAME)
-    MainView topView_;
-    MainFrame() {}
+    DECLARE_FRAME_WND_CLASS(NULL, IDR_POPUPFRAME)
+    PopupView topView_;
+    PopupFrame() {}
 
-    
     virtual BOOL PreTranslateMessage(MSG* pMsg) {
-        if(CFrameWindowImpl<MainFrame>::PreTranslateMessage(pMsg))
+        if(CFrameWindowImpl<PopupFrame>::PreTranslateMessage(pMsg))
             return TRUE;
         return topView_.PreTranslateMessage(pMsg);
     }
@@ -53,22 +46,21 @@ class MainFrame :
         return FALSE;
     }
 
-    BEGIN_UPDATE_UI_MAP(MainFrame)
+    BEGIN_UPDATE_UI_MAP(PopupFrame)
     END_UPDATE_UI_MAP()
 
-    BEGIN_MSG_MAP(MainFrame)
+    BEGIN_MSG_MAP(PopupFrame)
         MESSAGE_HANDLER(WM_CREATE, OnCreate)
         MESSAGE_HANDLER(WM_TIMER, OnTimer)
         MESSAGE_HANDLER(WM_CLOSE, OnClose)
-        MESSAGE_HANDLER(WM_GETMINMAXINFO, OnGetMinMaxInfo)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
-        CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
-        CHAIN_MSG_MAP(CFrameWindowImpl<MainFrame>)
+        CHAIN_MSG_MAP(CUpdateUI<PopupFrame>)
+        CHAIN_MSG_MAP(CFrameWindowImpl<PopupFrame>)
     END_MSG_MAP()
 
     void SetIconFromSettings() {
         json_value* settings = GetApplicationSettings();
-        const char* iconPath = (*settings)["main_window"]["icon"];
+        const char* iconPath = (*settings)["popup_window"]["icon"];
         if (iconPath && iconPath[0] != 0) {
             wchar_t iconPathW[MAX_PATH];
             Utf8ToWide(iconPath, iconPathW, _countof(iconPathW));
@@ -93,19 +85,32 @@ class MainFrame :
                                    "(ICON_SMALL)";
         }
     }
+    void SetTitleFromSettings() {
+        // Popup title.
+        json_value* settings = GetApplicationSettings();
+        std::wstring popup_title = (*settings)["popup_window"]["fixed_title"];
+        if (popup_title.empty())
+            popup_title = (*settings)["main_window"]["title"];
+        if (popup_title.empty())
+            popup_title = Utf8ToWide(GetExecutableName());
+        SetTitle(popup_title.c_str());
+    }
     LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
                      BOOL& /*bHandled*/) {
         SetIconFromSettings();
-        if (!CreateBrowser(Utf8ToWide(g_webServerUrl).c_str())) {
-            FatalError(m_hWnd, "Could not create Browser control.\n"
-                               "Exiting application.");
+        SetTitleFromSettings();
+        if (!CreateBrowser(L"about:blank")) {
+            LOG(logERROR) << "PopupFrame::OnCreate() failed: "
+                    "BrowserFrame::CreateBrowser() failed";
+            SendMessage(WM_CLOSE, 0, 0);
+            return 0;
         }
         SetTimer(CLICK_EVENTS_TIMER, 10, NULL);
         SetAllowedUrl(Utf8ToWide(g_webServerUrl).c_str());
 
         CMessageLoop* pLoop = g_appModule.GetMessageLoop();
         ATLASSERT(pLoop != NULL);
-        //pLoop->AddMessageFilter(this);
+        pLoop->AddMessageFilter(this);
         // pLoop->AddIdleHandler(this);
         return 0;
     }
@@ -114,36 +119,9 @@ class MainFrame :
         this->AttachClickEvents();
         return 0;
     }
-    LRESULT OnGetMinMaxInfo(UINT, WPARAM, LPARAM lParam, BOOL&) {
-        // Load size structure with lParam values
-        LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
-
-        json_value* settings = GetApplicationSettings();
-        static long minimum_width = 
-                (*settings)["main_window"]["minimum_size"][0];
-        static long minimum_height = 
-                (*settings)["main_window"]["minimum_size"][1];
-        static long maximum_width = 
-                (*settings)["main_window"]["maximum_size"][0];
-        static long maximum_height = 
-                (*settings)["main_window"]["maximum_size"][1];
-
-        if (minimum_width)
-            lpMMI->ptMinTrackSize.x = minimum_width;
-        if (minimum_height)
-            lpMMI->ptMinTrackSize.y = minimum_height;
-
-        if (maximum_width)        
-            lpMMI->ptMaxTrackSize.x = maximum_width;
-        if (maximum_height)
-            lpMMI->ptMaxTrackSize.y = maximum_height;
-
-        return 0;
-    }
     LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
                     BOOL& bHandled) {
         CloseBrowser();
-        TerminateWebServer();
         bHandled = FALSE;
         return 0;
     }
@@ -151,16 +129,23 @@ class MainFrame :
                       BOOL& bHandled) {
         CMessageLoop* pLoop = g_appModule.GetMessageLoop();
         ATLASSERT(pLoop != NULL);
-        //pLoop->RemoveMessageFilter(this);
+        pLoop->RemoveMessageFilter(this);
         // pLoop->RemoveIdleHandler(this);
         // When bHandled is false return value doesn't matter.
+        // WM_DESTROY: should return zero if it processes this message.        
         bHandled = FALSE;
         return 0;
     }
+    virtual void OnFinalMessage(HWND hwnd) {
+        // PopupFrame() is created using "new", cleaning up memory.
+		delete this;
+	}
     bool IsPopup() {
-        return false;
+        return true;
     }
     bool IsUsingMetaTitle() {
-        return false;
+        json_value* settings = GetApplicationSettings();
+        std::string fixed_title = (*settings)["popup_window"]["fixed_title"];
+        return fixed_title.empty();
     }
 };

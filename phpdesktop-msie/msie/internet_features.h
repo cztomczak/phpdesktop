@@ -2,6 +2,10 @@
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
+// TODO: Implement IDocHostUIHandler2::GetOptionKeyPath()
+//       so that you can set browser features that are
+//       customizable only through registry.
+
 #pragma once
 
 #include <UrlMon.h>
@@ -14,8 +18,8 @@
 // of them cannot be changed at runtime:
 // http://msdn.microsoft.com/en-us/library/ee330720(v=vs.85).aspx
 
-// These features most probably cannot be changed at runtime,
-// you can change them only through registry:
+// Additional features that can be changed only through
+// registry or by implementing IDocHostUIHandler2::GetOptionKeyPath().
 
 // FEATURE_RESTRICT_ABOUT_PROTOCOL_IE7
 // FEATURE_AJAX_CONNECTIONEVENTS
@@ -71,13 +75,11 @@
 // FEATURE_WEBOC_POPUPMANAGEMENT
 // FEATURE_BEHAVIORS
 // FEATURE_DISABLE_MK_PROTOCOL
-// FEATURE_LOCALMACHINE_LOCKDOWN // cannot be set per process
 // FEATURE_SECURITYBAND
 // FEATURE_RESTRICT_ACTIVEXINSTALL
 // FEATURE_VALIDATE_NAVIGATE_URL
 // FEATURE_RESTRICT_FILEDOWNLOAD
 // FEATURE_ADDON_MANAGEMENT
-// FEATURE_PROTOCOL_LOCKDOWN // cannot be set per process
 // FEATURE_HTTP_USERNAME_PASSWORD_DISABLE
 // FEATURE_SAFE_BINDTOOBJECT
 // FEATURE_UNC_SAVEDFILECHECK
@@ -92,9 +94,15 @@
 // FEATURE_FEEDS
 // FEATURE_BLOCK_INPUT_PROMPTS
 
+// Cannot be set per process:
+
+// FEATURE_PROTOCOL_LOCKDOWN
+// FEATURE_LOCALMACHINE_LOCKDOWN
+
 // Following features found in Wine 1.1.3, but setting them
 // per process fails:
 // (http://source.winehq.org/source/include/urlmon.idl?v=wine-1.1.3)
+
 // FEATURE_DOMSTORAGE
 // FEATURE_XDOMAINREQUEST
 // FEATURE_DATAURI

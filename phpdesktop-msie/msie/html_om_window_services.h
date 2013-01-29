@@ -6,53 +6,43 @@
 
 #include "browser_frame_interface.h"
 
-template <class RootFrame>
-class HTMLOMWindowServices : public IHTMLOMWindowServices
+template <class TopFrame>
+class HtmlOmWindowServices : public IHTMLOMWindowServices
 {
 public:
-    BrowserFrameInterface<RootFrame>* webFrame_;
+    BrowserFrameInterface<TopFrame>* browserFrame_;
 
-    HTMLOMWindowServices(BrowserFrameInterface<RootFrame>* inWebFrame)
-    {
-        webFrame_ = inWebFrame;
+    HtmlOmWindowServices(BrowserFrameInterface<TopFrame>* inBrowserFrame) 
+            : browserFrame_(inBrowserFrame) {
     }
-    ~HTMLOMWindowServices(){}
-
     // IUnknown
-
-    HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void **ppvObject)
-    {
+    HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void **ppvObject) {
+        *ppvObject = 0;
         return E_NOTIMPL;
+        return browserFrame_->GetOleClientSite()->QueryInterface(riid, 
+                                                                 ppvObject);
     }
-    ULONG STDMETHODCALLTYPE AddRef()
-    {
+    ULONG STDMETHODCALLTYPE AddRef(void) {
         return 1;
     }
-    ULONG STDMETHODCALLTYPE Release()
-    {
+    ULONG STDMETHODCALLTYPE Release(void) {
         return 1;
     }
-
     // IHTMLOMWindowServices
-
-    HRESULT STDMETHODCALLTYPE moveTo(LONG x, LONG y)
-    {
-        SetWindowPos(webFrame_->GetWindowHandle(), NULL, (int) x, (int) y, 
-                0, 0, SWP_NOSIZE | SWP_NOZORDER);
+    HRESULT STDMETHODCALLTYPE moveTo(LONG x, LONG y) {
+        SetWindowPos(browserFrame_->GetWindowHandle(), NULL, (int)x, (int)y, 
+                     0, 0, SWP_NOSIZE | SWP_NOZORDER);
         return S_OK;
     }
-    HRESULT STDMETHODCALLTYPE moveBy(LONG x, LONG y)
-    {
+    HRESULT STDMETHODCALLTYPE moveBy(LONG x, LONG y) {
         return E_NOTIMPL;
     }
-    HRESULT STDMETHODCALLTYPE resizeTo(LONG x, LONG y)
-    {
-        SetWindowPos(webFrame_->GetWindowHandle(), NULL, 0, 0, 
-                (int) x, (int) y, SWP_NOMOVE | SWP_NOZORDER);
+    HRESULT STDMETHODCALLTYPE resizeTo(LONG x, LONG y) {
+        SetWindowPos(browserFrame_->GetWindowHandle(), NULL, 0, 0, 
+                     (int)x, (int)y, SWP_NOMOVE | SWP_NOZORDER);
         return S_OK;
     }
-    HRESULT STDMETHODCALLTYPE resizeBy(LONG x, LONG y)
-    {
+    HRESULT STDMETHODCALLTYPE resizeBy(LONG x, LONG y) {
         return E_NOTIMPL;
     }
 };

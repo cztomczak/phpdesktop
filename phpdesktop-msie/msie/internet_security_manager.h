@@ -41,6 +41,8 @@ public:
     // IInternetSecurityManager
     HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void **ppvObject)
     {
+        if (ppvObject == 0)
+            return E_POINTER;
         *ppvObject = 0;
         return E_NOINTERFACE;
     }

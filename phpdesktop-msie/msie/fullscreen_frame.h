@@ -22,7 +22,7 @@
 
 */
 
-template <class T, bool t_bHasSip = true>
+template <class TopFrame>
 class FullscreenFrame
 {
 public:
@@ -46,7 +46,7 @@ public:
     {
         ShowTaskbar(!setFullscreen);
 
-        T* self = static_cast<T*>(this);
+        TopFrame* self = static_cast<TopFrame*>(this);
         ASSERT_EXIT(self->IsWindow(), "self->IsWindow()");
 
         if (setFullscreen) {

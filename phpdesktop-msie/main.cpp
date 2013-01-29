@@ -12,6 +12,7 @@
 #define _WIN32_IE       _WIN32_IE_IE60SP2
 #define _RICHEDIT_VER   0x0200
 
+#include <comdef.h> // CComBSTR
 #include <atlbase.h>
 #include <atlctl.h>
 #include <atlapp.h>
@@ -21,6 +22,7 @@
 
 #include "debug.h"
 #include "executable.h"
+#include "fatal_error.h"
 #include "file_utils.h"
 #include "log.h"
 #include "main_frame.h"
@@ -41,7 +43,6 @@ int Run(LPTSTR lpstrCmdLine, int nCmdShow, std::string main_window_title);
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPTSTR lpstrCmdLine, int nCmdShow) {
     json_value* settings = GetApplicationSettings();
-    
     // Debugging options.    
     bool show_console = (*settings)["debugging"]["show_console"];
     std::string log_level = (*settings)["debugging"]["log_level"];
@@ -128,10 +129,8 @@ int Run(LPTSTR lpstrCmdLine, int nCmdShow, std::string main_window_title) {
 
     SetInternetFeatures();
     if (!StartWebServer()) {
-        MessageBox(NULL, L"Could not start internal web-server.\n"
-                   L"Exiting application.",
-                   Utf8ToWide(main_window_title).c_str(), MB_ICONERROR);
-        exit(-1);
+        FatalError(NULL, "Could not start internal web-server.\n"
+                   "Exiting application.");
     }
 
     if (!default_width || !default_height) {
@@ -139,16 +138,20 @@ int Run(LPTSTR lpstrCmdLine, int nCmdShow, std::string main_window_title) {
         default_height = 768;
     }
 
-    RECT rc = {0, 0, default_width, default_height};
     MainFrame mainFrame;
-    if(mainFrame.CreateEx(NULL, rc) == NULL) {
+    if(mainFrame.CreateEx(NULL, NULL) == NULL) {
         ATLTRACE(L"Main window creation failed!\n");
         return 0;
     }
 
-    mainFrame.SetWindowTextW(Utf8ToWide(main_window_title).c_str());
+    if (default_width && default_height) {
+        mainFrame.SetWidth(default_width);
+        mainFrame.SetHeight(default_height);
+    }
+
+    mainFrame.SetWindowText(Utf8ToWide(main_window_title).c_str());
     if (disable_maximize_button) {
-        mainFrame.SetWindowLongW(GWL_STYLE, 
+        mainFrame.SetWindowLong(GWL_STYLE, 
                 mainFrame.GetWindowLongW(GWL_STYLE) & ~WS_MAXIMIZEBOX);
     }
     if (center_on_screen)

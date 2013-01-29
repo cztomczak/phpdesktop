@@ -4,16 +4,21 @@
 
 #pragma once
 
-template <class RootFrame>
+template <class TopFrame>
 class BrowserFrameInterface
 {
 public:
     virtual HWND GetWindowHandle() = 0;
+    virtual HWND GetBrowserHandle() = 0;
     virtual IOleClientSite* GetOleClientSite() = 0;
-    virtual bool GetActiveElement(wchar_t* tag, wchar_t* typeattr) = 0;
-
-    virtual HRESULT RootFrame_GetDlgControl(int nID, REFIID iid, void** ppCtrl) = 0;
-
-    virtual HWND RootView_GetWindowHandle() = 0;
-    virtual int RootView_GetDlgCtrlID() = 0;
+    virtual CComQIPtr<IWebBrowser2> GetBrowser() = 0;
+    virtual bool GetActiveHtmlElement(wchar_t* outTag, int outTagSize,
+                                      wchar_t* outType, int outTypeSize) = 0;
+    virtual void SetWidth(long width) = 0;
+    virtual void SetHeight(long height) = 0;
+    virtual void SetTop(long top) = 0;
+    virtual void SetLeft(long left) = 0;
+    virtual void SetTitle(const wchar_t* title) = 0;
+    virtual bool IsPopup() = 0;
+    virtual bool IsUsingMetaTitle() = 0;
 };

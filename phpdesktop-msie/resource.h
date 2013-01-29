@@ -3,6 +3,7 @@
 // Used by resource.rc
 //
 #define IDR_MAINFRAME                   128
+#define IDR_POPUPFRAME                  129
 
 // Next default values for new objects
 // 

@@ -2,7 +2,7 @@
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
-#pragma once
+#include <windows.h>
+#include <string>
 
-// TODO. 
-// See also "click_events.h".
+void FatalError(HWND hwnd, std::string message);

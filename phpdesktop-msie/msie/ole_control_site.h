@@ -2,34 +2,61 @@
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
-// This interface IS NOT used, see OleClientSite::QueryInterface().
-// When using DocHostUIHandlerDispatch() you do not need to
-// implement: IOleInPlaceFrame, IOleInPlaceSite, IOleControlSite.
-
 #pragma once
 
-OleControlSite : IOleControlSite {
+#include <OCIdl.h>
+#include "browser_frame_interface.h"
+
+template <class TopFrame>
+class OleControlSite : public IOleControlSite {
 public:
-    virtual HRESULT STDMETHODCALLTYPE OnControlInfoChanged( void) = 0;
-    
-    virtual HRESULT STDMETHODCALLTYPE LockInPlaceActive( 
-        /* [in] */ BOOL fLock) = 0;
-    
-    virtual HRESULT STDMETHODCALLTYPE GetExtendedControl( 
-        /* [out] */ __RPC__deref_out_opt IDispatch **ppDisp) = 0;
-    
-    virtual HRESULT STDMETHODCALLTYPE TransformCoords( 
-        /* [out][in] */ __RPC__inout POINTL *pPtlHimetric,
-        /* [out][in] */ __RPC__inout POINTF *pPtfContainer,
-        /* [in] */ DWORD dwFlags) = 0;
-    
-    virtual HRESULT STDMETHODCALLTYPE TranslateAccelerator( 
-        /* [in] */ __RPC__in MSG *pMsg,
-        /* [in] */ DWORD grfModifiers) = 0;
-    
-    virtual HRESULT STDMETHODCALLTYPE OnFocus( 
-        /* [in] */ BOOL fGotFocus) = 0;
-    
-    virtual HRESULT STDMETHODCALLTYPE ShowPropertyFrame( void) = 0;
-    
+    BrowserFrameInterface<TopFrame>* browserFrame_;
+
+    OleControlSite(BrowserFrameInterface<TopFrame>* inBrowserFrame)
+            : browserFrame_(inBrowserFrame) {
+    }
+    // IUnknown
+    HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppvObject) {
+        *ppvObject = 0;
+        return E_NOTIMPL;
+        return browserFrame_->GetOleClientSite()->QueryInterface(riid, 
+                                                                 ppvObject);
+    }
+    ULONG STDMETHODCALLTYPE AddRef(void) {
+        return 1;
+    }
+    ULONG STDMETHODCALLTYPE Release(void) {
+        return 1;
+    }
+    // IOleControlSite
+    HRESULT STDMETHODCALLTYPE OnControlInfoChanged(void) {
+        return S_OK;
+    }    
+    HRESULT STDMETHODCALLTYPE LockInPlaceActive( 
+            /* [in] */ BOOL fLock) {
+        return S_OK;
+    }    
+    HRESULT STDMETHODCALLTYPE GetExtendedControl( 
+            /* [out] */ IDispatch **ppDisp) {
+        *ppDisp = 0;
+        return E_NOTIMPL;
+    }
+    HRESULT STDMETHODCALLTYPE TransformCoords( 
+            /* [out][in] */ POINTL *pPtlHimetric,
+            /* [out][in] */ POINTF *pPtfContainer,
+            /* [in] */ DWORD dwFlags) {
+        return E_NOTIMPL;
+    }    
+    HRESULT STDMETHODCALLTYPE TranslateAccelerator( 
+            /* [in] */ MSG *pMsg,
+            /* [in] */ DWORD grfModifiers) {
+        return S_FALSE;
+    }
+    HRESULT STDMETHODCALLTYPE OnFocus( 
+            /* [in] */ BOOL fGotFocus) {
+        return S_OK;
+    }
+    HRESULT STDMETHODCALLTYPE ShowPropertyFrame(void) {
+        return E_NOTIMPL;
+    }
 };

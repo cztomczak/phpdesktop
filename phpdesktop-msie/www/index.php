@@ -1,3 +1,6 @@
+<a href="<?php echo $_SERVER["REQUEST_URI"];?>">Refresh</a>
+
+<title>Welcome to PHP Desktop</title>
 <h1>Welcome to PHP Desktop</h1>
 
 <p>Scripts in www/ directory:</h1>

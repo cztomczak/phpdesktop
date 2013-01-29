@@ -4,207 +4,144 @@
 
 #pragma once
 
+// ClickEvents is attached to document's onclick event, see
+// BrowserFrame::AttachClickEvents().
+//
 // Do not allow navigating to external websites using the
-// main browser window, subframes inside main window are allowed.
-
+// main browser window, subframes are allowed to navigate to
+// external pages.
+//
 // ClickEvents - control over clicked links.
 // SubmitEvents - control submitted forms.
 // Use of window.location cannot be controlled.
-
-// Make sure that events from IHTMLWindow3.attachEvent("onclick")
-// and IHTMLWindow3.attachEvent("onclick") are happening in current
-// document in main window, and not in subframes, as it is allowed
-// in subframes to navigate external resources.
-
-// Another protection against external navigation in main
-// browser window will be through IHTMLWindow3.attachEvent("onunload")
-// combined with DWebBrowserEvents2::BeforeNavigate2() - we will
+//
+// TODO: Another protection against external navigation in main
+// browser window would be through IHTMLWindow3.attachEvent("onunload"),
+// combined with DWebBrowserEvents2::BeforeNavigate2(), we should
 // only allow BeforeNavigate2() when it's not preceded with onunload event.
 
-// Post the complete solution here:
-// http://stackoverflow.com/questions/2925279/iwebbrowser2-how-to-force-links
-
-/*
-    DWebBrowserEvents2::BeforeNavigate2()
-    DWebBrowserEvents2::NavigateError()
-    DWebBrowserEvents2::NewWindow3()
-    DWebBrowserEvents2::DocumentComplete()
-
-    IHTMLWindow2::put_onunload(VARIANT p)
-
-    Get IHTMLWindow2:
-    1. IWebBrowser2::get_document()
-    2. IHTMLDocument2::get_parentWindow()
-
-    IHTMLWindow3::attachEvent(BSTR event, IDispatch *pDisp,
-                              VARIANT_BOOL *pfResult)
-    IHTMLWindow3::attachEvent(onClick)
-    IHTMLWindow3::attachEvent(onSubmit)
-
-    Get IHTMLWindow3:
-    1. IWebBrowser2->getdocument
-    2. IHTMLDocument2->get_parentWindow
-    3. HTMLWindow2->QueryInterface(IHTMLWindow3)
-
-    IHTMLWindow3::attachEvent example:
-
-        CComBSTR onScrollName( TEXT( "onscroll" ) );
-        VARIANT_BOOL result = VARIANT_TRUE;
-        hr = window3->attachEvent( onScrollName, events, &result );
-        if ( result != VARIANT_TRUE ) {}
-
-        class Events : public IDispatch{
-            GetTypeInfoCount : E_NOTIMPL
-            GetTypeInfo : E_NOTIMPL
-            GetIDsOfNames : E_NOTIMPL
-
-            STDMETHODIMP CIE4Events::Invoke(DISPID dispidMember, REFIID riid,
-            LCID lcid, WORD wFlags, DISPPARAMS* pDispParams,
-            VARIANT* pvarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr)
-            {
-                if ( !pDispParams ) {
-                return E_INVALIDARG;
-                }
-                if ( _browserControl != NULL &&
-                pDispParams->cArgs == 1 && pDispParams->rgvarg [0].vt ==
-                VT_DISPATCH ) {
-
-                ComPtrQI <IHTMLEventObj > event( ComPtrQI <IDispatch> (
-                pDispParams->rgvarg [0].pdispVal ) );
-
-                if ( event ) {
-
-                event IHTMLEventObj::get_srcElement(IHTMLElement **p);
-
-                event IHTMLEventObj::put_returnValue(VARIANT v)
-                false   Default action of the event on the source object is
-                        canceled.
-            }
-        }
-*/
-
-template <class RootFrame>
-class ClickEvents : public IDispatch
-{
+template <class TopFrame>
+class ClickEvents : public IDispatch {
 public:
-    RootFrame* rootFrame_;
+    TopFrame* topFrame_;
 
-    ClickEvents(RootFrame* inRootFrame) {
-        rootFrame_ = inRootFrame;
+    ClickEvents(TopFrame* inTopFrame)
+        : topFrame_(inTopFrame) {
     }
-
-    //
     // IUnknown
-    //
-
-    HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR* ppvObj) {
-        *ppvObj = 0;
+    HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppvObject) {
+        *ppvObject = 0;
         return E_NOTIMPL;
+        return topFrame_->GetOleClientSite()->QueryInterface(riid, ppvObject);
     }
-
     ULONG STDMETHODCALLTYPE AddRef(void) {
         return 1;
     }
-
     ULONG STDMETHODCALLTYPE Release(void) {
         return 1;
     }
-
-    //
     // IDispatch
-    //
-
-    HRESULT STDMETHODCALLTYPE GetTypeInfoCount(UINT *pctinfo) {
+    HRESULT STDMETHODCALLTYPE GetTypeInfoCount( 
+            /* [out] */ UINT *pctinfo) {
         *pctinfo = 0;
         return E_NOTIMPL;
-    }
-
-    HRESULT STDMETHODCALLTYPE GetTypeInfo(UINT iTInfo, LCID  lcid,
-            ITypeInfo **ppTInfo) {
+    }    
+    HRESULT STDMETHODCALLTYPE GetTypeInfo( 
+            /* [in] */ UINT iTInfo,
+            /* [in] */ LCID lcid,
+            /* [out] */ ITypeInfo **ppTInfo) {
+        *ppTInfo = 0;
+        return E_NOTIMPL;
+    }    
+    HRESULT STDMETHODCALLTYPE GetIDsOfNames( 
+            /* [in] */ REFIID riid,
+            /* [in] */ LPOLESTR *rgszNames,
+            /* [in] */ UINT cNames,
+            /* [in] */ LCID lcid,
+            /* [out] */ DISPID *rgDispId) {
+        *rgDispId = 0;
         return E_NOTIMPL;
     }
-
-    HRESULT STDMETHODCALLTYPE GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames,
-            UINT cNames, LCID lcid, DISPID *rgDispId) {
-        return E_NOTIMPL;
-    }
-
-    HRESULT STDMETHODCALLTYPE Invoke(DISPID dispIdMember, REFIID riid,
-            LCID lcid, WORD wFlags, DISPPARAMS *pDispParams,
-            VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr) {
-        UINT            uArgErr;
-        VARIANT     varResultDummy;
-
+    HRESULT STDMETHODCALLTYPE Invoke( 
+            /* [in] */ DISPID dispId,
+            /* [in] */ REFIID riid,
+            /* [in] */ LCID lcid,
+            /* [in] */ WORD wFlags,
+            /* [out][in] */ DISPPARAMS *pDispParams,
+            /* [out] */ VARIANT *pVarResult,
+            /* [out] */ EXCEPINFO *pExcepInfo,
+            /* [out] */ UINT *puArgErr) {
+        // When returning a result, you must check whether pVarResult
+        // is not NULL and initialize it using VariantInit(). If it's
+        // NULL then it doesn't expect a result.
         if (riid != IID_NULL)
             return ResultFromScode(DISP_E_UNKNOWNINTERFACE);
-
-        if (puArgErr == NULL)
-            puArgErr = &uArgErr;
-
-        if (pVarResult == NULL)
-            pVarResult = &varResultDummy;
-
-        VariantInit(pVarResult);
-
-        if (!pDispParams)
-            return E_INVALIDARG;
-
+        pExcepInfo = 0;
+        puArgErr = 0;
         HRESULT hr;
 
-        CComQIPtr<IWebBrowser2> webBrowser2;
-        hr = rootFrame_->GetDlgControl(rootFrame_->rootView.GetDlgCtrlID(),
-                IID_IWebBrowser2, (void**) &webBrowser2);
-        ASSERT_EXIT(SUCCEEDED(hr),
-                "rootFrame_->GetDlgControl(IID_IWebBrowser2) failed");
-
-        CComQIPtr<IDispatch> dispatch;
-        hr = webBrowser2->get_Document(&dispatch);
-        ASSERT_EXIT(SUCCEEDED(hr), "webBrowser2->get_Document(&dispatch)");
-
+        CComQIPtr<IWebBrowser2> webBrowser2 = topFrame_->GetBrowser();
+        CComQIPtr<IDispatch> documentDispatch;
+        hr = webBrowser2->get_Document(&documentDispatch);
+        if (FAILED(hr) || !documentDispatch) {
+            LOG(logWARNING) << "ClickEvents::Invoke() failed: "
+                               "get_Document() failed";
+            return S_OK;
+        }
         CComQIPtr<IHTMLDocument2> htmlDocument2;
-        hr = dispatch->QueryInterface(IID_IHTMLDocument2,
-                (void**) &htmlDocument2);
-        ASSERT_EXIT(SUCCEEDED(hr), "dispatch->QueryInterface(&htmlDocument2)");
-
+        hr = documentDispatch->QueryInterface(IID_IHTMLDocument2, 
+                                              (void**)&htmlDocument2);
+        if (FAILED(hr) || !htmlDocument2) {
+            LOG(logWARNING) << "ClickEvents::Invoke() failed: "
+                               "QueryInterface(IHTMLDocument2) failed";
+            return S_OK;
+        }
         CComQIPtr<IHTMLWindow2> htmlWindow2;
-        hr = htmlDocument2->get_parentWindow((IHTMLWindow2**) &htmlWindow2);
-        ASSERT_EXIT(SUCCEEDED(hr),
-                "htmlDocument2->get_parentWindow(&htmlWindow2)");
-
+        hr = htmlDocument2->get_parentWindow(
+                static_cast<IHTMLWindow2**>(&htmlWindow2));
+        if (FAILED(hr) || !htmlWindow2) {
+            LOG(logWARNING) << "ClickEvents::Invoke() failed: "
+                               "IHTMLDocument2->get_parentWindow() failed";
+            return S_OK;
+        }
         CComQIPtr<IHTMLEventObj> htmlEvent;
         hr = htmlWindow2->get_event(&htmlEvent);
-        ASSERT_EXIT(SUCCEEDED(hr), "htmlWindow2->get_event(&htmlEvent)");
-
+        if (FAILED(hr) || !htmlEvent) {
+            LOG(logWARNING) << "ClickEvents::Invoke() failed: "
+                               "IHTMLWindow2->get_event() failed";
+            return S_OK;
+        }
         CComQIPtr<IHTMLElement> htmlElement;
         hr = htmlEvent->get_srcElement(&htmlElement);
-        ASSERT_EXIT(SUCCEEDED(hr), "htmlEvent->get_srcElement(&htmlElement)");
-
+        if (FAILED(hr) || !htmlElement) {
+            LOG(logWARNING) << "ClickEvents::Invoke() failed: "
+                               "IHTMLEventObj->get_srcElement() failed";
+            return S_OK;
+        }
         CComBSTR hrefAttr(L"href");
         VARIANT attrValue;
         VariantInit(&attrValue);
-        // Second param == 0 => by default case insensitive
         hr = htmlElement->getAttribute(hrefAttr, 0, &attrValue);
-        ASSERT_EXIT(SUCCEEDED(hr), "htmlElement->getAttribute()");
-
+        if (FAILED(hr)) {
+            LOG(logWARNING) << "ClickEvents::Invoke() failed: "
+                               "IHTMLElement->getAttribute() failed";
+            return S_OK;
+        }
         if (attrValue.vt == VT_BSTR && attrValue.bstrVal) {
-            // Href attribute found, this is VT_NULL when not found,
-            // when this check was missing a crash happened on Windows 7
-            // while clicking on something else than a link.
-
+            // Href attribute found. When not found vt is VT_NULL.
             // Maximum url length in IE is 2084, see:
             // http://support.microsoft.com/kb/208427
             wchar_t href[2084];
             wcsncpy_s(href, _countof(href), attrValue.bstrVal, _TRUNCATE);
-
-            if (!rootFrame_->IsUrlAllowed(href, 2084)) {
-                VARIANT variant;
-                variant.vt = VT_BOOL;
-                variant.boolVal = VARIANT_FALSE;
-                htmlEvent->put_returnValue(variant);
+            if (!topFrame_->IsUrlAllowed(href, _countof(href))) {
+                VARIANT eventReturn;
+                VariantInit(&eventReturn);
+                eventReturn.vt = VT_BOOL;
+                eventReturn.boolVal = VARIANT_FALSE;
+                htmlEvent->put_returnValue(eventReturn);
                 ShellExecute(0, L"open", href, 0, 0, SW_SHOWNORMAL);
             }
         }
-
         return S_OK;
     }
 };

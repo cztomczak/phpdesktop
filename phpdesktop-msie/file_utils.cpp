@@ -3,10 +3,9 @@
 // Website: http://code.google.com/p/phpdesktop/
 
 #include <windows.h>
-
+#include <string>
 #include <fstream>
 #include <iostream>
-#include <string>
 
 #include "string_utils.h"
 

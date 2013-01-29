@@ -77,6 +77,7 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
+            VALUE "CompanyName", "Czarek Tomczak"
             VALUE "FileDescription", "PHP Desktop"
             VALUE "FileVersion", "1, 0, 0, 9"
             VALUE "InternalName", "phpdesktop"

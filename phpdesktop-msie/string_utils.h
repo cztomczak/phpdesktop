@@ -4,14 +4,13 @@
 
 #pragma once
 
-#include <windows.h>
 #include <string>
 
 void Utf8ToWide(const char* charString, wchar_t* wideString, int wideSize);
 std::wstring Utf8ToWide(const char* utf8String);
-std::wstring Utf8ToWide(const std::string utf8String);
+std::wstring Utf8ToWide(const std::string& utf8String);
 void WideToUtf8(const wchar_t* wideString, char* utf8String, int utf8Size);
 std::string WideToUtf8(const wchar_t* wideString);
-std::string WideToUtf8(const std::wstring wideString);
+std::string WideToUtf8(const std::wstring& wideString);
 std::string IntToString(long number);
 std::string BoolToString(bool value);

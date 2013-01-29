@@ -205,6 +205,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\fatal_error.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\file_utils.cpp"
 				>
 			</File>
@@ -246,6 +250,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc"
 			>
 			<File
+				RelativePath=".\msie\browser_events2.h"
+				>
+			</File>
+			<File
 				RelativePath=".\msie\browser_frame.h"
 				>
 			</File>
@@ -266,11 +274,23 @@
 				>
 			</File>
 			<File
-				RelativePath=".\msie\doc_host_ui_handler_dispatch.h"
+				RelativePath=".\msie\doc_host_show_ui.h"
+				>
+			</File>
+			<File
+				RelativePath=".\msie\doc_host_ui_handler.h"
 				>
 			</File>
 			<File
 				RelativePath=".\executable.h"
+				>
+			</File>
+			<File
+				RelativePath=".\msie\external_dispatch.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fatal_error.h"
 				>
 			</File>
 			<File
@@ -318,11 +338,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\msie\ole_inplace_frame.h"
+				RelativePath=".\msie\ole_in_place_frame.h"
 				>
 			</File>
 			<File
-				RelativePath=".\msie\ole_inplace_site.h"
+				RelativePath=".\msie\ole_in_place_site.h"
+				>
+			</File>
+			<File
+				RelativePath=".\popup_frame.h"
 				>
 			</File>
 			<File
@@ -437,6 +461,10 @@
 		</File>
 		<File
 			RelativePath=".\www\test-links.php"
+			>
+		</File>
+		<File
+			RelativePath=".\msie\todo.txt"
 			>
 		</File>
 	</Files>

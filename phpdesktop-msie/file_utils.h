@@ -2,5 +2,9 @@
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
+#pragma once
+
+#include <string>
+
 std::string GetFileContents(std::string file);
 std::string GetRealPath(std::string path);
