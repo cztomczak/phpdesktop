@@ -2,46 +2,101 @@
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
+#include "defines.h"
+
 #pragma comment(linker, "/manifestdependency:\"type='win32' "\
     "name='Microsoft.Windows.Common-Controls' version='6.0.0.0' "\
     "processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' "\
     "language='*'\"")
 
-#define WINVER          0x0500
-#define _WIN32_WINNT    0x0501
-#define _WIN32_IE       _WIN32_IE_IE60SP2
-#define _RICHEDIT_VER   0x0200
-
-#include <comdef.h> // CComBSTR
-#include <atlbase.h>
-#include <atlctl.h>
-#include <atlapp.h>
-#include <atlframe.h>
-
+#include <crtdbg.h> // _ASSERT() macro
 #include "resource.h"
 
-#include "debug.h"
 #include "executable.h"
 #include "fatal_error.h"
 #include "file_utils.h"
 #include "log.h"
-#include "main_frame.h"
 #include "msie/internet_features.h"
+#include "msie/browser_window.h"
 #include "settings.h"
 #include "single_instance_application.h"
 #include "string_utils.h"
 #include "web_server.h"
+#include "window_utils.h"
 
-CAppModule g_appModule;
+#define CLICK_EVENTS_TIMER 1
+
 SingleInstanceApplication g_singleInstanceApplication;
 wchar_t* g_singleInstanceApplicationGuid = 0;
+wchar_t g_windowClassName[256] = L"";
+int g_windowCount = 0;
+HINSTANCE g_hInstance = 0;
 
+HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title);
 void InitLogging(bool show_console, std::string log_level, 
                  std::string log_file);
-int Run(LPTSTR lpstrCmdLine, int nCmdShow, std::string main_window_title);
+
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, 
+                            LPARAM lParam) {
+    BrowserWindow* browser = 0;
+    UINT_PTR timer = 0;
+    switch (uMsg) {
+        case WM_SIZE:
+            browser = GetBrowserWindow(hwnd);
+            if (browser) {
+                browser->OnResize(uMsg, wParam, lParam);
+            } else {
+                LOG_WARNING << "WindowProc:WM_SIZE failed: "
+                               "could not fetch BrowserWindow";
+                return 1;
+            }
+            return 0;
+        case WM_CREATE:
+            g_windowCount++;
+            browser = new BrowserWindow(hwnd);
+            StoreBrowserWindow(hwnd, browser);
+            timer = SetTimer(hwnd, CLICK_EVENTS_TIMER, 50, 0);
+            if (!timer)
+                LOG_WARNING << "WindowProc:WM_CREATE SetTimer() failed";
+            return 0;
+        case WM_DESTROY:
+            g_windowCount--;
+            RemoveBrowserWindow(hwnd);
+            KillTimer(hwnd, CLICK_EVENTS_TIMER);
+            if (g_windowCount <= 0) {
+                TerminateWebServer();
+                PostQuitMessage(0);
+            }
+            return 1;
+        case WM_TIMER:
+            browser = GetBrowserWindow(hwnd);
+            if (browser) {
+                browser->OnTimer(uMsg, wParam, lParam);
+            } else {
+                LOG_WARNING << "WindowProc:WM_TIMER failed: "
+                               "could not fetch BrowserWindow";
+                return 1;
+            }
+            return 0;
+        case WM_GETMINMAXINFO:
+            browser = GetBrowserWindow(hwnd);
+            if (browser) {
+                browser->OnGetMinMaxInfo(uMsg, wParam, lParam);
+            } else {
+                // GetMinMaxInfo may fail during window creation, so
+                // log severity is only DEBUG.
+                LOG_DEBUG << "WindowProc:WM_GETMINMAXINFO failed: "
+                             "could not fetch BrowserWindow";
+                return 1;
+            }
+            return 0;
+    }
+    return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPTSTR lpstrCmdLine, int nCmdShow) {
+    g_hInstance = hInstance;
     json_value* settings = GetApplicationSettings();
     // Debugging options.    
     bool show_console = (*settings)["debugging"]["show_console"];
@@ -53,15 +108,15 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     }
 
     InitLogging(show_console, log_level, log_file);
-    LOG(logINFO) << "--------------------------------------------------------";
-    LOG(logINFO) << "Started application";    
+    LOG_INFO << "--------------------------------------------------------";
+    LOG_INFO << "Started application";    
     
     if (log_file.length())
-        LOG(logINFO) << "Logging to: " << log_file;
+        LOG_INFO << "Logging to: " << log_file;
     else
-        LOG(logINFO) << "No logging file set";
-    LOG(logINFO) << "Log level = "
-            << FILELog::ToString(FILELog::ReportingLevel());
+        LOG_INFO << "No logging file set";
+    LOG_INFO << "Log level = "
+             << FILELog::ToString(FILELog::ReportingLevel());
 
     // Main window title option.
     std::string main_window_title = (*settings)["main_window"]["title"];
@@ -92,76 +147,82 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         }
     }
 
-    HRESULT hRes = ::OleInitialize(NULL);
-    _ASSERT(SUCCEEDED(hRes));
+    // Window class name.
+    if (g_singleInstanceApplicationGuid) {
+        swprintf_s(g_windowClassName, _countof(g_windowClassName), L"%s",
+                   g_singleInstanceApplicationGuid);
+    } else {
+        swprintf_s(g_windowClassName, _countof(g_windowClassName), L"%s",
+                   Utf8ToWide(GetExecutableName()).c_str());
+    }
 
-    // This resolves ATL window thunking problem when Microsoft 
-    // Layer for Unicode (MSLU) is used.
-    ::DefWindowProc(NULL, 0, 0, 0L);
-
-    // Support some of the common controls.
-    AtlInitCommonControls(ICC_BAR_CLASSES); 
-
-    hRes = g_appModule.Init(NULL, hInstance);
-    _ASSERT(SUCCEEDED(hRes));
-
-    AtlAxWinInit();
-    int nRet = Run(lpstrCmdLine, nCmdShow, main_window_title);
-    g_appModule.Term();
-    
-    ::OleUninitialize();
-    LOG(logINFO) << "Ended application";
-    LOG(logINFO) << "--------------------------------------------------------";
-
-    return nRet;
-}
-int Run(LPTSTR lpstrCmdLine, int nCmdShow, std::string main_window_title) {
-    CMessageLoop theLoop;
-    g_appModule.AddMessageLoop(&theLoop);
-
-    json_value* settings = GetApplicationSettings();
-    
-    long default_width = (*settings)["main_window"]["default_size"][0];
-    long default_height = (*settings)["main_window"]["default_size"][1];
-    bool disable_maximize_button = 
-            (*settings)["main_window"]["disable_maximize_button"];
-    bool center_on_screen = (*settings)["main_window"]["center_on_screen"];
-
-    SetInternetFeatures();
     if (!StartWebServer()) {
         FatalError(NULL, "Could not start internal web-server.\n"
                    "Exiting application.");
     }
 
+    HRESULT hr = OleInitialize(0);
+    _ASSERT(SUCCEEDED(hr));
+
+    SetInternetFeatures();
+    CreateMainWindow(hInstance, nCmdShow, main_window_title);
+    
+    MSG msg;
+    int ret;
+    while ((ret = GetMessage(&msg, 0, 0, 0)) != 0) {
+        if (ret == -1) {
+            LOG_ERROR << "WinMain.GetMessage() returned -1";
+            break;
+        } else {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+    }
+
+    OleUninitialize();
+    LOG_INFO << "Ended application";
+    LOG_INFO << "--------------------------------------------------------";
+
+    return ret;
+}
+HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title) {
+    json_value* settings = GetApplicationSettings();    
+    long default_width = (*settings)["main_window"]["default_size"][0];
+    long default_height = (*settings)["main_window"]["default_size"][1];
+    bool disable_maximize_button = 
+            (*settings)["main_window"]["disable_maximize_button"];
+    bool center_on_screen = (*settings)["main_window"]["center_on_screen"];
     if (!default_width || !default_height) {
-        default_width = 1024;
-        default_height = 768;
+        default_width = CW_USEDEFAULT;
+        default_height = CW_USEDEFAULT;
     }
 
-    MainFrame mainFrame;
-    if(mainFrame.CreateEx(NULL, NULL) == NULL) {
-        ATLTRACE(L"Main window creation failed!\n");
-        return 0;
-    }
+    WNDCLASSEX wc = {};
+    wc.cbSize = sizeof(wc);
+    wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDR_MAINWINDOW));
+    wc.hInstance = hInstance;
+    wc.lpfnWndProc = WindowProc;
+    wc.lpszClassName = g_windowClassName;
+    
+    ATOM atom = RegisterClassEx(&wc);
+    _ASSERT(atom);
 
-    if (default_width && default_height) {
-        mainFrame.SetWidth(default_width);
-        mainFrame.SetHeight(default_height);
-    }
-
-    mainFrame.SetWindowText(Utf8ToWide(main_window_title).c_str());
+    HWND hwnd = CreateWindowEx(0, g_windowClassName,
+            Utf8ToWide(title).c_str(), WS_OVERLAPPEDWINDOW, 
+            CW_USEDEFAULT, CW_USEDEFAULT, default_width, default_height, 
+            HWND_DESKTOP, 0, hInstance, 0);
+    _ASSERT(hwnd);
     if (disable_maximize_button) {
-        mainFrame.SetWindowLong(GWL_STYLE, 
-                mainFrame.GetWindowLongW(GWL_STYLE) & ~WS_MAXIMIZEBOX);
+        int style = GetWindowLong(hwnd, GWL_STYLE);
+        _ASSERT(style);
+        int ret = SetWindowLong(hwnd, GWL_STYLE, style &~WS_MAXIMIZEBOX);
+        _ASSERT(ret);
     }
     if (center_on_screen)
-        mainFrame.CenterWindow();
-
-    mainFrame.ShowWindow(nCmdShow);
-    int nRet = theLoop.Run();
-    g_appModule.RemoveMessageLoop();
-
-    return nRet;
+        CenterWindow(hwnd);
+    ShowWindow(hwnd, nCmdShow);
+    UpdateWindow(hwnd);
+    return hwnd;
 }
 void InitLogging(bool show_console, std::string log_level, 
                  std::string log_file) {
@@ -183,6 +244,6 @@ void InitLogging(bool show_console, std::string log_level,
         if (0 == _wfopen_s(&pFile, Utf8ToWide(log_file).c_str(), L"a"))
             Output2FILE::Stream() = pFile;
         else
-            LOG(logINFO) << "Opening log file for writing failed";
+            LOG_INFO << "Opening log file for writing failed";
     }
 }

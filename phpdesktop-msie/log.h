@@ -5,6 +5,7 @@
 #ifndef __LOG_H__
 #define __LOG_H__
 
+#include "defines.h"
 #include <sstream>
 #include <string>
 #include <stdio.h>
@@ -141,6 +142,11 @@ class FILELOG_DECLSPEC FILELog : public Log<Output2FILE> {};
     if (level > FILELOG_MAX_LEVEL) ;\
     else if (level > FILELog::ReportingLevel() || !Output2FILE::Stream()) ; \
     else FILELog().Get(level)
+
+#define LOG_ERROR LOG(logERROR)
+#define LOG_WARNING LOG(logWARNING)
+#define LOG_INFO LOG(logINFO)
+#define LOG_DEBUG LOG(logDEBUG)
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
 

@@ -4,99 +4,49 @@
 
 #pragma once
 
-#include "browser_frame_interface.h"
+#include "../defines.h"
+#include <OleIdl.h>
+class BrowserWindow;
 
-template <class TopFrame>
-class OleInPlaceFrame : public IOleInPlaceFrame
-{
+class OleInPlaceFrame : public IOleInPlaceFrame {
+private:
+    BrowserWindow* browserWindow_;
 public:
-    BrowserFrameInterface<TopFrame>* browserFrame_;
-
-    OleInPlaceFrame(BrowserFrameInterface<TopFrame>* inBrowserFrame)
-        : browserFrame_(inBrowserFrame) {
-    }
+    OleInPlaceFrame(BrowserWindow* inBrowserWindow);
     // IUnknown
-    HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppvObject) {
-        return browserFrame_->GetOleClientSite()->QueryInterface(riid, 
-                                                                 ppvObject);
-    }
-    ULONG STDMETHODCALLTYPE AddRef(void) {
-        return 1;
-    }
-    ULONG STDMETHODCALLTYPE Release(void) {
-        return 1;
-    }
+    HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppvObject);
+    ULONG STDMETHODCALLTYPE AddRef(void);
+    ULONG STDMETHODCALLTYPE Release(void);
     // IOleWindow
     HRESULT STDMETHODCALLTYPE GetWindow(
-            /* [out] */ HWND FAR* lphwnd) {
-        _ASSERT(browserFrame_->GetWindowHandle());
-        *lphwnd = browserFrame_->GetWindowHandle();
-        return S_OK;
-    }
+            /* [out] */ HWND FAR* lphwnd);
     HRESULT STDMETHODCALLTYPE ContextSensitiveHelp(
-            /* [in] */ BOOL fEnterMode) {
-        return S_OK;
-    }
+            /* [in] */ BOOL fEnterMode);
     // IOleInPlaceUIWindow
     HRESULT STDMETHODCALLTYPE GetBorder(
-            /* [out] */ LPRECT lprectBorder) {
-        if (lprectBorder == NULL) 
-            return E_INVALIDARG;
-        return INPLACE_E_NOTOOLSPACE;
-    }
+            /* [out] */ LPRECT lprectBorder);
     HRESULT STDMETHODCALLTYPE RequestBorderSpace(
-            /* [in] */ LPCBORDERWIDTHS pborderwidths) {
-        return INPLACE_E_NOTOOLSPACE;
-    }
+            /* [in] */ LPCBORDERWIDTHS pborderwidths);
     HRESULT STDMETHODCALLTYPE SetBorderSpace(
-            /* [in] */ LPCBORDERWIDTHS pborderwidths) {
-        return S_OK;
-    }
+            /* [in] */ LPCBORDERWIDTHS pborderwidths);
     HRESULT STDMETHODCALLTYPE SetActiveObject(
             /* [in] */ IOleInPlaceActiveObject *pActiveObject, 
-            /* [in] */ LPCOLESTR pszObjName) {
-        return S_OK;
-    }
+            /* [in] */ LPCOLESTR pszObjName);
     // IOleInPlaceFrame
     HRESULT STDMETHODCALLTYPE InsertMenus(
             /* [in] */ HMENU hmenuShared, 
-            /* [out][in] */ LPOLEMENUGROUPWIDTHS lpMenuWidths) {
-        lpMenuWidths->width[0] = 0;
-        lpMenuWidths->width[2] = 0;
-        lpMenuWidths->width[4] = 0;
-        return S_OK;
-    }
+            /* [out][in] */ LPOLEMENUGROUPWIDTHS lpMenuWidths);
     HRESULT STDMETHODCALLTYPE SetMenu(
             /* [in] */ HMENU hmenuShared, 
             /* [in] */ HOLEMENU holemenu, 
-            /* [in] */ HWND hwndActiveObject) {
-        if (hmenuShared == NULL || holemenu == NULL 
-                || hwndActiveObject == NULL) {
-            return E_INVALIDARG;
-        }
-        return S_OK;
-    }
+            /* [in] */ HWND hwndActiveObject);
     HRESULT STDMETHODCALLTYPE RemoveMenus(
-            /* [in] */ HMENU hmenuShared) {
-        if (hmenuShared == NULL)
-            return E_INVALIDARG;
-        return S_OK;
-    }
+            /* [in] */ HMENU hmenuShared);
     HRESULT STDMETHODCALLTYPE SetStatusText(
-            /* [in] */ LPCOLESTR pszStatusText) {
-        if (pszStatusText == NULL)
-            return E_INVALIDARG;
-        return S_OK;
-    }
+            /* [in] */ LPCOLESTR pszStatusText);
     HRESULT STDMETHODCALLTYPE EnableModeless(
-            /* [in] */ BOOL fEnable) {
-        return S_OK;
-    }
+            /* [in] */ BOOL fEnable);
     HRESULT STDMETHODCALLTYPE TranslateAccelerator(
             /* [in] */ LPMSG lpmsg, 
-            /* [in] */ WORD wID) {
-        if (lpmsg == NULL)
-            return E_INVALIDARG;
-        return S_FALSE;
-    }
+            /* [in] */ WORD wID);
 };

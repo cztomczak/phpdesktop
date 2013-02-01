@@ -2,61 +2,35 @@
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
+#include "../defines.h"
 #pragma once
 
 #include <OCIdl.h>
-#include "browser_frame_interface.h"
+class BrowserWindow;
 
-template <class TopFrame>
 class OleControlSite : public IOleControlSite {
+private:
+    BrowserWindow* browserWindow_;
 public:
-    BrowserFrameInterface<TopFrame>* browserFrame_;
-
-    OleControlSite(BrowserFrameInterface<TopFrame>* inBrowserFrame)
-            : browserFrame_(inBrowserFrame) {
-    }
+    OleControlSite(BrowserWindow* inBrowserWindow);
     // IUnknown
-    HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppvObject) {
-        *ppvObject = 0;
-        return E_NOTIMPL;
-        return browserFrame_->GetOleClientSite()->QueryInterface(riid, 
-                                                                 ppvObject);
-    }
-    ULONG STDMETHODCALLTYPE AddRef(void) {
-        return 1;
-    }
-    ULONG STDMETHODCALLTYPE Release(void) {
-        return 1;
-    }
+    HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppvObject);
+    ULONG STDMETHODCALLTYPE AddRef(void);
+    ULONG STDMETHODCALLTYPE Release(void);
     // IOleControlSite
-    HRESULT STDMETHODCALLTYPE OnControlInfoChanged(void) {
-        return S_OK;
-    }    
+    HRESULT STDMETHODCALLTYPE OnControlInfoChanged(void);
     HRESULT STDMETHODCALLTYPE LockInPlaceActive( 
-            /* [in] */ BOOL fLock) {
-        return S_OK;
-    }    
+            /* [in] */ BOOL fLock);
     HRESULT STDMETHODCALLTYPE GetExtendedControl( 
-            /* [out] */ IDispatch **ppDisp) {
-        *ppDisp = 0;
-        return E_NOTIMPL;
-    }
+            /* [out] */ IDispatch **ppDisp);
     HRESULT STDMETHODCALLTYPE TransformCoords( 
             /* [out][in] */ POINTL *pPtlHimetric,
             /* [out][in] */ POINTF *pPtfContainer,
-            /* [in] */ DWORD dwFlags) {
-        return E_NOTIMPL;
-    }    
+            /* [in] */ DWORD dwFlags);
     HRESULT STDMETHODCALLTYPE TranslateAccelerator( 
             /* [in] */ MSG *pMsg,
-            /* [in] */ DWORD grfModifiers) {
-        return S_FALSE;
-    }
+            /* [in] */ DWORD grfModifiers);
     HRESULT STDMETHODCALLTYPE OnFocus( 
-            /* [in] */ BOOL fGotFocus) {
-        return S_OK;
-    }
-    HRESULT STDMETHODCALLTYPE ShowPropertyFrame(void) {
-        return E_NOTIMPL;
-    }
+            /* [in] */ BOOL fGotFocus);
+    HRESULT STDMETHODCALLTYPE ShowPropertyFrame(void);
 };

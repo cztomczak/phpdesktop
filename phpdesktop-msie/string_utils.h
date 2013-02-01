@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "defines.h"
 #include <string>
 
 void Utf8ToWide(const char* charString, wchar_t* wideString, int wideSize);

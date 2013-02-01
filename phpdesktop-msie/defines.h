@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "../defines.h"
-
-// TODO. 
-// See also "click_events.h".
+#define WINVER          0x0500
+#define _WIN32_WINNT    0x0501
+#define _WIN32_IE       _WIN32_IE_IE60SP2
+#define WIN32_MEAN_AND_LEAN

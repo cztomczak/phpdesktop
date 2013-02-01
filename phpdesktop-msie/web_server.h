@@ -2,5 +2,7 @@
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
+#include "defines.h"
+
 bool StartWebServer();
 void TerminateWebServer();

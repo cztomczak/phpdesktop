@@ -4,110 +4,39 @@
 
 #pragma once
 
-#include "browser_frame_interface.h"
-#include "ole_in_place_frame.h"
+#include "../defines.h"
+#include <OleIdl.h>
+class BrowserWindow;
+class OleInPlaceFrame;
 
-template <class TopFrame>
-class OleInPlaceSite : public IOleInPlaceSite
-{
-public:
-    BrowserFrameInterface<TopFrame>* browserFrame_;
+class OleInPlaceSite : public IOleInPlaceSite {
+private:
+    BrowserWindow* browserWindow_;
     IOleInPlaceFrame* oleInPlaceFrame_;
-
-    OleInPlaceSite(BrowserFrameInterface<TopFrame>* inBrowserFrame,
-                   IOleInPlaceFrame* inOleInPlaceFrame)
-            : browserFrame_(inBrowserFrame),
-            oleInPlaceFrame_(inOleInPlaceFrame) {
-    }
+public:
+    OleInPlaceSite(BrowserWindow* inBrowserWindow,
+                   IOleInPlaceFrame* inOleInPlaceFrame);
     // IUnknown
-    HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppvObject) {
-        return browserFrame_->GetOleClientSite()->QueryInterface(riid, 
-                                                                 ppvObject);
-    }
-    ULONG STDMETHODCALLTYPE AddRef(void) {
-        return 1;
-    }
-    ULONG STDMETHODCALLTYPE Release(void) {
-        return 1;
-    }
+    HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppvObject);
+    ULONG STDMETHODCALLTYPE AddRef(void);
+    ULONG STDMETHODCALLTYPE Release(void);
     // IOleWindow
-    HRESULT STDMETHODCALLTYPE GetWindow(HWND FAR* lphwnd) {
-        _ASSERT(browserFrame_->GetWindowHandle());
-        *lphwnd = browserFrame_->GetWindowHandle();
-        return S_OK;
-    }
-    HRESULT STDMETHODCALLTYPE ContextSensitiveHelp(BOOL fEnterMode) {
-        return S_OK;
-    }
+    HRESULT STDMETHODCALLTYPE GetWindow(HWND FAR* lphwnd);
+    HRESULT STDMETHODCALLTYPE ContextSensitiveHelp(BOOL fEnterMode);
     // IOleInPlaceSite
-    HRESULT STDMETHODCALLTYPE CanInPlaceActivate(void) {
-        return S_OK;
-    }
-    HRESULT STDMETHODCALLTYPE OnInPlaceActivate(void) {
-        return S_OK;
-    }
-    HRESULT STDMETHODCALLTYPE OnUIActivate(void) {
-        return S_OK;
-    }
+    HRESULT STDMETHODCALLTYPE CanInPlaceActivate(void);
+    HRESULT STDMETHODCALLTYPE OnInPlaceActivate(void);
+    HRESULT STDMETHODCALLTYPE OnUIActivate(void);
     HRESULT STDMETHODCALLTYPE GetWindowContext( 
             /* [out] */ IOleInPlaceFrame **ppFrame,
             /* [out] */ IOleInPlaceUIWindow **ppDoc,
             /* [out] */ LPRECT lprcPosRect,
             /* [out] */ LPRECT lprcClipRect,
-            /* [out][in] */ LPOLEINPLACEFRAMEINFO lpFrameInfo) {
-        _ASSERT(oleInPlaceFrame_);
-        _ASSERT(browserFrame_->GetWindowHandle());
-        *ppFrame = oleInPlaceFrame_;
-        *ppDoc = 0;
-        GetClientRect(browserFrame_->GetWindowHandle(), lprcPosRect);
-        GetClientRect(browserFrame_->GetWindowHandle(), lprcClipRect);
-        lpFrameInfo->fMDIApp = FALSE;
-        lpFrameInfo->hwndFrame = browserFrame_->GetWindowHandle();
-        lpFrameInfo->haccel = 0;
-        lpFrameInfo->cAccelEntries = 0;
-        return S_OK;
-    }
-    HRESULT STDMETHODCALLTYPE Scroll(SIZE scrollExtent) {
-        return E_NOTIMPL;
-    }
-    HRESULT STDMETHODCALLTYPE OnUIDeactivate(BOOL fUndoable) {
-        return S_OK;
-    }
-    HRESULT STDMETHODCALLTYPE OnInPlaceDeactivate(void) {
-        return S_OK;
-    }
-    HRESULT STDMETHODCALLTYPE DiscardUndoState(void) {
-        return E_NOTIMPL;
-    }
-    HRESULT STDMETHODCALLTYPE DeactivateAndUndo(void) {
-        return E_NOTIMPL;
-    }
-    HRESULT STDMETHODCALLTYPE OnPosRectChange(LPCRECT lprcPosRect) {
-        if (!lprcPosRect)
-            return E_INVALIDARG;
-        HRESULT hr;
-        CComQIPtr<IOleObject> oleObject;
-        CComQIPtr<IWebBrowser2> browser = browserFrame_->GetBrowser();        
-        hr = browser->QueryInterface(IID_IOleObject, (void**)&oleObject);
-        if (FAILED(hr) || !oleObject) {
-            LOG(logWARNING) << "OleInPlaceSite::OnPosRectChange() failed: "
-                               "QueryInterface(IOleObject) failed";
-            return E_UNEXPECTED;
-        }
-        CComQIPtr<IOleInPlaceObject> oleInPlaceObject;
-        hr = oleObject->QueryInterface(IID_IOleInPlaceObject, 
-                                       (void**)&oleInPlaceObject);
-        if (FAILED(hr) || !oleInPlaceObject) {
-            LOG(logWARNING) << "OleInPlaceSite::OnPosRectChange() failed: "
-                               "QueryInterface(IOleInPlaceObject) failed";
-            return E_UNEXPECTED;
-        }
-        hr = oleInPlaceObject->SetObjectRects(lprcPosRect, lprcPosRect);
-        if (FAILED(hr)) {
-            LOG(logWARNING) << "OleInPlaceSite::OnPosRectChange() failed: "
-                               "IOleInPlaceObject->SetObjectRects() failed";
-            return E_UNEXPECTED;
-        }
-        return S_OK;
-    }
+            /* [out][in] */ LPOLEINPLACEFRAMEINFO lpFrameInfo);
+    HRESULT STDMETHODCALLTYPE Scroll(SIZE scrollExtent);
+    HRESULT STDMETHODCALLTYPE OnUIDeactivate(BOOL fUndoable);
+    HRESULT STDMETHODCALLTYPE OnInPlaceDeactivate(void);
+    HRESULT STDMETHODCALLTYPE DiscardUndoState(void);
+    HRESULT STDMETHODCALLTYPE DeactivateAndUndo(void);
+    HRESULT STDMETHODCALLTYPE OnPosRectChange(LPCRECT lprcPosRect);
 };

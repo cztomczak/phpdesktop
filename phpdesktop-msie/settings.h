@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "defines.h"
 #include "json.h"
 
 json_value* GetApplicationSettings();

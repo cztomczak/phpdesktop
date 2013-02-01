@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "../defines.h"
+#include "defines.h"
 
-// TODO. 
-// See also "click_events.h".
+void CenterWindow(HWND hwnd);
+HWND GetParentWindow(HWND hwnd);

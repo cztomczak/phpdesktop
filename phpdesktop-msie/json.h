@@ -40,6 +40,7 @@
 
 #ifdef __cplusplus
 
+   #include "defines.h"
    #include <string.h>
    #include <string>
    #include "string_utils.h"   

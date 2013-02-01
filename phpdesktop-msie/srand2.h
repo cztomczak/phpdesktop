@@ -2,8 +2,9 @@
 
 #pragma once
 
-#include "time.h"
-#include "windows.h"
+#include "defines.h"
+#include <time.h>
+#include <windows.h>
 
 unsigned long srand2_mix(unsigned long a, unsigned long b, unsigned long c)
 {

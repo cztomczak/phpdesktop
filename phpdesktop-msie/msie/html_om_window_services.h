@@ -4,45 +4,22 @@
 
 #pragma once
 
-#include "browser_frame_interface.h"
+#include "../defines.h"
+#include <MsHtmHst.h>
+class BrowserWindow;
 
-template <class TopFrame>
-class HtmlOmWindowServices : public IHTMLOMWindowServices
-{
+class HtmlOmWindowServices : public IHTMLOMWindowServices {
+private:
+    BrowserWindow* browserWindow_;
 public:
-    BrowserFrameInterface<TopFrame>* browserFrame_;
-
-    HtmlOmWindowServices(BrowserFrameInterface<TopFrame>* inBrowserFrame) 
-            : browserFrame_(inBrowserFrame) {
-    }
+    HtmlOmWindowServices(BrowserWindow* inBrowserWindow);
     // IUnknown
-    HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void **ppvObject) {
-        *ppvObject = 0;
-        return E_NOTIMPL;
-        return browserFrame_->GetOleClientSite()->QueryInterface(riid, 
-                                                                 ppvObject);
-    }
-    ULONG STDMETHODCALLTYPE AddRef(void) {
-        return 1;
-    }
-    ULONG STDMETHODCALLTYPE Release(void) {
-        return 1;
-    }
+    HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void **ppvObject);
+    ULONG STDMETHODCALLTYPE AddRef(void);
+    ULONG STDMETHODCALLTYPE Release(void);
     // IHTMLOMWindowServices
-    HRESULT STDMETHODCALLTYPE moveTo(LONG x, LONG y) {
-        SetWindowPos(browserFrame_->GetWindowHandle(), NULL, (int)x, (int)y, 
-                     0, 0, SWP_NOSIZE | SWP_NOZORDER);
-        return S_OK;
-    }
-    HRESULT STDMETHODCALLTYPE moveBy(LONG x, LONG y) {
-        return E_NOTIMPL;
-    }
-    HRESULT STDMETHODCALLTYPE resizeTo(LONG x, LONG y) {
-        SetWindowPos(browserFrame_->GetWindowHandle(), NULL, 0, 0, 
-                     (int)x, (int)y, SWP_NOMOVE | SWP_NOZORDER);
-        return S_OK;
-    }
-    HRESULT STDMETHODCALLTYPE resizeBy(LONG x, LONG y) {
-        return E_NOTIMPL;
-    }
+    HRESULT STDMETHODCALLTYPE moveTo(LONG x, LONG y);
+    HRESULT STDMETHODCALLTYPE moveBy(LONG x, LONG y);
+    HRESULT STDMETHODCALLTYPE resizeTo(LONG x, LONG y);
+    HRESULT STDMETHODCALLTYPE resizeBy(LONG x, LONG y);
 };

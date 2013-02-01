@@ -4,6 +4,9 @@
 
 #pragma once
 
+#include "defines.h"
+#include <windows.h>
+
 #define CONCAT_NX(s1, s2) s1 ## s2
 #define CONCAT(s1, s2) CONCAT_NX(s1, s2)
 
@@ -76,11 +79,4 @@ char* WCHAR_TO_CHAR(wchar_t* wide) {
         MessageBoxA(NULL, tmpstr, "DEBUG", MB_ICONINFORMATION);\
     }
 
-void GUID_TO_CHAR(const GUID* guid, char* outString, size_t outStringSize)
-{
-    sprintf_s(outString, outStringSize, 
-              "{%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x}",
-              guid->Data1, guid->Data2, guid->Data3,
-              guid->Data4[0], guid->Data4[1], guid->Data4[2], guid->Data4[3],
-              guid->Data4[4], guid->Data4[5], guid->Data4[6], guid->Data4[7]);
-}
+void GUID_TO_CHAR(const GUID* guid, char* outString, size_t outStringSize);

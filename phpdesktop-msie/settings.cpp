@@ -2,6 +2,7 @@
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
+#include "defines.h"
 #include "executable.h"
 #include "file_utils.h"
 #include "json.h"
@@ -13,12 +14,12 @@ json_value* GetApplicationSettings() {
     if (settings_fetched)
         return ret;
     settings_fetched = true;
-    LOG(logDEBUG) << "Fetching settings from settings.json file";
+    LOG_DEBUG << "Fetching settings from settings.json file";
 
     std::string settingsFile = GetExecutableDirectory() + "\\settings.json";
     std::string contents = GetFileContents(settingsFile);
     if (contents.empty()) {
-        LOG(logWARNING) << "Error opening settings.json file";
+        LOG_WARNING << "Error opening settings.json file";
         return ret;
     }
 
@@ -28,7 +29,7 @@ json_value* GetApplicationSettings() {
     json_value* json_parsed = json_parse_ex(&settings, contents.c_str(), 
                                             &error[0]);
     if (json_parsed == 0) {
-        LOG(logWARNING) << "Error while parsing settings.json file: " << error;
+        LOG_WARNING << "Error while parsing settings.json file: " << error;
         return ret;
     }
     ret = json_parsed;

@@ -2,6 +2,7 @@
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
+#include "defines.h"
 #include <windows.h>
 #include <Shellapi.h>
 #include <stdio.h>
@@ -29,14 +30,14 @@ void* MongooseEvent(enum mg_event ev, struct mg_connection* conn) {
             message.append("?");
             message.append(request->query_string);
         }
-        LOG(logINFO) << message;
+        LOG_INFO << message;
     } else if (ev == MG_EVENT_LOG) {
-        LOG(logWARNING) << (const char *) mg_get_request_info(conn)->ev_data;
+        LOG_WARNING << (const char *) mg_get_request_info(conn)->ev_data;
     }
     return NULL;
 }
 bool StartWebServer() {
-    LOG(logINFO) << "Starting Mongoose web-server";
+    LOG_INFO << "Starting Mongoose web-server";
     json_value* settings = GetApplicationSettings();
 
     // Web-server url from settings.
@@ -50,7 +51,7 @@ bool StartWebServer() {
         port = "54007";
     }
     g_webServerUrl = "http://" + ipAddress + ":" + port + "/";
-    LOG(logINFO) << "Web-server url: " << g_webServerUrl;
+    LOG_INFO << "Web-server url: " << g_webServerUrl;
 
     // WWW directory from settings.
     std::string wwwDirectory = (*settings)["web_server"]["www_directory"];
@@ -59,7 +60,7 @@ bool StartWebServer() {
     wwwDirectory = GetExecutableDirectory().append("\\").append(wwwDirectory);
     // Mongoose won't accept "..\\" in a path, need a real path.
     wwwDirectory = GetRealPath(wwwDirectory);
-    LOG(logINFO) << "WWW directory: " << wwwDirectory;
+    LOG_INFO << "WWW directory: " << wwwDirectory;
 
     // Index files from settings.
     const json_value indexFilesArray = (*settings)["web_server"]["index_files"];
@@ -74,7 +75,7 @@ bool StartWebServer() {
     }
     if (indexFiles.empty())
         indexFiles = "index.html,index.php";
-    LOG(logINFO) << "Index files: " << indexFiles;
+    LOG_INFO << "Index files: " << indexFiles;
 
     // CGI interpreter from settings.
     std::string cgiInterpreter = (*settings)["web_server"]["cgi_interpreter"];
@@ -82,7 +83,7 @@ bool StartWebServer() {
         cgiInterpreter = "php\\php-cgi.exe";
     cgiInterpreter.insert(0, GetExecutableDirectory() + "\\");
     cgiInterpreter = GetRealPath(cgiInterpreter);
-    LOG(logINFO) << "CGI interpreter: " << cgiInterpreter;
+    LOG_INFO << "CGI interpreter: " << cgiInterpreter;
 
     // CGI extensions from settings.
     const json_value cgiExtensions = 
@@ -98,7 +99,7 @@ bool StartWebServer() {
     }
     if (cgiPattern.empty())
         cgiPattern = "**.php$";
-    LOG(logINFO) << "CGI pattern: " << cgiPattern;
+    LOG_INFO << "CGI pattern: " << cgiPattern;
 
     // Mongoose web-server.
     std::string listening_ports = ipAddress + ":" + port;
@@ -111,14 +112,14 @@ bool StartWebServer() {
         NULL
     };
     g_mongooseContext = mg_start(&MongooseEvent, NULL, options);
-    if (g_mongooseContext)
-        return true;
-    else
+    if (g_mongooseContext == NULL)
         return false;
+    else
+        return true;
 }
 void TerminateWebServer() {
     if (g_mongooseContext) {
-        LOG(logINFO) << "Stopping Mongoose web-server";
+        LOG_INFO << "Stopping Mongoose web-server";
         mg_stop(g_mongooseContext);
     }
 }

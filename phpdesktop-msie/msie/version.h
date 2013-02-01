@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "../defines.h"
 #pragma comment(lib, "Advapi32")
 
 #include <Winreg.h>
@@ -57,7 +58,7 @@ bool IsAtLeastInternetExplorer60ServicePack2()
     LONG lRes = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Internet Explorer", 0, KEY_READ, &hKey);
     if (lRes == ERROR_SUCCESS) {
         GetStringRegKey(hKey, "Version", registryVersion, "0.0.0.0");
-        LOG(logINFO) << "IE version from registry: " << registryVersion.c_str();
+        LOG_INFO << "IE version from registry: " << registryVersion.c_str();
     }
     RegCloseKey(hKey);
 
@@ -66,8 +67,8 @@ bool IsAtLeastInternetExplorer60ServicePack2()
     // 6.00.2900.2180 == IE 6.0 SP2
     // 6.00.2800.1106 == IE 6.0 SP1
     if (IsLessThanVersion(registryVersion, "6.00.2900.2180")) {
-        LOG(logERROR) << "IE 6.0 SP2 (6.00.2900.2180) is required for the"
-                         "program to run correctly";
+        LOG_ERROR << "IE 6.0 SP2 (6.00.2900.2180) is required for the"
+                     "program to run correctly";
         return false;
     }
     return true;

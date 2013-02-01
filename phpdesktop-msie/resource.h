@@ -2,8 +2,8 @@
 // Microsoft Visual C++ generated include file.
 // Used by resource.rc
 //
-#define IDR_MAINFRAME                   128
-#define IDR_POPUPFRAME                  129
+#define IDR_MAINWINDOW                   128
+#define IDR_POPUPWINDOW                  129
 
 // Next default values for new objects
 // 

@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "defines.h"
+
 class SingleInstanceApplication {
   protected:
 	DWORD lastError;

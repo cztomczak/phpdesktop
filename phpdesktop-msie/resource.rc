@@ -1,13 +1,11 @@
 // Microsoft Visual C++ generated resource script.
 //
+#include "defines.h"
+#include <windows.h>
 #include "resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 2 resource.
-//
-#include "atlres.h"
+
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -34,7 +32,6 @@ END
 
 2 TEXTINCLUDE 
 BEGIN
-    "#include ""atlres.h""\r\n"
     "\0"
 END
 
@@ -53,7 +50,8 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON                    "icon.ico"
+IDR_MAINWINDOW           ICON                    "icon.ico"
+IDR_POPUPWINDOW          ICON                    "icon.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -101,7 +99,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDR_MAINFRAME           "phpdesktop"
+    IDR_MAINWINDOW           "phpdesktop"
 END
 
 #endif    // English (U.S.) resources

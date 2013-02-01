@@ -19,7 +19,7 @@
 			OutputDirectory="Debug"
 			IntermediateDirectory="Debug"
 			ConfigurationType="1"
-			UseOfATL="2"
+			UseOfATL="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
 			>
@@ -50,7 +50,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\..\..\wtl81\Include\"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -105,7 +105,7 @@
 			OutputDirectory="Release"
 			IntermediateDirectory="Release"
 			ConfigurationType="1"
-			UseOfATL="1"
+			UseOfATL="0"
 			ATLMinimizesCRunTimeLibraryUsage="true"
 			CharacterSet="1"
 			>
@@ -136,7 +136,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="4"
-				AdditionalIncludeDirectories="..\..\wtl81\Include\"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;NDEBUG"
 				ExceptionHandling="1"
 				RuntimeLibrary="0"
@@ -193,6 +193,14 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
+				RelativePath=".\msie\browser_window.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\debug.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\executable.cpp"
 				>
 				<FileConfiguration
@@ -244,25 +252,37 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\window_utils.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc"
 			>
 			<File
+				RelativePath=".\msie\browser_events2.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\msie\browser_events2.h"
 				>
 			</File>
 			<File
-				RelativePath=".\msie\browser_frame.h"
+				RelativePath=".\msie\browser_window.h"
 				>
 			</File>
 			<File
-				RelativePath=".\msie\browser_frame_interface.h"
+				RelativePath=".\msie\click_events.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\msie\click_events.h"
+				>
+			</File>
+			<File
+				RelativePath=".\msie\com_utils.h"
 				>
 			</File>
 			<File
@@ -274,7 +294,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\defines.h"
+				>
+			</File>
+			<File
+				RelativePath=".\msie\doc_host_show_ui.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\msie\doc_host_show_ui.h"
+				>
+			</File>
+			<File
+				RelativePath=".\msie\doc_host_ui_handler.cpp"
 				>
 			</File>
 			<File
@@ -283,6 +315,10 @@
 			</File>
 			<File
 				RelativePath=".\executable.h"
+				>
+			</File>
+			<File
+				RelativePath=".\msie\external_dispatch.cpp"
 				>
 			</File>
 			<File
@@ -298,7 +334,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\msie\fullscreen_frame.h"
+				RelativePath=".\msie\fullscreen_frame.txt"
+				>
+			</File>
+			<File
+				RelativePath=".\msie\html_om_window_services.cpp"
 				>
 			</File>
 			<File
@@ -307,6 +347,10 @@
 			</File>
 			<File
 				RelativePath=".\msie\internet_features.h"
+				>
+			</File>
+			<File
+				RelativePath=".\msie\internet_security_manager.cpp"
 				>
 			</File>
 			<File
@@ -322,7 +366,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\main_frame.h"
+				RelativePath=".\main.h"
 				>
 			</File>
 			<File
@@ -330,7 +374,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\msie\ole_client_site.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\msie\ole_client_site.h"
+				>
+			</File>
+			<File
+				RelativePath=".\msie\ole_control_site.cpp"
 				>
 			</File>
 			<File
@@ -338,7 +390,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\msie\ole_in_place_frame.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\msie\ole_in_place_frame.h"
+				>
+			</File>
+			<File
+				RelativePath=".\msie\ole_in_place_site.cpp"
 				>
 			</File>
 			<File
@@ -346,11 +406,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\popup_frame.h"
+				RelativePath=".\resource.h"
 				>
 			</File>
 			<File
-				RelativePath=".\resource.h"
+				RelativePath=".\msie\service_provider.cpp"
 				>
 			</File>
 			<File
@@ -389,6 +449,10 @@
 				RelativePath=".\web_server.h"
 				>
 			</File>
+			<File
+				RelativePath=".\window_utils.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -424,7 +488,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\before_release.txt"
+			RelativePath=".\before-release.txt"
 			>
 		</File>
 		<File
