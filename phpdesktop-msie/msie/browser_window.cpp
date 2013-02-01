@@ -231,10 +231,42 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     return true;
 }
 void BrowserWindow::CloseBrowserControl() {
-    UnadviseEvent(webBrowser2_, DIID_DWebBrowserEvents2,
-                  dWebBrowserEvents2Cookie_);
-    webBrowser2_->Quit();
-    webBrowser2_.Release();
+    if (webBrowser2_) {
+        UnadviseEvent(webBrowser2_, DIID_DWebBrowserEvents2,
+                      dWebBrowserEvents2Cookie_);
+        webBrowser2_->Stop();
+        webBrowser2_->put_Visible(VARIANT_FALSE);
+        
+        IOleObjectPtr oleObject;
+        HRESULT hr = webBrowser2_->QueryInterface(IID_IOleObject, 
+                                                  (void**)&oleObject);
+        if (FAILED(hr) || !oleObject) {
+            LOG_DEBUG << "BrowserWindow::CloseBrowserControl(): "
+                         "QueryInterface(IOleObject) failed";
+        }
+
+        // Remember to check if webBrowser2_ is not empty before using it,
+        // in other functions like TryAttachClickEvents().
+        webBrowser2_->Quit();
+        webBrowser2_.Release();
+
+        // It is important to set client site to NULL, otherwise
+        // you will get first-chance exceptions when calling Close().
+        oleObject->SetClientSite(0);
+        oleObject->Close(OLECLOSE_NOSAVE);
+        oleObject.Release();
+        
+        // Need to release all member variables otherwise you get exception:
+        // "First-chance exception at 0x76034974 in php-desktop-msie.exe:
+        //  0xC0000005: Access violation reading location 0xfeeefef6".
+        // Calling oleObject->SetClientSite(0) fixed these problems, so
+        // commenting off:
+        // documentUniqueID_.~_bstr_t();
+        // clickDispatch_.~_variant_t();
+        // clickEvents_.reset();
+        // externalDispatch_.reset();
+        // oleClientSite_.reset();
+    }
 }
 bool BrowserWindow::TryAttachClickEvents() {
     // Attach OnClick event - to catch clicking any external
@@ -242,6 +274,11 @@ bool BrowserWindow::TryAttachClickEvents() {
     // it is required for the DOM to be ready, call this
     // function in a timer until it succeeds.After browser
     // navigation these click events need to be re-attached.
+    
+    if (!webBrowser2_) {
+        // Web-browser control might be closing.
+        return false;
+    }
     HRESULT hr;        
     VARIANT_BOOL isBusy;
     hr = webBrowser2_->get_Busy(&isBusy);
@@ -655,14 +692,13 @@ void BrowserWindow::SetIconFromSettings() {
 HWND BrowserWindow::GetShellBrowserHandle() {
     // Calling WebBrowser2->get_HWND() fails, need to go around.
     HRESULT hr;
-    IWebBrowser2Ptr webBrowser2 = GetWebBrowser2();
-    if (!webBrowser2) {
+    if (!webBrowser2_) {
         LOG_DEBUG << "BrowserWindow::GetShellBrowserHandle() failed: "
-                     "WebBrowser2 not yet created";
+                     "WebBrowser2 is empty";
         return 0;
     }
     IServiceProviderPtr serviceProvider;
-    hr = webBrowser2->QueryInterface(IID_IServiceProvider, 
+    hr = webBrowser2_->QueryInterface(IID_IServiceProvider,
             (void**)&serviceProvider);
     if (FAILED(hr) || !serviceProvider) {
         LOG_WARNING << "BrowserWindow::GetShellBrowserHandle() failed: "

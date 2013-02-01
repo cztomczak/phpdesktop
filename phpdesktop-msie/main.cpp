@@ -164,7 +164,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     // thread some time to initialize.
     Sleep(100);
 
-    HRESULT hr = OleInitialize(0);
+    HRESULT hr = CoInitializeEx(0, COINIT_APARTMENTTHREADED 
+                                | COINIT_DISABLE_OLE1DDE);
     _ASSERT(SUCCEEDED(hr));
 
     SetInternetFeatures();
@@ -182,7 +183,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         }
     }
 
-    OleUninitialize();
+    CoUninitialize();
     LOG_INFO << "Ended application";
     LOG_INFO << "--------------------------------------------------------";
 

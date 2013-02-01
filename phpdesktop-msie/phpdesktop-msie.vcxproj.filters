@@ -214,6 +214,9 @@
     <None Include="www\test-forms.php" />
     <None Include="www\test-links.php" />
     <None Include="msie\todo.txt" />
+    <None Include="www\test-javascript-errors.php" />
+    <None Include="www\test-popups.php" />
+    <None Include="www\test-window.php" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">
