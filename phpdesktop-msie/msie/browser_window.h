@@ -34,12 +34,14 @@ private:
     IWebBrowser2Ptr webBrowser2_;
     DWORD dWebBrowserEvents2Cookie_;
     bool isResizing_;
+    bool focusedAfterCreation_;
 public:
     BrowserWindow(HWND inWindowHandle);
     ~BrowserWindow();
     bool CreateBrowserControl(const wchar_t* navigateUrl);
     void CloseBrowserControl();
     bool TryAttachClickEvents();
+    bool TrySetFocusAfterCreation();
     bool AdviseEvent(IWebBrowser2Ptr webBrowser2, REFIID riid,
                      DWORD* adviseCookie);
     bool UnadviseEvent(IWebBrowser2Ptr webBrowser2, REFIID riid,
@@ -66,6 +68,7 @@ public:
     void SetTitleFromSettings();
     void SetIconFromSettings();
     HWND GetShellBrowserHandle();
+    bool SetFocus();
 };
 
 

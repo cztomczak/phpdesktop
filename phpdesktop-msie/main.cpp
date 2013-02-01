@@ -24,7 +24,7 @@
 #include "web_server.h"
 #include "window_utils.h"
 
-#define CLICK_EVENTS_TIMER 1
+#define BROWSER_GENERIC_TIMER 1
 
 SingleInstanceApplication g_singleInstanceApplication;
 wchar_t* g_singleInstanceApplicationGuid = 0;
@@ -46,7 +46,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             if (browser) {
                 browser->OnResize(uMsg, wParam, lParam);
             } else {
-                LOG_WARNING << "WindowProc:WM_SIZE failed: "
+                LOG_WARNING << "WindowProc(): WM_SIZE failed: "
                                "could not fetch BrowserWindow";
                 return 1;
             }
@@ -55,14 +55,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             g_windowCount++;
             browser = new BrowserWindow(hwnd);
             StoreBrowserWindow(hwnd, browser);
-            timer = SetTimer(hwnd, CLICK_EVENTS_TIMER, 50, 0);
+            timer = SetTimer(hwnd, BROWSER_GENERIC_TIMER, 50, 0);
             if (!timer)
-                LOG_WARNING << "WindowProc:WM_CREATE SetTimer() failed";
+                LOG_WARNING << "WindowProc(): WM_CREATE SetTimer() failed";
             return 0;
         case WM_DESTROY:
             g_windowCount--;
             RemoveBrowserWindow(hwnd);
-            KillTimer(hwnd, CLICK_EVENTS_TIMER);
+            KillTimer(hwnd, BROWSER_GENERIC_TIMER);
             if (g_windowCount <= 0) {
                 TerminateWebServer();
                 PostQuitMessage(0);
@@ -73,7 +73,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             if (browser) {
                 browser->OnTimer(uMsg, wParam, lParam);
             } else {
-                LOG_WARNING << "WindowProc:WM_TIMER failed: "
+                LOG_WARNING << "WindowProc(): WM_TIMER failed: "
                                "could not fetch BrowserWindow";
                 return 1;
             }
@@ -85,9 +85,18 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             } else {
                 // GetMinMaxInfo may fail during window creation, so
                 // log severity is only DEBUG.
-                LOG_DEBUG << "WindowProc:WM_GETMINMAXINFO failed: "
+                LOG_DEBUG << "WindowProc(): WM_GETMINMAXINFO failed: "
                              "could not fetch BrowserWindow";
                 return 1;
+            }
+            return 0;
+        case WM_SETFOCUS:
+            browser = GetBrowserWindow(hwnd);
+            if (browser) {
+                browser->SetFocus();
+            } else {
+                LOG_DEBUG << "WindowProc(): WM_SETFOCUS failed: "
+                             "could not fetch BrowserWindow";
             }
             return 0;
     }

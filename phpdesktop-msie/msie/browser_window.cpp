@@ -73,17 +73,18 @@ void RemoveBrowserWindow(HWND hwnd) {
 
 BrowserWindow::BrowserWindow(HWND inWindowHandle) 
         : windowHandle_(inWindowHandle),
-        parentHandle_(0),
-        oleClientSite_(), // initialized in constructor
-        externalDispatch_(), // initialized in constructor
-        clickEvents_(), // initialized in constructor
-        clickEventsAttached_(false),
-        documentUniqueID_(),
-        clickDispatch_(),
-        // allowedUrl_ (initialized in constructor)
-        // webBrowser2_
-        dWebBrowserEvents2Cookie_(0),
-        isResizing_(false) {
+          parentHandle_(0),
+          oleClientSite_(), // initialized in constructor
+          externalDispatch_(), // initialized in constructor
+          clickEvents_(), // initialized in constructor
+          clickEventsAttached_(false),
+          documentUniqueID_(),
+          clickDispatch_(),
+          // allowedUrl_ (initialized in constructor)
+          // webBrowser2_
+          dWebBrowserEvents2Cookie_(0),
+          isResizing_(false),
+          focusedAfterCreation_(false) {
 
     // Passing "this" in member initialization throws a warning,
     // the solution is to initialize these classes in constructor.
@@ -542,6 +543,7 @@ bool BrowserWindow::IsUsingMetaTitle() {
 void BrowserWindow::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam) {
     // Need to re-attach click events after each browser navigation.
     TryAttachClickEvents();
+    TrySetFocusAfterCreation();
 }
 void BrowserWindow::OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam) {
     if (!IsPopup()) {
@@ -721,4 +723,56 @@ HWND BrowserWindow::GetShellBrowserHandle() {
         return 0;
     }
     return shellBrowserHandle;
+}
+bool BrowserWindow::SetFocus() {
+    // Calling SetFocus() on shellBrowser handle does not work.
+    if (webBrowser2_) {
+        IDispatchPtr dispatch;
+        HRESULT hr = webBrowser2_->get_Document(&dispatch);
+        if (FAILED(hr) || !dispatch) {
+            LOG_DEBUG << "BrowserWindow::SetFocus() failed: "
+                            "IWebBrowser2->get_Document() failed";
+            return false;
+        }
+        IHTMLDocument2Ptr htmlDocument2;
+        hr = dispatch->QueryInterface(IID_IHTMLDocument2, 
+                                        (void**)&htmlDocument2);
+        if (FAILED(hr) || !htmlDocument2) {
+            LOG_DEBUG << "BrowserWindow::SetFocus() failed: "
+                            "QueryInterface(IHTMLDocument2) failed";
+            return false;
+        }
+        IHTMLElementPtr htmlElement;
+        hr = htmlDocument2->get_body(&htmlElement);
+        if (FAILED(hr) || !htmlElement) {
+            LOG_DEBUG << "BrowserWindow::SetFocus() failed: "
+                            "IHTMLDocument2->get_body() failed";
+            return false;
+        }
+        IHTMLElement2Ptr htmlElement2;
+        hr = htmlElement->QueryInterface(IID_IHTMLElement2, 
+                                            (void**)&htmlElement2);
+        if (FAILED(hr) || !htmlElement2) {
+            LOG_DEBUG << "BrowserWindow::SetFocus() failed: "
+                            "QueryInterface(IHTMLElement2) failed";
+            return false;
+        }
+        hr = htmlElement2->focus();
+        if (FAILED(hr)) {
+            LOG_DEBUG << "BrowserWindow::SetFocus() failed: "
+                            "IHTMLElement2->focus() failed";
+            return false;
+        }
+        return true;
+    }
+    return false;
+}
+bool BrowserWindow::TrySetFocusAfterCreation() {
+    if (!focusedAfterCreation_) {
+        if (SetFocus()) {
+            focusedAfterCreation_ = true;
+            return true;
+        }
+    }
+    return false;
 }

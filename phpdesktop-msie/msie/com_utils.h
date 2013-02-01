@@ -28,5 +28,6 @@ Already defined in comdef.h:
 #endif // _DEBUG
 */
 
-// Some smart ptr defs are missing.
+// Some smart pointer defs are missing.
 _COM_SMARTPTR_TYPEDEF(IHTMLDocument3, IID_IHTMLDocument3);
+_COM_SMARTPTR_TYPEDEF(IHTMLElement2, IID_IHTMLElement2);
