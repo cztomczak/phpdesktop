@@ -2,6 +2,8 @@
 
 #pragma once
 
+// #include <random> - TR1
+
 #include "defines.h"
 #include <time.h>
 #include <windows.h>
@@ -21,7 +23,7 @@ unsigned long srand2_mix(unsigned long a, unsigned long b, unsigned long c)
 }
 void srand2() {
     unsigned long seed = srand2_mix(
-            clock(), 
+            clock(),
             (unsigned long)time(NULL),
             GetProcessId(GetModuleHandle(NULL)));
     srand(seed);

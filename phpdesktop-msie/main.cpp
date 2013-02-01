@@ -160,6 +160,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         FatalError(NULL, "Could not start internal web-server.\n"
                    "Exiting application.");
     }
+    // Random guess for app freezing problem, let's give web-server
+    // thread some time to initialize.
+    Sleep(100);
 
     HRESULT hr = OleInitialize(0);
     _ASSERT(SUCCEEDED(hr));
@@ -199,6 +202,7 @@ HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title) {
 
     WNDCLASSEX wc = {};
     wc.cbSize = sizeof(wc);
+    wc.hbrBackground = (HBRUSH)GetSysColorBrush(COLOR_WINDOW);
     wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDR_MAINWINDOW));
     wc.hInstance = hInstance;
     wc.lpfnWndProc = WindowProc;

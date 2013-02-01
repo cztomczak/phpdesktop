@@ -129,13 +129,26 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     BOOL b;
     json_value* settings = GetApplicationSettings();
 
+    // Creating a Web Browser Object:
+    // http://msdn.microsoft.com/en-ca/library/aa451946.aspx
+    // IUnknown retrieved through a call to CoCreateInstance, then 
+    // IOleObject, do OLEIVERB_UIACTIVATE, retrieve IWebBrowser2 as last.
+
     // Create browser control.
-    IOleObjectPtr oleObject;
+    IUnknownPtr unknown;
     hr = CoCreateInstance(CLSID_WebBrowser, NULL, CLSCTX_INPROC,
-                          IID_IOleObject, (void**)&oleObject);
-    if (FAILED(hr) || !oleObject) {
+                          IID_IUnknown, (void**)&unknown);
+    if (FAILED(hr) || !unknown) {
         LOG_ERROR << "BrowserWindow::CreateBrowserControl() failed: "
                      "CoCreateInstance(CLSID_WebBrowser) failed";
+        return false;
+    }
+
+    IOleObjectPtr oleObject;
+    hr = unknown->QueryInterface(IID_IOleObject, (void**)&oleObject);
+    if (FAILED(hr) || !oleObject) {
+        LOG_ERROR << "BrowserWindow::CreateBrowserControl() failed: "
+                     "QueryInterface(IOleObject) failed";
         return false;
     }
     
@@ -145,6 +158,7 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
                      "SetClientSite() failed";
         return false;
     }
+
     RECT rect;
     b = GetClientRect(windowHandle_, &rect);
     if (!b) {
@@ -152,7 +166,13 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
                      "GetClientRect() failed";
         return false;
     }
-    hr = oleObject->DoVerb(OLEIVERB_INPLACEACTIVATE, NULL, 
+    
+    // OLEIVERB_INPLACEACTIVATE or OLEIVERB_UIACTIVATE.
+    // When OLEIVERB_UIACTIVATE is set, IOleControlSite is queried 
+    // just after IOleInPlaceSite.
+    // When OLEIVERB_INPLACEACTIVATE is set IOleControlSite is queried 
+    // only when window loses/gains focus.
+    hr = oleObject->DoVerb(OLEIVERB_UIACTIVATE, NULL, 
                            static_cast<IOleClientSite*>(oleClientSite_.get()), 
                            0, windowHandle_, &rect);
     if (FAILED(hr)) {
@@ -180,23 +200,25 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     webBrowser2_->put_Top(0);
     webBrowser2_->put_Width(rect.right);
     webBrowser2_->put_Height(rect.bottom);
+
     // Do not allow displaying files dragged into the window.
     hr = webBrowser2_->put_RegisterAsDropTarget(VARIANT_FALSE);
     if (FAILED(hr)) {
         LOG_WARNING << "BrowserWindow::CreateBrowserControl(): "
                     << "put_RegisterAsDropTarget(False) failed";
     }
+
     // AdviseEvent() takes care of logging errors.
     AdviseEvent(webBrowser2_, DIID_DWebBrowserEvents2,
                 &dWebBrowserEvents2Cookie_);
+    
+    // Initial navigation.
     if (navigateUrl) {
         _variant_t varUrl = navigateUrl;
-        _variant_t varFlags((short)0, VT_I2);
+        _variant_t varFlags((long)0, VT_I4);
         _variant_t varTargetFrame(L"_self");
         _variant_t varPostData;
         _variant_t varHeaders;
-        // Browser is sometimes hanging up on application launch, maybe
-        // postponing navigate will fix it? Do it through WM_TIMER. TODO.
         hr = webBrowser2_->Navigate2(&varUrl, &varFlags, &varTargetFrame, 
                                      &varPostData, &varHeaders);
         if (FAILED(hr)) {
@@ -205,6 +227,7 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
             return false;
         }
     }
+
     return true;
 }
 void BrowserWindow::CloseBrowserControl() {
