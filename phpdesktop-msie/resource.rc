@@ -51,7 +51,6 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINWINDOW           ICON                    "icon.ico"
-IDR_POPUPWINDOW          ICON                    "icon.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

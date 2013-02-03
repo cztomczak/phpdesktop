@@ -40,13 +40,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                             LPARAM lParam) {
     BrowserWindow* browser = 0;
     UINT_PTR timer = 0;
+    BOOL b = 0;
     switch (uMsg) {
         case WM_SIZE:
             browser = GetBrowserWindow(hwnd);
             if (browser) {
                 browser->OnResize(uMsg, wParam, lParam);
             } else {
-                LOG_WARNING << "WindowProc(): WM_SIZE failed: "
+                LOG_WARNING << "WindowProc(): event WM_SIZE: "
                                "could not fetch BrowserWindow";
                 return 1;
             }
@@ -56,13 +57,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             browser = new BrowserWindow(hwnd);
             StoreBrowserWindow(hwnd, browser);
             timer = SetTimer(hwnd, BROWSER_GENERIC_TIMER, 50, 0);
-            if (!timer)
-                LOG_WARNING << "WindowProc(): WM_CREATE SetTimer() failed";
+            if (!timer) {
+                LOG_WARNING << "WindowProc(): event WM_CREATE: "
+                               "SetTimer() failed";
+            }
             return 0;
         case WM_DESTROY:
             g_windowCount--;
+            b = KillTimer(hwnd, BROWSER_GENERIC_TIMER);
+            _ASSERT(b);
             RemoveBrowserWindow(hwnd);
-            KillTimer(hwnd, BROWSER_GENERIC_TIMER);
             if (g_windowCount <= 0) {
                 TerminateWebServer();
                 PostQuitMessage(0);
@@ -73,7 +77,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             if (browser) {
                 browser->OnTimer(uMsg, wParam, lParam);
             } else {
-                LOG_WARNING << "WindowProc(): WM_TIMER failed: "
+                LOG_WARNING << "WindowProc(): event WM_TIMER failed: "
                                "could not fetch BrowserWindow";
                 return 1;
             }
@@ -85,7 +89,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             } else {
                 // GetMinMaxInfo may fail during window creation, so
                 // log severity is only DEBUG.
-                LOG_DEBUG << "WindowProc(): WM_GETMINMAXINFO failed: "
+                LOG_DEBUG << "WindowProc(): event WM_GETMINMAXINFO: "
                              "could not fetch BrowserWindow";
                 return 1;
             }
@@ -95,14 +99,30 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             if (browser) {
                 browser->SetFocus();
             } else {
-                LOG_DEBUG << "WindowProc(): WM_SETFOCUS failed: "
+                LOG_DEBUG << "WindowProc(): event WM_SETFOCUS: "
                              "could not fetch BrowserWindow";
+                return 1;
             }
             return 0;
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
-
+bool ProcessKeyboardMessage(MSG* msg) {
+    if (msg->message == WM_KEYDOWN 
+            || msg->message == WM_KEYUP
+            || msg->message == WM_SYSKEYDOWN 
+            || msg->message == WM_SYSKEYUP) {
+        HWND root = GetAncestor(msg->hwnd, GA_ROOT);
+        BrowserWindow* browser = GetBrowserWindow(root);
+        if (browser) {
+            if (browser->TranslateAccelerator(msg))
+                return true;
+        } else {
+            LOG_DEBUG << "ProcessKeyboardMessage(): could not fetch BrowserWindow";
+        }
+    }
+    return false;
+}
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPTSTR lpstrCmdLine, int nCmdShow) {
     g_hInstance = hInstance;
@@ -169,9 +189,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         FatalError(NULL, "Could not start internal web-server.\n"
                    "Exiting application.");
     }
-    // Random guess for app freezing problem, let's give web-server
-    // thread some time to initialize.
-    Sleep(100);
 
     HRESULT hr = CoInitializeEx(0, COINIT_APARTMENTTHREADED 
                                 | COINIT_DISABLE_OLE1DDE);
@@ -187,8 +204,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
             LOG_ERROR << "WinMain.GetMessage() returned -1";
             break;
         } else {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
+            if (!ProcessKeyboardMessage(&msg)) {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
         }
     }
 

@@ -3,7 +3,6 @@
 // Used by resource.rc
 //
 #define IDR_MAINWINDOW                   128
-#define IDR_POPUPWINDOW                  129
 
 // Next default values for new objects
 // 

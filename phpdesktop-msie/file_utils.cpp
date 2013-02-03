@@ -17,7 +17,7 @@ std::string GetFileContents(std::string file) {
         return "";
     std::string contents;
     inFile.seekg(0, std::ios::end);
-    contents.resize(inFile.tellg());
+    contents.resize(static_cast<unsigned int>(inFile.tellg()));
     inFile.seekg(0, std::ios::beg);
     inFile.read(&contents[0], contents.size());
     inFile.close();

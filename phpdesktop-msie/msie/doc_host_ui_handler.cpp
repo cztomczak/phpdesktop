@@ -68,8 +68,9 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetHostInfo(
     bool dpi_aware = (*settings)["msie"]["dpi_aware"];
 
     pInfo->cbSize = sizeof(DOCHOSTUIINFO);
+    // PICS = Platform for Internet Content Selection.
     pInfo->dwFlags = DOCHOSTUIFLAG_DISABLE_HELP_MENU
-            | DOCHOSTUIFLAG_NO3DBORDER;
+            | DOCHOSTUIFLAG_NO3DBORDER | DOCHOSTUIFLAG_NOPICS;
 
     if (use_themes)
         pInfo->dwFlags |= DOCHOSTUIFLAG_THEME;
@@ -153,9 +154,6 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::TranslateAccelerator(
     // Return S_OK if message was handled, S_FALSE for the
     // default behavior.
 
-    return S_FALSE;
-    // LOG_DEBUG << "IDocHostUIHandler::TranslateAccelerator()";
-    
     json_value* settings = GetApplicationSettings();
     HRESULT hr = S_FALSE;
 

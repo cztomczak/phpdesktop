@@ -5,6 +5,7 @@
 #include "../defines.h"
 #include "ole_in_place_frame.h"
 #include "browser_window.h"
+#include "../log.h"
 
 OleInPlaceFrame::OleInPlaceFrame(BrowserWindow* inBrowserWindow)
     : browserWindow_(inBrowserWindow) {
@@ -91,6 +92,7 @@ HRESULT STDMETHODCALLTYPE OleInPlaceFrame::EnableModeless(
 HRESULT STDMETHODCALLTYPE OleInPlaceFrame::TranslateAccelerator(
         /* [in] */ LPMSG lpmsg, 
         /* [in] */ WORD wID) {
+    // Seems like this method is never called.
     if (lpmsg == NULL)
         return E_INVALIDARG;
     return S_FALSE;

@@ -36,6 +36,7 @@
 
 std::map<HWND, BrowserWindow*> g_browserWindows;
 extern std::string g_webServerUrl;
+extern wchar_t g_windowClassName[256];
 
 BrowserWindow* GetBrowserWindow(HWND hwnd) {
     std::map<HWND, BrowserWindow*>::iterator it;
@@ -45,7 +46,7 @@ BrowserWindow* GetBrowserWindow(HWND hwnd) {
     }
     // GetBrowserWindow() may fail during window creation, so log
     // severity is only DEBUG.
-    LOG_DEBUG << "GetBrowserWindow() failed: hwnd = " << (int)hwnd;
+    LOG_DEBUG << "GetBrowserWindow(): not found, hwnd = " << (int)hwnd;
     return NULL;
 }
 void StoreBrowserWindow(HWND hwnd, BrowserWindow* browser) {
@@ -130,30 +131,16 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     BOOL b;
     json_value* settings = GetApplicationSettings();
 
-    // Creating a Web Browser Object:
-    // http://msdn.microsoft.com/en-ca/library/aa451946.aspx
-    // IUnknown retrieved through a call to CoCreateInstance, then 
-    // IOleObject, do OLEIVERB_UIACTIVATE, retrieve IWebBrowser2 as last.
-
     // Create browser control.
-    IUnknownPtr unknown;
-    hr = CoCreateInstance(CLSID_WebBrowser, NULL, CLSCTX_INPROC,
-                          IID_IUnknown, (void**)&unknown);
-    if (FAILED(hr) || !unknown) {
+    hr = CoCreateInstance(CLSID_WebBrowser, NULL, CLSCTX_INPROC_SERVER,
+                          IID_IOleObject, (void**)&oleObject_);
+    if (FAILED(hr) || !oleObject_) {
         LOG_ERROR << "BrowserWindow::CreateBrowserControl() failed: "
                      "CoCreateInstance(CLSID_WebBrowser) failed";
         return false;
     }
 
-    IOleObjectPtr oleObject;
-    hr = unknown->QueryInterface(IID_IOleObject, (void**)&oleObject);
-    if (FAILED(hr) || !oleObject) {
-        LOG_ERROR << "BrowserWindow::CreateBrowserControl() failed: "
-                     "QueryInterface(IOleObject) failed";
-        return false;
-    }
-    
-    hr = oleObject->SetClientSite(oleClientSite_.get());
+    hr = oleObject_->SetClientSite(oleClientSite_.get());
     if (FAILED(hr)) {
         LOG_ERROR << "BrowserWindow::CreateBrowserControl() failed: "
                      "SetClientSite() failed";
@@ -167,13 +154,22 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
                      "GetClientRect() failed";
         return false;
     }
+
+    hr = oleObject_->SetHostNames(g_windowClassName, 0);
+    if (FAILED(hr)) {
+        LOG_ERROR << "BrowserWindow::CreateBrowserControl() failed: ";
+                     "IOleObject->SetHostNames() failed";
+        return false;
+    }
+
+    hr = OleSetContainedObject(static_cast<IUnknown*>(oleObject_), TRUE);
+    if (FAILED(hr)) {
+        LOG_ERROR << "BrowserWindow::CreateBrowserControl() failed: "
+                     "OleSetContaintedObject() failed";
+        return false;
+    }
     
-    // OLEIVERB_INPLACEACTIVATE or OLEIVERB_UIACTIVATE.
-    // When OLEIVERB_UIACTIVATE is set, IOleControlSite is queried 
-    // just after IOleInPlaceSite.
-    // When OLEIVERB_INPLACEACTIVATE is set IOleControlSite is queried 
-    // only when window loses/gains focus.
-    hr = oleObject->DoVerb(OLEIVERB_UIACTIVATE, NULL, 
+    hr = oleObject_->DoVerb(OLEIVERB_SHOW, NULL,
                            static_cast<IOleClientSite*>(oleClientSite_.get()), 
                            0, windowHandle_, &rect);
     if (FAILED(hr)) {
@@ -182,7 +178,15 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
         return false;
     }
 
-    oleObject->QueryInterface(IID_IWebBrowser2, (void**)&webBrowser2_);
+    hr = oleObject_->QueryInterface(IID_IOleInPlaceActiveObject, 
+            (void**)&oleInPlaceActiveObject_);
+    if (FAILED(hr) || !oleInPlaceActiveObject_) {
+        LOG_DEBUG << "BrowserWindow::TranslateAccelerator() failed: "
+                "IOleObject->QueryInterface(IOleInPlaceActiveObject) failed";
+        return false;
+    }
+
+    oleObject_->QueryInterface(IID_IWebBrowser2, (void**)&webBrowser2_);
     if (FAILED(hr) || !webBrowser2_) {
         LOG_ERROR << "BrowserWindow::CreateBrowserControl() failed: "
                      "QueryInterface(IID_IWebBrowser2) failed";
@@ -209,6 +213,9 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
                     << "put_RegisterAsDropTarget(False) failed";
     }
 
+    hr = webBrowser2_->put_RegisterAsBrowser(VARIANT_FALSE);
+    _ASSERT(SUCCEEDED(hr));
+
     // AdviseEvent() takes care of logging errors.
     AdviseEvent(webBrowser2_, DIID_DWebBrowserEvents2,
                 &dWebBrowserEvents2Cookie_);
@@ -220,6 +227,7 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
         _variant_t varTargetFrame(L"_self");
         _variant_t varPostData;
         _variant_t varHeaders;
+        Sleep(0);
         hr = webBrowser2_->Navigate2(&varUrl, &varFlags, &varTargetFrame, 
                                      &varPostData, &varHeaders);
         if (FAILED(hr)) {
@@ -232,42 +240,90 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     return true;
 }
 void BrowserWindow::CloseBrowserControl() {
-    if (webBrowser2_) {
-        UnadviseEvent(webBrowser2_, DIID_DWebBrowserEvents2,
-                      dWebBrowserEvents2Cookie_);
-        webBrowser2_->Stop();
-        webBrowser2_->put_Visible(VARIANT_FALSE);
-        
-        IOleObjectPtr oleObject;
-        HRESULT hr = webBrowser2_->QueryInterface(IID_IOleObject, 
-                                                  (void**)&oleObject);
-        if (FAILED(hr) || !oleObject) {
-            LOG_DEBUG << "BrowserWindow::CloseBrowserControl(): "
-                         "QueryInterface(IOleObject) failed";
-        }
+    if (!webBrowser2_)
+        return;
+    HRESULT hr;
 
-        // Remember to check if webBrowser2_ is not empty before using it,
-        // in other functions like TryAttachClickEvents().
-        webBrowser2_->Quit();
-        webBrowser2_.Release();
+    UnadviseEvent(webBrowser2_, DIID_DWebBrowserEvents2,
+                    dWebBrowserEvents2Cookie_);
 
-        // It is important to set client site to NULL, otherwise
-        // you will get first-chance exceptions when calling Close().
-        oleObject->SetClientSite(0);
-        oleObject->Close(OLECLOSE_NOSAVE);
-        oleObject.Release();
-        
-        // Need to release all member variables otherwise you get exception:
-        // "First-chance exception at 0x76034974 in php-desktop-msie.exe:
-        //  0xC0000005: Access violation reading location 0xfeeefef6".
-        // Calling oleObject->SetClientSite(0) fixed these problems, so
-        // commenting off:
-        // documentUniqueID_.~_bstr_t();
-        // clickDispatch_.~_variant_t();
-        // clickEvents_.reset();
-        // externalDispatch_.reset();
-        // oleClientSite_.reset();
+    _ASSERT(oleInPlaceActiveObject_);
+    oleInPlaceActiveObject_.Release();
+
+    // This is important, otherwise getting unhandled exceptions,
+    // scenario: open popup, close it, navigate in main window,
+    // exception! after DispatchMessage(), msg.message = 32770.
+    DetachClickEvents();
+
+    // Remember to check if webBrowser2_ is not empty before using it,
+    // in other functions like TryAttachClickEvents().
+    _ASSERT(webBrowser2_);
+    hr = webBrowser2_->Stop();
+    _ASSERT(SUCCEEDED(hr));
+    hr = webBrowser2_->put_Visible(VARIANT_FALSE);
+    _ASSERT(SUCCEEDED(hr));        
+    // WebBrowser object (CLSID_WebBrowser) cannot call Quit(),
+    // it is for Internet Explorer object (CLSID_InternetExplorer).
+    // hr = webBrowser2_->Quit();
+    // _ASSERT(SUCCEEDED(hr));
+    webBrowser2_.Release();
+
+    IOleInPlaceObjectPtr inPlaceObject;
+    hr = oleObject_->QueryInterface(IID_IOleInPlaceObject,
+            (void**)&inPlaceObject);
+    _ASSERT(SUCCEEDED(hr));
+    if (SUCCEEDED(hr) && inPlaceObject) {
+        hr = inPlaceObject->InPlaceDeactivate();
+        _ASSERT(SUCCEEDED(hr));
+        // Assertion when using OLEIVERB_SHOW:
+        // hr = inPlaceObject->UIDeactivate();
+        // _ASSERT(SUCCEEDED(hr));
     }
+
+    // It is important to set client site to NULL, otherwise
+    // you will get first-chance exceptions when calling Close().
+    _ASSERT(oleObject_);
+    hr = OleSetContainedObject(static_cast<IUnknown*>(oleObject_), FALSE);
+    _ASSERT(SUCCEEDED(hr));
+    hr = oleObject_->DoVerb(OLEIVERB_HIDE, NULL, oleClientSite_.get(), 0, 
+            windowHandle_, NULL);
+    _ASSERT(SUCCEEDED(hr));
+    hr = oleObject_->Close(OLECLOSE_NOSAVE);
+    _ASSERT(SUCCEEDED(hr));
+    hr = oleObject_->SetClientSite(0);
+    _ASSERT(SUCCEEDED(hr));
+    hr = CoDisconnectObject(static_cast<IUnknown*>(oleObject_), 0);
+    _ASSERT(SUCCEEDED(hr));
+    oleObject_.Release();
+}
+bool BrowserWindow::DetachClickEvents() {
+    if (!webBrowser2_)
+        return false;
+    IDispatchPtr dispatch;
+    HRESULT hr = webBrowser2_->get_Document(&dispatch);
+    // This may fail when window is loading.
+    if (FAILED(hr) || !dispatch) {
+        return false;
+    }
+    IHTMLDocument2Ptr htmlDocument2;
+    hr = dispatch->QueryInterface(IID_IHTMLDocument2,
+                                  (void**)&htmlDocument2);
+    if (FAILED(hr) || !htmlDocument2) {
+        LOG_WARNING << "BrowserWindow::DetachClickEvents() failed: "
+                       "QueryInterface(IHTMLDocument2)";
+        return false;
+    }
+    _variant_t emptyClickDispatch;
+    emptyClickDispatch.vt = VT_DISPATCH;
+    emptyClickDispatch.pdispVal = 0;
+    emptyClickDispatch.ppdispVal = 0;
+    hr = htmlDocument2->put_onclick(emptyClickDispatch);
+    if (FAILED(hr)) {
+        LOG_WARNING << "BrowserWindow::DetachClickEvents() failed: "
+                       "htmlDocument2->put_onclick() failed";
+        return false;
+    }
+    return true;
 }
 bool BrowserWindow::TryAttachClickEvents() {
     // Attach OnClick event - to catch clicking any external
@@ -725,47 +781,29 @@ HWND BrowserWindow::GetShellBrowserHandle() {
     return shellBrowserHandle;
 }
 bool BrowserWindow::SetFocus() {
+    LOG_DEBUG << "BrowserWindow::SetFocus() called";
     // Calling SetFocus() on shellBrowser handle does not work.
-    if (webBrowser2_) {
-        IDispatchPtr dispatch;
-        HRESULT hr = webBrowser2_->get_Document(&dispatch);
-        if (FAILED(hr) || !dispatch) {
-            LOG_DEBUG << "BrowserWindow::SetFocus() failed: "
-                            "IWebBrowser2->get_Document() failed";
-            return false;
-        }
-        IHTMLDocument2Ptr htmlDocument2;
-        hr = dispatch->QueryInterface(IID_IHTMLDocument2, 
-                                        (void**)&htmlDocument2);
-        if (FAILED(hr) || !htmlDocument2) {
-            LOG_DEBUG << "BrowserWindow::SetFocus() failed: "
-                            "QueryInterface(IHTMLDocument2) failed";
-            return false;
-        }
-        IHTMLElementPtr htmlElement;
-        hr = htmlDocument2->get_body(&htmlElement);
-        if (FAILED(hr) || !htmlElement) {
-            LOG_DEBUG << "BrowserWindow::SetFocus() failed: "
-                            "IHTMLDocument2->get_body() failed";
-            return false;
-        }
-        IHTMLElement2Ptr htmlElement2;
-        hr = htmlElement->QueryInterface(IID_IHTMLElement2, 
-                                            (void**)&htmlElement2);
-        if (FAILED(hr) || !htmlElement2) {
-            LOG_DEBUG << "BrowserWindow::SetFocus() failed: "
-                            "QueryInterface(IHTMLElement2) failed";
-            return false;
-        }
-        hr = htmlElement2->focus();
-        if (FAILED(hr)) {
-            LOG_DEBUG << "BrowserWindow::SetFocus() failed: "
-                            "IHTMLElement2->focus() failed";
-            return false;
-        }
-        return true;
+    if (!oleInPlaceActiveObject_)
+        return false;
+    HRESULT hr = oleInPlaceActiveObject_->OnFrameWindowActivate(TRUE);
+    if (FAILED(hr)) {
+        LOG_DEBUG << "BrowserWindow::SetFocus(): "
+                "IOleInPlaceActiveObject->OnFrameWindowActivate() failed";
+        return false;
     }
-    return false;
+    hr = oleInPlaceActiveObject_->OnDocWindowActivate(TRUE);
+    if (FAILED(hr)) {
+        LOG_DEBUG << "BrowserWindow::SetFocus(): "
+                "IOleInPlaceActiveObject->OnDocWindowActivate() failed";
+        return false;
+    }
+    return true;
+    // Another way is to call:
+    // IWebBrowser2->get_Document()
+    // IDispatch->QueryInterface(IHTMLDocument2)
+    // IHTMLDocument2->get_body()
+    // IHTMLElement->QueryInterface(IHTMLElement2)
+    // IHTMLElement2->focus()
 }
 bool BrowserWindow::TrySetFocusAfterCreation() {
     if (!focusedAfterCreation_) {
@@ -775,4 +813,19 @@ bool BrowserWindow::TrySetFocusAfterCreation() {
         }
     }
     return false;
+}
+bool BrowserWindow::TranslateAccelerator(MSG* msg) {
+    if (!oleInPlaceActiveObject_)
+        return false;
+    HRESULT hr = oleInPlaceActiveObject_->TranslateAccelerator(msg);
+    if (FAILED(hr)) {
+        LOG_DEBUG << "BrowserWindow::TranslateAccelerator() failed: "
+                "IOleInPlaceActiveObject->TranslateAccelerator() failed";
+        return false;
+    }
+    // S_OK - translated
+    // S_FALSE - not translated
+    // other values = FAILED()
+    // Remember that (hr=S_FALSE) == SUCCEEDED(hr)
+    return (hr == S_OK);
 }

@@ -5,6 +5,7 @@
 #include "../defines.h"
 #include "ole_control_site.h"
 #include "browser_window.h"
+#include "../log.h"
 
 OleControlSite::OleControlSite(BrowserWindow* inBrowserWindow)
         : browserWindow_(inBrowserWindow) {

@@ -27,6 +27,8 @@ ULONG STDMETHODCALLTYPE OleInPlaceSite::Release(void) {
 }
 // IOleWindow
 HRESULT STDMETHODCALLTYPE OleInPlaceSite::GetWindow(HWND FAR* lphwnd) {
+    if (!lphwnd)
+        return E_FAIL;
     _ASSERT(browserWindow_->GetWindowHandle());
     *lphwnd = browserWindow_->GetWindowHandle();
     return S_OK;
@@ -59,10 +61,12 @@ HRESULT STDMETHODCALLTYPE OleInPlaceSite::GetWindowContext(
     _ASSERT(b);
     b = GetClientRect(browserWindow_->GetWindowHandle(), lprcClipRect);
     _ASSERT(b);
-    lpFrameInfo->fMDIApp = FALSE;
-    lpFrameInfo->hwndFrame = browserWindow_->GetWindowHandle();
-    lpFrameInfo->haccel = 0;
-    lpFrameInfo->cAccelEntries = 0;
+    if(lpFrameInfo->cb == sizeof(OLEINPLACEFRAMEINFO)) {
+        lpFrameInfo->fMDIApp = FALSE;
+        lpFrameInfo->hwndFrame = browserWindow_->GetWindowHandle();
+        lpFrameInfo->haccel = 0;
+        lpFrameInfo->cAccelEntries = 0;
+    }
     return S_OK;
 }
 HRESULT STDMETHODCALLTYPE OleInPlaceSite::Scroll(SIZE scrollExtent) {

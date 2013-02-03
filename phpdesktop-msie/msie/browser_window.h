@@ -32,6 +32,8 @@ private:
     _variant_t clickDispatch_;    
     wchar_t allowedUrl_[2084];
     IWebBrowser2Ptr webBrowser2_;
+    IOleObjectPtr oleObject_;
+    IOleInPlaceActiveObjectPtr oleInPlaceActiveObject_;
     DWORD dWebBrowserEvents2Cookie_;
     bool isResizing_;
     bool focusedAfterCreation_;
@@ -40,6 +42,7 @@ public:
     ~BrowserWindow();
     bool CreateBrowserControl(const wchar_t* navigateUrl);
     void CloseBrowserControl();
+    bool DetachClickEvents();
     bool TryAttachClickEvents();
     bool TrySetFocusAfterCreation();
     bool AdviseEvent(IWebBrowser2Ptr webBrowser2, REFIID riid,
@@ -69,6 +72,7 @@ public:
     void SetIconFromSettings();
     HWND GetShellBrowserHandle();
     bool SetFocus();
+    bool TranslateAccelerator(MSG* msg);
 };
 
 
