@@ -5,16 +5,18 @@
 #include "../defines.h"
 #include "doc_host_ui_handler.h"
 #include "browser_window.h"
-
 #include "virtual_keys.h"
-
 #include "../settings.h"
 #include "../log.h"
+#include <string>
+#include "../registry.h"
 
 #ifndef DOCHOSTUIFLAG_DPI_AWARE
  // Available since Internet Explorer 8.
  #define DOCHOSTUIFLAG_DPI_AWARE 0x40000000
 #endif
+
+
 
 DocHostUiHandler::DocHostUiHandler(BrowserWindow* inBrowserWindow,
                                    IDispatch* inExternalDispatch)
@@ -247,6 +249,13 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::TranslateAccelerator(
 HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetOptionKeyPath( 
         /* [out] */ LPOLESTR *pchKey,
         /* [in] */ DWORD dw) {
+    if (!pchKey)
+	    return E_INVALIDARG;
+    json_value* settings = GetApplicationSettings();
+    bool smooth_scroll = (*settings)["msie"]["smooth_scroll"];
+    bool disable_script_debugger = 
+            (*settings)["msie"]["disable_script_debugger"];
+
     // Gets a registry subkey path that overrides the
     // default Windows Internet Explorer registry settings.
     
@@ -260,25 +269,44 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetOptionKeyPath(
     // See this StackOverflow answer:
     // http://stackoverflow.com/a/8918293/623622
 
-    /* Should we create this key?
-       RegCreateKeyEx(HKEY_CURRENT_USER, L"Software\\MyCompany\\MyApp",
-           NULL, NULL, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE,
-           NULL, &hKey, &dwDisposition);
-    */
-
-    // TODO: disable script debugging messages?
-    // http://stackoverflow.com/q/2936279/623622
-    // Create registry key "Main\\Disable Script Debugger" and
-    // set to "yes".
-
-    if (!pchKey)
-	    return E_INVALIDARG;
-    // TODO: create this registry key and subkeys: 
-    // "MAIN", "MAIN/FeatureControl".
-    wchar_t registryPath[200] =
-            L"Software\\PHP Desktop\\WebBrowser2 settings";
+    wchar_t registryPath[200] = L"Software\\PHP Desktop\\MSIE";
     LOG_DEBUG << "DocHostUiHandler::GetOptionKeyPath(): "
-                 "registry path: " << WideToUtf8(registryPath);
+            "registry path: " << WideToUtf8(registryPath);
+
+    // Main options:
+    // UseClearType - cannot be changed, seems to always be Yes.
+    // SmoothScroll - by default Yes.
+    // Disable Script Debugger
+    // DisableScriptDebuggerIE
+    
+    std::wstring mainPath = std::wstring(registryPath).append(L"\\Main");
+    CreateRegistryKey(HKEY_CURRENT_USER, mainPath.c_str());
+
+    if (smooth_scroll) {
+        CreateRegistryString(HKEY_CURRENT_USER, mainPath.c_str(),
+                L"SmoothScroll", L"yes");
+    } else {
+        CreateRegistryString(HKEY_CURRENT_USER, mainPath.c_str(),
+                L"SmoothScroll", L"no");
+    }
+    if (disable_script_debugger) {
+        CreateRegistryString(HKEY_CURRENT_USER, mainPath.c_str(),
+                L"Disable Script Debugger", L"yes");
+        CreateRegistryString(HKEY_CURRENT_USER, mainPath.c_str(),
+                L"DisableScriptDebuggerIE", L"yes");
+    } else {
+        CreateRegistryString(HKEY_CURRENT_USER, mainPath.c_str(),
+                L"Disable Script Debugger", L"no");
+        CreateRegistryString(HKEY_CURRENT_USER, mainPath.c_str(),
+                L"DisableScriptDebuggerIE", L"no");
+    }
+    
+    CreateRegistryKey(HKEY_CURRENT_USER, std::wstring(registryPath).append(
+            L"\\Main\\FeatureControl").c_str());
+    CreateRegistryKey(HKEY_CURRENT_USER, std::wstring(registryPath).append(
+            L"\\Settings").c_str());
+    
+    // Return registry path.
     int registrySize = wcslen(registryPath) + 1;
     int memorySize = registrySize * sizeof(registryPath[0]);
     *pchKey = reinterpret_cast<LPOLESTR>(CoTaskMemAlloc(memorySize));

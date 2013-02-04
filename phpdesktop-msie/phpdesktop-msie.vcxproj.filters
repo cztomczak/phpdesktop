@@ -84,6 +84,9 @@
     <ClCompile Include="msie\service_provider.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="registry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="msie\browser_events2.h">
@@ -186,6 +189,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="window_utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="registry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

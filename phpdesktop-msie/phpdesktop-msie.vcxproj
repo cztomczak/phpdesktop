@@ -137,6 +137,7 @@
     <ClCompile Include="json.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mongoose.c" />
+    <ClCompile Include="registry.cpp" />
     <ClCompile Include="settings.cpp" />
     <ClCompile Include="string_utils.cpp" />
     <ClCompile Include="web_server.cpp">
@@ -161,6 +162,7 @@
     <ClInclude Include="msie\browser_window.h" />
     <ClInclude Include="msie\click_events.h" />
     <ClInclude Include="msie\com_utils.h" />
+    <ClInclude Include="registry.h" />
     <ClInclude Include="WebBrowser\CompareIEVersions.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="defines.h" />
