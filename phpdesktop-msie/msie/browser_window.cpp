@@ -32,6 +32,7 @@
 #include "../settings.h"
 #include "../string_utils.h"
 #include "../fatal_error.h"
+#include "../file_utils.h"
 #include "../window_utils.h"
 
 std::map<HWND, BrowserWindow*> g_browserWindows;
@@ -112,6 +113,7 @@ BrowserWindow::BrowserWindow(HWND inWindowHandle)
         if (!CreateBrowserControl(0)) {
             LOG_ERROR << "BrowserWindow::CreateBrowserControl() "
                          "failed";
+            _ASSERT(false);
             SendMessage(windowHandle_, WM_CLOSE, 0, 0);
             return;
         }
@@ -137,6 +139,7 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     if (FAILED(hr) || !oleObject_) {
         LOG_ERROR << "BrowserWindow::CreateBrowserControl() failed: "
                      "CoCreateInstance(CLSID_WebBrowser) failed";
+        _ASSERT(false);
         return false;
     }
 
@@ -144,6 +147,7 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     if (FAILED(hr)) {
         LOG_ERROR << "BrowserWindow::CreateBrowserControl() failed: "
                      "SetClientSite() failed";
+        _ASSERT(false);
         return false;
     }
 
@@ -152,6 +156,7 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     if (!b) {
         LOG_ERROR << "BrowserWindow::CreateBrowserControl() failed: "
                      "GetClientRect() failed";
+        _ASSERT(false);
         return false;
     }
 
@@ -159,6 +164,7 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     if (FAILED(hr)) {
         LOG_ERROR << "BrowserWindow::CreateBrowserControl() failed: ";
                      "IOleObject->SetHostNames() failed";
+        _ASSERT(false);
         return false;
     }
 
@@ -166,6 +172,7 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     if (FAILED(hr)) {
         LOG_ERROR << "BrowserWindow::CreateBrowserControl() failed: "
                      "OleSetContaintedObject() failed";
+        _ASSERT(false);
         return false;
     }
     
@@ -175,6 +182,7 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     if (FAILED(hr)) {
         LOG_ERROR << "BrowserWindow::CreateBrowserControl() failed: "
                      "DoVerb(OLEIVERB_INPLACEACTIVATE) failed";
+        _ASSERT(false);
         return false;
     }
 
@@ -190,6 +198,7 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     if (FAILED(hr) || !webBrowser2_) {
         LOG_ERROR << "BrowserWindow::CreateBrowserControl() failed: "
                      "QueryInterface(IID_IWebBrowser2) failed";
+        _ASSERT(false);
         return false;
     }
 
@@ -222,21 +231,29 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     
     // Initial navigation.
     if (navigateUrl) {
-        _variant_t varUrl = navigateUrl;
-        _variant_t varFlags((long)0, VT_I4);
-        _variant_t varTargetFrame(L"_self");
-        _variant_t varPostData;
-        _variant_t varHeaders;
-        Sleep(0);
-        hr = webBrowser2_->Navigate2(&varUrl, &varFlags, &varTargetFrame, 
-                                     &varPostData, &varHeaders);
-        if (FAILED(hr)) {
-            LOG_WARNING << "BrowserWindow::CreateBrowserControl() failed: "
-                           "WebBrowser2->Navigate2() failed";
+        if (!Navigate(navigateUrl))
             return false;
-        }
     }
 
+    return true;
+}
+bool BrowserWindow::Navigate(const wchar_t* navigateUrl) {
+    if (!webBrowser2_)
+        return false;
+    _variant_t varUrl = navigateUrl;
+    _variant_t varFlags((long)0, VT_I4);
+    _variant_t varTargetFrame(L"_self");
+    _variant_t varPostData;
+    _variant_t varHeaders;
+    Sleep(0);
+    HRESULT hr = webBrowser2_->Navigate2(&varUrl, &varFlags, &varTargetFrame, 
+            &varPostData, &varHeaders);
+    if (FAILED(hr)) {
+        LOG_ERROR << "BrowserWindow::Navigate() failed: "
+                "WebBrowser2->Navigate2() failed";
+        _ASSERT(false);
+        return false;
+    }
     return true;
 }
 void BrowserWindow::CloseBrowserControl() {
@@ -316,7 +333,8 @@ bool BrowserWindow::DetachClickEvents() {
     _variant_t emptyClickDispatch;
     emptyClickDispatch.vt = VT_DISPATCH;
     emptyClickDispatch.pdispVal = 0;
-    emptyClickDispatch.ppdispVal = 0;
+    // If vt == (VT_BYREF | VT_DISPATCH) then you use ppdispVal:
+    // emptyClickDispatch.ppdispVal = 0;
     hr = htmlDocument2->put_onclick(emptyClickDispatch);
     if (FAILED(hr)) {
         LOG_WARNING << "BrowserWindow::DetachClickEvents() failed: "
@@ -554,7 +572,7 @@ bool BrowserWindow::ExternalCall(int functionIdentifier) {
 void BrowserWindow::SetAllowedUrl(const wchar_t* inUrl) {
     wcsncpy_s(allowedUrl_, _countof(allowedUrl_), inUrl, _TRUNCATE);
 }
-bool BrowserWindow::IsUrlAllowed(wchar_t* inUrl, int sizeInWords) {
+bool BrowserWindow::IsUrlAllowed(const wchar_t* inUrl, int sizeInWords) {
     wchar_t* url_lower = new wchar_t[sizeInWords];
     wcsncpy_s(url_lower, sizeInWords, inUrl, _TRUNCATE);
     _wcslwr_s(url_lower, sizeInWords);
@@ -781,7 +799,6 @@ HWND BrowserWindow::GetShellBrowserHandle() {
     return shellBrowserHandle;
 }
 bool BrowserWindow::SetFocus() {
-    LOG_DEBUG << "BrowserWindow::SetFocus() called";
     // Calling SetFocus() on shellBrowser handle does not work.
     if (!oleInPlaceActiveObject_)
         return false;
@@ -828,4 +845,104 @@ bool BrowserWindow::TranslateAccelerator(MSG* msg) {
     // other values = FAILED()
     // Remember that (hr=S_FALSE) == SUCCEEDED(hr)
     return (hr == S_OK);
+}
+bool BrowserWindow::DisplayHtmlString(const wchar_t* htmlString) {
+    if (!webBrowser2_)
+        return false;
+    IDispatchPtr documentDispatch;
+    HRESULT hr = webBrowser2_->get_Document(&documentDispatch);
+    if (FAILED(hr) || !documentDispatch) {
+        LOG_DEBUG << "BrowserWindow::DisplayHtmlString(): "
+                "IWebBrowser2->get_Document() failed";
+        // If there is no document available navigate to blank page.
+        bool navigated = Navigate(L"about:blank");
+        LOG_DEBUG << "Navigated to about:blank";
+        if (!navigated)
+            return false;
+        hr = webBrowser2_->get_Document(&documentDispatch);
+        if (FAILED(hr) || !documentDispatch) {
+            LOG_ERROR << "BrowserWindow::DisplayHtmlString() failed: "
+                "IWebBrowser2->get_Document(about:blank) failed";
+            _ASSERT(false);
+            return false;
+        }
+    }
+    IHTMLDocument2Ptr htmlDocument2;
+    hr = documentDispatch->QueryInterface(&htmlDocument2);
+    if (FAILED(hr) || !htmlDocument2) {
+        LOG_ERROR << "BrowserWindow::DisplayHtmlString() failed: "
+                "QueryInterface(IHTMLDocument2) failed";
+        _ASSERT(false);
+        return false;
+    }
+    SAFEARRAY *strings = SafeArrayCreateVector(VT_VARIANT, 0, 1);
+    if (!strings) {
+        LOG_ERROR << "BrowserWindow::DisplayHtmlString() failed: "
+                "SafeArrayCreateVector() failed";
+        _ASSERT(false);
+        return false;
+    }
+    // NOTICE: From now on returning false is allowed only at the end 
+    // of the function, as we need to cleanup memory.
+    VARIANT* variantParam;
+    _bstr_t bstrParam = htmlString;
+    hr = SafeArrayAccessData(strings, (void**)&variantParam);
+    bool ret = false;
+    if (SUCCEEDED(hr)) {
+        variantParam->vt = VT_BSTR;
+        variantParam->bstrVal = bstrParam.GetBSTR();
+        hr = SafeArrayUnaccessData(strings);
+        if (SUCCEEDED(hr)) {
+            hr = htmlDocument2->write(strings);
+            if (SUCCEEDED(hr)) {
+                hr = htmlDocument2->close();
+                if (SUCCEEDED(hr)) {
+                    ret = true;
+                } else {
+                    LOG_ERROR << "BrowserWindow::DisplayHtmlString() failed: "
+                            "IHTMLDocument2->close() failed";
+                    _ASSERT(false);
+                }
+            } else {
+                LOG_ERROR << "BrowserWindow::DisplayHtmlString() failed: "
+                        "IHTMLDocument2->write() failed";
+                _ASSERT(false);
+            }
+        } else {
+            LOG_ERROR << "BrowserWindow::DisplayHtmlString() failed: "
+                    "SafeArrayUnaccessData() failed";
+            _ASSERT(false);
+        }
+    } else {
+        LOG_ERROR << "BrowserWindow::DisplayHtmlString() failed: "
+                "SafeArrayAccessData() failed";
+        _ASSERT(false);
+    }
+    if (strings) {
+        hr = SafeArrayDestroy(strings);
+        strings = 0;
+        _ASSERT(SUCCEEDED(hr));
+    }
+    return ret;
+}
+bool BrowserWindow::DisplayErrorPage(const wchar_t* navigateUrl, int statusCode) {
+    json_value* settings = GetApplicationSettings();
+    std::string error_page = (*settings)["msie"]["error_page"];
+    if (error_page.empty())
+        return false;
+    std::string htmlFile = GetExecutableDirectory() + "\\" + error_page;
+    htmlFile = GetRealPath(htmlFile);
+    std::string htmlString = GetFileContents(htmlFile);
+    if (htmlString.empty()) {
+        LOG_WARNING << "BrowserWindow::DisplayErrorPage() failed: "
+                "file not found: " << htmlFile;
+        return false;
+    }
+    ReplaceStringInPlace(htmlString, "{{navigate_url}}", 
+            WideToUtf8(navigateUrl));
+    ReplaceStringInPlace(htmlString, "{{status_code}}", 
+            IntToString(statusCode));
+    if (DisplayHtmlString(Utf8ToWide(htmlString).c_str()))
+        return true;
+    return false;
 }

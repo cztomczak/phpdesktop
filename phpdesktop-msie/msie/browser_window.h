@@ -41,6 +41,7 @@ public:
     BrowserWindow(HWND inWindowHandle);
     ~BrowserWindow();
     bool CreateBrowserControl(const wchar_t* navigateUrl);
+    bool Navigate(const wchar_t* navigateUrl);
     void CloseBrowserControl();
     bool DetachClickEvents();
     bool TryAttachClickEvents();
@@ -57,7 +58,7 @@ public:
     int ExternalIdentifier(wchar_t* function);
     bool ExternalCall(int functionIdentifier);
     void SetAllowedUrl(const wchar_t* inUrl);
-    bool IsUrlAllowed(wchar_t* inUrl, int sizeInWords);
+    bool IsUrlAllowed(const wchar_t* inUrl, int sizeInWords);
     void SetWidth(long width);
     void SetHeight(long height);
     void SetTop(long top);
@@ -73,6 +74,6 @@ public:
     HWND GetShellBrowserHandle();
     bool SetFocus();
     bool TranslateAccelerator(MSG* msg);
+    bool DisplayHtmlString(const wchar_t* htmlString);
+    bool DisplayErrorPage(const wchar_t* navigateUrl, int statusCode);
 };
-
-

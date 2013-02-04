@@ -5,4 +5,4 @@
 <h1>Test 404</h1>
 
 Test 404 navigation error:
-<a href="non-existent.html">non-existent.html</a>
+<a href="non_existent.html">non_existent.html</a>

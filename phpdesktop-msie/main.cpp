@@ -11,6 +11,7 @@
 
 #include <crtdbg.h> // _ASSERT() macro
 #include "resource.h"
+#include <iostream>
 
 #include "executable.h"
 #include "fatal_error.h"
@@ -73,15 +74,18 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             }
             return 1;
         case WM_TIMER:
-            browser = GetBrowserWindow(hwnd);
-            if (browser) {
-                browser->OnTimer(uMsg, wParam, lParam);
-            } else {
-                LOG_WARNING << "WindowProc(): event WM_TIMER failed: "
-                               "could not fetch BrowserWindow";
-                return 1;
+            if (wParam == BROWSER_GENERIC_TIMER) {
+                browser = GetBrowserWindow(hwnd);
+                if (browser) {
+                    browser->OnTimer(uMsg, wParam, lParam);
+                } else {
+                    LOG_WARNING << "WindowProc(): event WM_TIMER failed: "
+                                   "could not fetch BrowserWindow";
+                    return 1;
+                }
+                return 0;
             }
-            return 0;
+            return 1;
         case WM_GETMINMAXINFO:
             browser = GetBrowserWindow(hwnd);
             if (browser) {
@@ -202,6 +206,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     while ((ret = GetMessage(&msg, 0, 0, 0)) != 0) {
         if (ret == -1) {
             LOG_ERROR << "WinMain.GetMessage() returned -1";
+            _ASSERT(false);
             break;
         } else {
             if (!ProcessKeyboardMessage(&msg)) {

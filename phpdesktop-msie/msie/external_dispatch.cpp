@@ -40,7 +40,7 @@ HRESULT STDMETHODCALLTYPE ExternalDispatch::GetIDsOfNames(
         /* [in] */ LCID lcid,
         /* [out] */ DISPID *rgDispId) {
     if (riid != IID_NULL)
-        return ResultFromScode(DISP_E_UNKNOWNINTERFACE);
+        return DISP_E_UNKNOWNINTERFACE;
     if (cNames == 1) {
         int id = browserWindow_->ExternalIdentifier(rgszNames[0]);
         if (id) {
@@ -51,7 +51,7 @@ HRESULT STDMETHODCALLTYPE ExternalDispatch::GetIDsOfNames(
     for (UINT i = 0; i < cNames; i++) {
         rgDispId[i] = DISPID_UNKNOWN;
     }
-    return ResultFromScode(DISP_E_UNKNOWNNAME);
+    return DISP_E_UNKNOWNNAME;
 }
 HRESULT STDMETHODCALLTYPE ExternalDispatch::Invoke( 
         /* [in] */ DISPID dispId,
@@ -66,22 +66,22 @@ HRESULT STDMETHODCALLTYPE ExternalDispatch::Invoke(
     // is not NULL and initialize it using VariantInit(). If it's
     // NULL then it doesn't expect a result.
     if (riid != IID_NULL)
-        return ResultFromScode(DISP_E_UNKNOWNINTERFACE);
+        return DISP_E_UNKNOWNINTERFACE;
     pExcepInfo = 0;
     puArgErr = 0;
     if (wFlags & (DISPATCH_PROPERTYGET | DISPATCH_PROPERTYPUT 
             | DISPATCH_PROPERTYPUTREF)) {
-        return ResultFromScode(DISP_E_MEMBERNOTFOUND);
+        return DISP_E_MEMBERNOTFOUND;
     }
     if (wFlags & DISPATCH_METHOD) {
         if (pDispParams->cArgs != 0) {
             // Currently no support for arguments, only simple function
             // call. See BrowserEvents2::Invoke() on how to fetch
             // arguments or return a value.
-            return ResultFromScode(DISP_E_BADPARAMCOUNT);
+            return DISP_E_BADPARAMCOUNT;
         }
         if (browserWindow_->ExternalCall(dispId))
             return S_OK;
     }
-    return ResultFromScode(DISP_E_MEMBERNOTFOUND);
+    return DISP_E_MEMBERNOTFOUND;
 }

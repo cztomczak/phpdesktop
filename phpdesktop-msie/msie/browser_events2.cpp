@@ -92,7 +92,7 @@ HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke(
     // is not NULL and initialize it using VariantInit(). If it's
     // NULL then it doesn't expect a result.
     if (riid != IID_NULL)
-        return ResultFromScode(DISP_E_UNKNOWNINTERFACE);
+        return DISP_E_UNKNOWNINTERFACE;
     pExcepInfo = 0;
     puArgErr = 0;
     HRESULT hr;
@@ -106,6 +106,22 @@ HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke(
            and assign the dispatch interface of the new popup
            browser to the first parameter of NewWindow3. */
         LOG_DEBUG << "BrowserEvents2::NewWindow3()";            
+        if (pDispParams->cArgs != 5) {
+            LOG_WARNING << "BrowserEvents2::NewWindow3() failed: "
+                    "Wrong number of arguments, expected 5";
+            return DISP_E_BADPARAMCOUNT;
+        }
+        // ppDisp
+        _ASSERT(pDispParams->rgvarg[4].vt == (VT_DISPATCH | VT_BYREF));
+        // Cancel
+        _ASSERT(pDispParams->rgvarg[3].vt == (VT_BOOL | VT_BYREF)); 
+        // dwFlags
+        _ASSERT(pDispParams->rgvarg[2].vt == VT_I4); 
+        // bstrUrlContext
+        _ASSERT(pDispParams->rgvarg[1].vt == VT_BSTR); 
+        // bstrUrl        
+        _ASSERT(pDispParams->rgvarg[0].vt == VT_BSTR); 
+
         HWND popupHandle = CreatePopupWindow(
                 browserWindow_->GetWindowHandle());
         _ASSERT(popupHandle);
@@ -125,8 +141,9 @@ HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke(
                            "webBrowser2->get_Application() failed";
             return S_OK;
         }
-        *pDispParams->rgvarg[3].pboolVal = VARIANT_FALSE;
+        
         *pDispParams->rgvarg[4].ppdispVal = dispatch.Detach();
+        *pDispParams->rgvarg[3].pboolVal = VARIANT_FALSE;        
 
         // Following events (DWebBrowserEvents2) will appear  
         // after popup creation, they inform about "features"
@@ -145,21 +162,29 @@ HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke(
         // DISPID_NAVIGATECOMPLETE2            
         return S_OK;
     } else if (dispId == DISPID_WINDOWSETWIDTH) {
+        _ASSERT(pDispParams->cArgs == 1);
+        _ASSERT(pDispParams->rgvarg[0].vt == VT_I4); // nWidth
         long width = pDispParams->rgvarg[0].lVal;
         // LOG_DEBUG << "BrowserEvents2::WindowSetWidth(): width = "
         //           << width;
         browserWindow_->SetWidth(width);
     } else if (dispId == DISPID_WINDOWSETHEIGHT) {
+        _ASSERT(pDispParams->cArgs == 1);
+        _ASSERT(pDispParams->rgvarg[0].vt == VT_I4); // nHeight
         long height = pDispParams->rgvarg[0].lVal;
         // LOG_DEBUG << "BrowserEvents2::WindowSetHeight(): height = "
         //           << height;
         browserWindow_->SetHeight(height);
     } else if (dispId == DISPID_WINDOWSETTOP) {
+        _ASSERT(pDispParams->cArgs == 1);
+        _ASSERT(pDispParams->rgvarg[0].vt == VT_I4); // nTop
         long top = pDispParams->rgvarg[0].lVal;
         // LOG_DEBUG << "BrowserEvents2::WindowSetTop(): top = "
         //           << top;
         browserWindow_->SetTop(top);
     } else if (dispId == DISPID_WINDOWSETLEFT) {
+        _ASSERT(pDispParams->cArgs == 1);
+        _ASSERT(pDispParams->rgvarg[0].vt == VT_I4); // nLeft
         long left = pDispParams->rgvarg[0].lVal;
         // LOG_DEBUG << "BrowserEvents2::WindowSetLeft(): left = "
         //           << left;
@@ -167,12 +192,44 @@ HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke(
     } else if (dispId == DISPID_TITLECHANGE) {
         if (browserWindow_->IsPopup()
                 && browserWindow_->IsUsingMetaTitle()) {
-            _ASSERT(pDispParams->rgvarg[0].vt == VT_BSTR);
+            _ASSERT(pDispParams->cArgs == 1);
+            _ASSERT(pDispParams->rgvarg[0].vt == VT_BSTR); // Text
             BSTR title = pDispParams->rgvarg[0].bstrVal;
             // LOG_DEBUG << "BrowserEvents2::TitleChange(): "
             //              "setting popup title = " << WideToUtf8(title);
             browserWindow_->SetTitle(title);
         }
-    }        
+    } else if (dispId == DISPID_NAVIGATEERROR) {
+        LOG_DEBUG << "BrowserEvents2::NavigateError()";
+        if (pDispParams->cArgs != 5) {
+            LOG_WARNING << "BrowserEvents2::NavigateError() failed: "
+                    "Wrong number of arguments, expected 5";
+            return DISP_E_BADPARAMCOUNT;
+        }
+        // pDisp
+        _ASSERT(pDispParams->rgvarg[4].vt == VT_DISPATCH); 
+        // URL
+        _ASSERT(pDispParams->rgvarg[3].vt == (VT_VARIANT | VT_BYREF)); 
+        _ASSERT(pDispParams->rgvarg[3].pvarVal->vt == VT_BSTR);
+        // TargetFrameName
+        _ASSERT(pDispParams->rgvarg[2].vt == (VT_VARIANT | VT_BYREF)); 
+        _ASSERT(pDispParams->rgvarg[2].pvarVal->vt == VT_BSTR);
+        // StatusCode
+        _ASSERT(pDispParams->rgvarg[1].vt == (VT_VARIANT | VT_BYREF));
+        _ASSERT(pDispParams->rgvarg[1].pvarVal->vt == VT_I4);
+        // Cancel
+        _ASSERT(pDispParams->rgvarg[0].vt == (VT_BOOL | VT_BYREF)); 
+
+        const wchar_t* navigateUrl = pDispParams->rgvarg[3].pvarVal->bstrVal;
+        int statusCode = pDispParams->rgvarg[1].pvarVal->lVal;
+        
+        if (browserWindow_->DisplayErrorPage(navigateUrl, statusCode)) {
+            *pDispParams->rgvarg[0].pboolVal = VARIANT_TRUE;
+            return S_OK;
+        } else {
+            *pDispParams->rgvarg[0].pboolVal = VARIANT_FALSE;
+            return S_OK;
+        }
+    }
     return S_OK;
 }    

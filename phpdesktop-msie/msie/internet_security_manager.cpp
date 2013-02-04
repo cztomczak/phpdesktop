@@ -5,6 +5,8 @@
 #include "../defines.h"
 #include "internet_security_manager.h"
 #include "browser_window.h"
+#include "../log.h"
+#include "../string_utils.h"
 
 // These constants are not defined cause we set _WIN32_IE to
 // _WIN32_IE_IE60SP2, so that IE7 and later features are not
@@ -32,6 +34,7 @@
 #define URLACTION_FEATURE_DATA_BINDING              0x00002106
 #define URLACTION_FEATURE_CROSSDOMAIN_FOCUS_CHANGE  0x00002107
 #define URLACTION_SCRIPT_XSSFILTER                  0x00001409
+#define URLACTION_INPRIVATE_BLOCKING                0x00002700
 
 InternetSecurityManager::InternetSecurityManager(
         BrowserWindow* inBrowserWindow)
@@ -70,14 +73,24 @@ HRESULT STDMETHODCALLTYPE InternetSecurityManager::MapUrlToZone(
     // WScript.Shell, jezeli ustawimy 0, a w ProcessUrlAction damy
     // return INET_E_DEFAULT_ACTION to sie pojawi komunikat o
     // bezpieczenstwie.
-    *pdwZone = 0;
+    /*
+    This will cause "Access denied" when navigating from "about:blank":
+    *pdwZone = URLZONE_LOCAL_MACHINE;
     return S_OK;
+    */
+    /*
+    This also works with "about:blank":
+    *pdwZone = URLZONE_TRUSTED;
+    return S_OK;
+    */
+    return INET_E_DEFAULT_ACTION;
 }
 HRESULT STDMETHODCALLTYPE InternetSecurityManager::GetSecurityId(
         /* [in] */ LPCWSTR pwszUrl, 
         /* [out] */ BYTE *pbSecurityId, 
         /* [out][in] */ DWORD *pcbSecurityId, 
         /* [in] */ DWORD_PTR dwReserved) {
+    
     // Implementing this method allows different zones to interact with.
     // So for example an Internet webpage can call javascript on our 
     // Local desktop webpage, or the other way. We don't want any 
@@ -85,28 +98,22 @@ HRESULT STDMETHODCALLTYPE InternetSecurityManager::GetSecurityId(
 
     // http://stackoverflow.com/q/1498211/623622
     // http://msdn.microsoft.com/en-us/library/ie/ms537122(v=vs.85).aspx
-    // (see comments on msdn).
 
-    #define MY_SECURITY_DOMAIN "file:"
-    int cbSecurityDomain = strlen(MY_SECURITY_DOMAIN);
+    #define SECURITY_DOMAIN "file:"
     if (*pcbSecurityId >= MAX_SIZE_SECURITY_ID) {
-        memset(pbSecurityId, 0, *pcbSecurityId);
+        memset(pbSecurityId, 0, *pcbSecurityId);        
         #pragma warning(disable:4996)
-        strcpy((char*)pbSecurityId, MY_SECURITY_DOMAIN);
+        strcpy((char*)pbSecurityId, SECURITY_DOMAIN);
         #pragma warning(default:4996)
-        // Last 4 bytes are <URLZONE> and then 3 zeros.
-        pbSecurityId[ cbSecurityDomain + 1 ] = URLZONE_LOCAL_MACHINE;
-        pbSecurityId[ cbSecurityDomain + 2 ] = 0;
-        pbSecurityId[ cbSecurityDomain + 3 ] = 0;
-        pbSecurityId[ cbSecurityDomain + 4 ] = 0;
-        // plus the 4 bytes from above.
-        *pcbSecurityId = (DWORD) cbSecurityDomain + 4;
+        pbSecurityId[strlen(SECURITY_DOMAIN) + 1] = URLZONE_LOCAL_MACHINE;
+        pbSecurityId[strlen(SECURITY_DOMAIN) + 2] = URLZONE_LOCAL_MACHINE;
+        pbSecurityId[strlen(SECURITY_DOMAIN) + 3] = URLZONE_LOCAL_MACHINE;
+        pbSecurityId[strlen(SECURITY_DOMAIN) + 4] = URLZONE_LOCAL_MACHINE;
+        *pcbSecurityId = (DWORD) (strlen(SECURITY_DOMAIN) + 4);
         return S_OK;
-    } else {
-        pbSecurityId = 0;
-        *pcbSecurityId = 0;
-        return INET_E_DEFAULT_ACTION;
     }
+    *pcbSecurityId = 0;
+    return INET_E_DEFAULT_ACTION;
 }
 HRESULT STDMETHODCALLTYPE InternetSecurityManager::ProcessUrlAction(
         /* [in] */ LPCWSTR pwszUrl, 
@@ -117,7 +124,7 @@ HRESULT STDMETHODCALLTYPE InternetSecurityManager::ProcessUrlAction(
         /* [in] */ DWORD cbContext, 
         /* [in] */ DWORD dwFlags, 
         /* [in] */ DWORD dwReserved) {
-    
+
     // You can't set all actions to ALLOW, as it sometimes works
     // the other way, an ALLOW could set restrictions we don't 
     // want to. We have to check and seteach flag separately.
@@ -236,6 +243,7 @@ HRESULT STDMETHODCALLTYPE InternetSecurityManager::ProcessUrlAction(
             *pPolicy = URLPOLICY_DISALLOW;
             return S_FALSE;
     }
+
     *pPolicy = 0;
     return INET_E_DEFAULT_ACTION;
 }

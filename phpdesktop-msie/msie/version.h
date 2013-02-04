@@ -69,6 +69,7 @@ bool IsAtLeastInternetExplorer60ServicePack2()
     if (IsLessThanVersion(registryVersion, "6.00.2900.2180")) {
         LOG_ERROR << "IE 6.0 SP2 (6.00.2900.2180) is required for the"
                      "program to run correctly";
+        _ASSERT(false);
         return false;
     }
     return true;

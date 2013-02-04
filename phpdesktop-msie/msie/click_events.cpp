@@ -74,7 +74,7 @@ HRESULT STDMETHODCALLTYPE ClickEvents::Invoke(
     // is not NULL and initialize it using VariantInit(). If it's
     // NULL then it doesn't expect a result.
     if (riid != IID_NULL)
-        return ResultFromScode(DISP_E_UNKNOWNINTERFACE);
+        return DISP_E_UNKNOWNINTERFACE;
     pExcepInfo = 0;
     puArgErr = 0;
     HRESULT hr;

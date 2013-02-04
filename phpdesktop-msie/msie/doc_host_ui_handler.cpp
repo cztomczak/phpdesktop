@@ -38,22 +38,24 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::ShowContextMenu(
         /* [in] */ IUnknown *pcmdtReserved,
         /* [in] */ IDispatch *pdispReserved) {
     // If desired, we can pop up our own custom context menu here.
-    
-    // Do not show context menus by default with S_OK.
-    HRESULT hr(S_OK);
+    json_value* settings = GetApplicationSettings();
+    bool show_context_menu = (*settings)["msie"]["show_context_menu"];
 
     // We could allow context menu on text selection, but
     // it also displays Print/Print preview options.
     // dwID == CONTEXT_MENU_TEXTSELECT & return S_FALSE
-        
-    // Notify a frame window that the user clicked the
-    // right mouse button in the window.
-    POINT pt;
-	GetCursorPos(&pt);
-    PostMessage(browserWindow_->GetWindowHandle(), WM_CONTEXTMENU, 
-                pt.x, pt.y);
 
-    return hr;
+    if (show_context_menu) {
+        return S_FALSE;
+    } else {
+        // Notify a frame window that the user clicked the
+        // right mouse button in the window.
+        POINT pt;
+	    GetCursorPos(&pt);
+        PostMessage(browserWindow_->GetWindowHandle(), WM_CONTEXTMENU, 
+                    pt.x, pt.y);
+        return S_OK;
+    }
 }    
 HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetHostInfo( 
         /* [out][in] */ DOCHOSTUIINFO *pInfo) {
