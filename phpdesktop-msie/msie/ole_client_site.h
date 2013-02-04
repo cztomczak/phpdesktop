@@ -10,7 +10,6 @@
 class BrowserWindow;
 #include "ole_in_place_frame.h"
 #include "ole_in_place_site.h"
-#include "ole_control_site.h"
 #include "service_provider.h"
 #include "browser_events2.h"
 #include "doc_host_show_ui.h"
@@ -22,7 +21,6 @@ private:
     BrowserWindow* browserWindow_;
     OleInPlaceFrame oleInPlaceFrame_;
     OleInPlaceSite oleInPlaceSite_;
-    OleControlSite oleControlSite_;
     ServiceProvider serviceProvider_;
     BrowserEvents2 browserEvents2_;
     DocHostShowUi docHostShowUi_;

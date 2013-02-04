@@ -75,9 +75,6 @@
     <ClCompile Include="msie\ole_client_site.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="msie\ole_control_site.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="msie\ole_in_place_frame.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
@@ -150,9 +147,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="msie\ole_client_site.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="msie\ole_control_site.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="msie\ole_in_place_frame.h">

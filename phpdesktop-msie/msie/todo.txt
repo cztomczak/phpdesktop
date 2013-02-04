@@ -16,3 +16,11 @@ MSIE todo:
    http://stackoverflow.com/q/2936279/623622
    Create registry key "Main\\Disable Script Debugger" and
    set to "yes".
+ 
+ * IDocHostUiHandler::GetOptionKeyPath()
+   Create this registry key:
+   L"Software\\PHP Desktop\\WebBrowser2 settings";
+   and subkeys: 
+   "MAIN", "MAIN/FeatureControl".
+    
+            

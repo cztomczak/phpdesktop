@@ -23,14 +23,12 @@ ULONG STDMETHODCALLTYPE ExternalDispatch::Release(void) {
 }    
 HRESULT STDMETHODCALLTYPE ExternalDispatch::GetTypeInfoCount( 
         /* [out] */ UINT *pctinfo) {
-    *pctinfo = 0;
     return E_NOTIMPL;
 }    
 HRESULT STDMETHODCALLTYPE ExternalDispatch::GetTypeInfo( 
         /* [in] */ UINT iTInfo,
         /* [in] */ LCID lcid,
         /* [out] */ ITypeInfo **ppTInfo) {
-    *ppTInfo = 0;
     return E_NOTIMPL;
 }    
 HRESULT STDMETHODCALLTYPE ExternalDispatch::GetIDsOfNames( 

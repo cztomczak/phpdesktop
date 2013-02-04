@@ -19,7 +19,6 @@ OleClientSite::OleClientSite(BrowserWindow* inBrowserWindow)
         : browserWindow_(inBrowserWindow),
         oleInPlaceFrame_(inBrowserWindow),
         oleInPlaceSite_(inBrowserWindow, &oleInPlaceFrame_),
-        oleControlSite_(inBrowserWindow),
         serviceProvider_(inBrowserWindow),
         browserEvents2_(inBrowserWindow),
         docHostShowUi_(inBrowserWindow),
@@ -60,13 +59,6 @@ HRESULT STDMETHODCALLTYPE OleClientSite::QueryInterface(
             LOG_DEBUG << "QueryInterface(): IOleInPlaceFrame";
             logged = true;
         }
-    } else if (riid == IID_IOleControlSite) {
-        *ppvObject = static_cast<IOleControlSite*>(&oleControlSite_);
-        static bool logged = false;
-        if (!logged) {
-            LOG_DEBUG << "QueryInterface(): IOleControlSite";
-            logged = true;
-        }
     } else if (riid == IID_IServiceProvider) {
         *ppvObject = static_cast<IServiceProvider*>(&serviceProvider_);
         static bool logged = false;
@@ -96,6 +88,7 @@ HRESULT STDMETHODCALLTYPE OleClientSite::QueryInterface(
             logged = true;
         }
     } else if (   riid == IID_IDocHostUIHandler2
+               || riid == IID_IOleControlSite
                || riid == IID_IOleInPlaceSiteEx
                || riid == IID_IOleCommandTarget
                || riid == IID_IDispatch
@@ -127,7 +120,6 @@ HRESULT STDMETHODCALLTYPE OleClientSite::GetMoniker(
         /* [in] */ DWORD dwAssign,
         /* [in] */ DWORD dwWhichMoniker,
         /* [out] */ IMoniker **ppmk) {
-    *ppmk = 0;
     return E_NOTIMPL;
 }
 HRESULT STDMETHODCALLTYPE OleClientSite::GetContainer(

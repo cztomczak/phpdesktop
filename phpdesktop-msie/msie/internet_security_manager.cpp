@@ -58,13 +58,15 @@ HRESULT STDMETHODCALLTYPE InternetSecurityManager::SetSecuritySite(
 }
 HRESULT STDMETHODCALLTYPE InternetSecurityManager::GetSecuritySite(
         /* [out] */ IInternetSecurityMgrSite **ppSite) {
-    *ppSite = 0;
     return E_NOTIMPL;
 }
 HRESULT STDMETHODCALLTYPE InternetSecurityManager::MapUrlToZone(
         /* [in] */ LPCWSTR pwszUrl, 
         /* [out] */ DWORD *pdwZone, 
         /* [in] */ DWORD dwFlags) {
+    if (!pdwZone)
+        return E_INVALIDARG;
+            
     // const char *rgZoneNames[] = 
     // { "Local", "Intranet", "Trusted", "Internet", "Restricted" };
     // 0 == Local Machine. Gdy ustawimy 1 i w ProcessUrlAction()
@@ -74,14 +76,12 @@ HRESULT STDMETHODCALLTYPE InternetSecurityManager::MapUrlToZone(
     // return INET_E_DEFAULT_ACTION to sie pojawi komunikat o
     // bezpieczenstwie.
     /*
+    BrowserWindow::DisplayHtmlString() requires navigation to work
+    from "about:blank" pages.
+
     This will cause "Access denied" when navigating from "about:blank":
-    *pdwZone = URLZONE_LOCAL_MACHINE;
-    return S_OK;
-    */
-    /*
-    This also works with "about:blank":
-    *pdwZone = URLZONE_TRUSTED;
-    return S_OK;
+        *pdwZone = URLZONE_LOCAL_MACHINE;
+        return S_OK;
     */
     return INET_E_DEFAULT_ACTION;
 }
@@ -90,6 +90,8 @@ HRESULT STDMETHODCALLTYPE InternetSecurityManager::GetSecurityId(
         /* [out] */ BYTE *pbSecurityId, 
         /* [out][in] */ DWORD *pcbSecurityId, 
         /* [in] */ DWORD_PTR dwReserved) {
+    if (!pbSecurityId)
+        return E_INVALIDARG;
     
     // Implementing this method allows different zones to interact with.
     // So for example an Internet webpage can call javascript on our 
@@ -99,6 +101,7 @@ HRESULT STDMETHODCALLTYPE InternetSecurityManager::GetSecurityId(
     // http://stackoverflow.com/q/1498211/623622
     // http://msdn.microsoft.com/en-us/library/ie/ms537122(v=vs.85).aspx
 
+    /*
     #define SECURITY_DOMAIN "file:"
     if (*pcbSecurityId >= MAX_SIZE_SECURITY_ID) {
         memset(pbSecurityId, 0, *pcbSecurityId);        
@@ -112,7 +115,8 @@ HRESULT STDMETHODCALLTYPE InternetSecurityManager::GetSecurityId(
         *pcbSecurityId = (DWORD) (strlen(SECURITY_DOMAIN) + 4);
         return S_OK;
     }
-    *pcbSecurityId = 0;
+    */
+    
     return INET_E_DEFAULT_ACTION;
 }
 HRESULT STDMETHODCALLTYPE InternetSecurityManager::ProcessUrlAction(
@@ -244,7 +248,6 @@ HRESULT STDMETHODCALLTYPE InternetSecurityManager::ProcessUrlAction(
             return S_FALSE;
     }
 
-    *pPolicy = 0;
     return INET_E_DEFAULT_ACTION;
 }
 HRESULT STDMETHODCALLTYPE InternetSecurityManager::QueryCustomPolicy(
@@ -260,8 +263,6 @@ HRESULT STDMETHODCALLTYPE InternetSecurityManager::QueryCustomPolicy(
     // *pPolicy = URLPOLICY_ALLOW dla wszystkich to ta funkcja
     // nigdy nie jest wywolywana, ale dla pewnosci zwrocmy i 
     // INET_E_DEFAULT_ACTION a nie "not implemented".
-    *ppPolicy = 0;
-    *pcbPolicy = 0;
     return INET_E_DEFAULT_ACTION;
 }
 HRESULT STDMETHODCALLTYPE InternetSecurityManager::SetZoneMapping(
@@ -274,6 +275,5 @@ HRESULT STDMETHODCALLTYPE InternetSecurityManager::GetZoneMappings(
         /* [in] */ DWORD dwZone, 
         /* [out] */ IEnumString **ppenumString, 
         /* [in] */ DWORD dwFlags) {
-    *ppenumString = 0;
     return E_NOTIMPL;
 }

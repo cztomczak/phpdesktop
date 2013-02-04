@@ -59,14 +59,12 @@ ULONG STDMETHODCALLTYPE BrowserEvents2::Release(void) {
 }    
 HRESULT STDMETHODCALLTYPE BrowserEvents2::GetTypeInfoCount( 
         /* [out] */ UINT *pctinfo) {
-    *pctinfo = 0;
     return E_NOTIMPL;
 }    
 HRESULT STDMETHODCALLTYPE BrowserEvents2::GetTypeInfo( 
         /* [in] */ UINT iTInfo,
         /* [in] */ LCID lcid,
         /* [out] */ ITypeInfo **ppTInfo) {
-    *ppTInfo = 0;
     return E_NOTIMPL;
 }    
 HRESULT STDMETHODCALLTYPE BrowserEvents2::GetIDsOfNames( 
@@ -75,7 +73,6 @@ HRESULT STDMETHODCALLTYPE BrowserEvents2::GetIDsOfNames(
         /* [in] */ UINT cNames,
         /* [in] */ LCID lcid,
         /* [out] */ DISPID *rgDispId) {
-    *rgDispId = 0;
     return E_NOTIMPL;
 }
 HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke( 

@@ -71,7 +71,7 @@
       <MinimalRebuild>true</MinimalRebuild>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -107,7 +107,7 @@
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -152,7 +152,6 @@
     <ClCompile Include="msie\html_om_window_services.cpp" />
     <ClCompile Include="msie\internet_security_manager.cpp" />
     <ClCompile Include="msie\ole_client_site.cpp" />
-    <ClCompile Include="msie\ole_control_site.cpp" />
     <ClCompile Include="msie\ole_in_place_frame.cpp" />
     <ClCompile Include="msie\ole_in_place_site.cpp" />
     <ClCompile Include="msie\service_provider.cpp" />
@@ -179,7 +178,6 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="mongoose.h" />
     <ClInclude Include="msie\ole_client_site.h" />
-    <ClInclude Include="msie\ole_control_site.h" />
     <ClInclude Include="msie\ole_in_place_frame.h" />
     <ClInclude Include="msie\ole_in_place_site.h" />
     <ClInclude Include="resource.h" />

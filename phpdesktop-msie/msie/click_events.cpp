@@ -42,14 +42,12 @@ ULONG STDMETHODCALLTYPE ClickEvents::Release(void) {
 // IDispatch
 HRESULT STDMETHODCALLTYPE ClickEvents::GetTypeInfoCount( 
         /* [out] */ UINT *pctinfo) {
-    *pctinfo = 0;
     return E_NOTIMPL;
 }    
 HRESULT STDMETHODCALLTYPE ClickEvents::GetTypeInfo( 
         /* [in] */ UINT iTInfo,
         /* [in] */ LCID lcid,
         /* [out] */ ITypeInfo **ppTInfo) {
-    *ppTInfo = 0;
     return E_NOTIMPL;
 }    
 HRESULT STDMETHODCALLTYPE ClickEvents::GetIDsOfNames( 
@@ -58,7 +56,6 @@ HRESULT STDMETHODCALLTYPE ClickEvents::GetIDsOfNames(
         /* [in] */ UINT cNames,
         /* [in] */ LCID lcid,
         /* [out] */ DISPID *rgDispId) {
-    *rgDispId = 0;
     return E_NOTIMPL;
 }
 HRESULT STDMETHODCALLTYPE ClickEvents::Invoke( 

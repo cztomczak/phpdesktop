@@ -273,8 +273,8 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetOptionKeyPath(
 
     if (!pchKey)
 	    return E_INVALIDARG;
-    // This registry path does not need to exist, it should
-    // be empty.
+    // TODO: create this registry key and subkeys: 
+    // "MAIN", "MAIN/FeatureControl".
     wchar_t registryPath[200] =
             L"Software\\PHP Desktop\\WebBrowser2 settings";
     LOG_DEBUG << "DocHostUiHandler::GetOptionKeyPath(): "
@@ -292,9 +292,8 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetOptionKeyPath(
 HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetDropTarget( 
         /* [in] */ IDropTarget *pDropTarget,
         /* [out] */ IDropTarget **ppDropTarget) {
-    if (pDropTarget == 0)
+    if (!pDropTarget)
         return E_INVALIDARG;
-    *ppDropTarget = 0;
     return E_NOTIMPL;
 }
 HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetExternal( 
