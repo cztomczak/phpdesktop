@@ -5,6 +5,8 @@
 #include "../defines.h"
 #include "external_dispatch.h"
 #include "browser_window.h"
+#include <MsHtmdid.h>
+#include "../log.h"
 
 ExternalDispatch::ExternalDispatch(BrowserWindow* inBrowserWindow)
         : browserWindow_(inBrowserWindow) {

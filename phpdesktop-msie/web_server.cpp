@@ -86,7 +86,7 @@ bool StartWebServer() {
     LOG_INFO << "CGI interpreter: " << cgiInterpreter;
 
     // CGI extensions from settings.
-    const json_value cgiExtensions = 
+    const json_value cgiExtensions =
             (*settings)["web_server"]["cgi_extensions"];
     std::string cgiPattern;
     for (int i = 0; i < 32; i++) {
@@ -109,6 +109,8 @@ bool StartWebServer() {
         "index_files", indexFiles.c_str(),
         "cgi_interpreter", cgiInterpreter.c_str(),
         "cgi_pattern", cgiPattern.c_str(),
+        // 200 - hint for the freezing problem.
+        "num_threads", "200", // By default: 20.
         NULL
     };
     g_mongooseContext = mg_start(&MongooseEvent, NULL, options);

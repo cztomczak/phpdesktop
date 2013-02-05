@@ -240,17 +240,13 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
 bool BrowserWindow::Navigate(const wchar_t* navigateUrl) {
     if (!webBrowser2_)
         return false;
-    _variant_t varUrl = navigateUrl;
-    _variant_t varFlags((long)0, VT_I4);
-    _variant_t varTargetFrame(L"_self");
-    _variant_t varPostData;
-    _variant_t varHeaders;
-    Sleep(0);
-    HRESULT hr = webBrowser2_->Navigate2(&varUrl, &varFlags, &varTargetFrame, 
-            &varPostData, &varHeaders);
+    _bstr_t bstrUrl(navigateUrl);
+    _variant_t variantFlags((long)(navNoHistory | navNoReadFromCache 
+            | navNoWriteToCache), VT_I4);
+    HRESULT hr = webBrowser2_->Navigate(bstrUrl, &variantFlags, 0, 0, 0);
     if (FAILED(hr)) {
         LOG_ERROR << "BrowserWindow::Navigate() failed: "
-                "WebBrowser2->Navigate2() failed";
+                "IWebBrowser2->Navigate() failed";
         _ASSERT(false);
         return false;
     }

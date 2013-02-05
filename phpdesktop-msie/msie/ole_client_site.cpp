@@ -23,7 +23,8 @@ OleClientSite::OleClientSite(BrowserWindow* inBrowserWindow)
         browserEvents2_(inBrowserWindow),
         docHostShowUi_(inBrowserWindow),
         externalDispatch_(inBrowserWindow),
-        docHostUiHandler_(inBrowserWindow, &externalDispatch_) {
+        docHostUiHandler_(inBrowserWindow, &externalDispatch_),
+        hostDispatch_(inBrowserWindow) {
 }
 HRESULT STDMETHODCALLTYPE OleClientSite::QueryInterface(
         REFIID riid, void** ppvObject) {
@@ -87,11 +88,17 @@ HRESULT STDMETHODCALLTYPE OleClientSite::QueryInterface(
             LOG_DEBUG << "QueryInterface(): IDocHostUIHandler";
             logged = true;
         }
+    } else if (riid == IID_IDispatch) {
+        *ppvObject = static_cast<IDispatch*>(&hostDispatch_);
+        static bool logged = false;
+        if (!logged) {
+            LOG_DEBUG << "QueryInterface(): IDispatch";
+            logged = true;
+        }
     } else if (   riid == IID_IDocHostUIHandler2
                || riid == IID_IOleControlSite
                || riid == IID_IOleInPlaceSiteEx
                || riid == IID_IOleCommandTarget
-               || riid == IID_IDispatch
                || riid == IID_IAxWinHostWindow) {
         *ppvObject = 0;
         return E_NOINTERFACE;

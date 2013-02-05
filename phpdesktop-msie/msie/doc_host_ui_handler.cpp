@@ -279,6 +279,10 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetOptionKeyPath(
     // Disable Script Debugger
     // DisableScriptDebuggerIE
     
+    // Play_Background_Sounds - mouse clicks? In HostDispatch::Invoke()
+    //     we're already setting flags for DISPID_AMBIENT_DLCONTROL,
+    //     DLCTL_BGSOUNDS is not set so sounds should be disabled.
+    
     std::wstring mainPath = std::wstring(registryPath).append(L"\\Main");
     CreateRegistryKey(HKEY_CURRENT_USER, mainPath.c_str());
 
