@@ -1,23 +1,12 @@
 // Microsoft Visual C++ generated resource script.
 //
-#include "defines.h"
-#include <windows.h>
 #include "resource.h"
-
-#define APSTUDIO_READONLY_SYMBOLS
-
-
 /////////////////////////////////////////////////////////////////////////////
-#undef APSTUDIO_READONLY_SYMBOLS
-
-/////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -50,7 +39,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINWINDOW           ICON                    "icon.ico"
+IDR_MAINWINDOW          ICON                    "icon.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -58,8 +47,8 @@ IDR_MAINWINDOW           ICON                    "icon.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,9
- PRODUCTVERSION 1,0,0,9
+ FILEVERSION 1,0,0,10
+ PRODUCTVERSION 1,0,0,10
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -76,12 +65,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Czarek Tomczak"
             VALUE "FileDescription", "PHP Desktop"
-            VALUE "FileVersion", "1, 0, 0, 9"
+            VALUE "FileVersion", "1.0.0.10"
             VALUE "InternalName", "phpdesktop"
             VALUE "LegalCopyright", "(c) Czarek Tomczak 2012-2013"
             VALUE "OriginalFilename", "PHP Desktop.exe"
             VALUE "ProductName", "PHP Desktop"
-            VALUE "ProductVersion", "1, 0, 0, 9"
+            VALUE "ProductVersion", "1.0.0.10"
         END
     END
     BLOCK "VarFileInfo"
@@ -96,12 +85,12 @@ END
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
-    IDR_MAINWINDOW           "phpdesktop"
+    IDR_MAINWINDOW          "phpdesktop"
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

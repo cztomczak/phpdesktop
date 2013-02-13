@@ -16,8 +16,6 @@
  #define DOCHOSTUIFLAG_DPI_AWARE 0x40000000
 #endif
 
-
-
 DocHostUiHandler::DocHostUiHandler(BrowserWindow* inBrowserWindow,
                                    IDispatch* inExternalDispatch)
         : browserWindow_(inBrowserWindow),
@@ -106,7 +104,7 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetHostInfo(
     pInfo->dwDoubleClick = DOCHOSTUIDBLCLK_DEFAULT;
     return S_OK;
 }    
-HRESULT STDMETHODCALLTYPE DocHostUiHandler::ShowUI( 
+HRESULT STDMETHODCALLTYPE DocHostUiHandler::ShowUI(
         /* [in] */ DWORD dwID,
         /* [in] */ IOleInPlaceActiveObject *pActiveObject,
         /* [in] */ IOleCommandTarget *pCommandTarget,
@@ -114,7 +112,7 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::ShowUI(
         /* [in] */ IOleInPlaceUIWindow *pDoc) {
     // Enables the host to replace MSHTML menus and toolbars.
     return S_OK;
-}    
+}
 HRESULT STDMETHODCALLTYPE DocHostUiHandler::HideUI(void) {
     // Enables the host to remove its menus and toolbars.
     return S_OK;

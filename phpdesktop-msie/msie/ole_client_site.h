@@ -16,6 +16,7 @@ class BrowserWindow;
 #include "doc_host_ui_handler.h"
 #include "external_dispatch.h"
 #include "host_dispatch.h"
+#include "ole_command_target.h"
 
 class OleClientSite : public IOleClientSite {
 private:
@@ -28,6 +29,7 @@ private:
     ExternalDispatch externalDispatch_;
     DocHostUiHandler docHostUiHandler_;
     HostDispatch hostDispatch_;
+    OleCommandTarget oleCommandTarget_;
 public:
     OleClientSite(BrowserWindow* inBrowserWindow);
     HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppvObject);

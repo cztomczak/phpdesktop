@@ -35,6 +35,8 @@
 #include "../file_utils.h"
 #include "../window_utils.h"
 
+#define EXTERNAL_CLOSE_WINDOW 1
+
 std::map<HWND, BrowserWindow*> g_browserWindows;
 extern std::string g_webServerUrl;
 extern wchar_t g_windowClassName[256];
@@ -240,6 +242,12 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
 bool BrowserWindow::Navigate(const wchar_t* navigateUrl) {
     if (!webBrowser2_)
         return false;
+    if (wcslen(navigateUrl) == 0) {
+        LOG_ERROR << "BrowserWindow::Navigate() failed: "
+                "navigateUrl is empty";
+        _ASSERT(false);
+        return false;
+    }
     _bstr_t bstrUrl(navigateUrl);
     _variant_t variantFlags((long)(navNoHistory | navNoReadFromCache 
             | navNoWriteToCache), VT_I4);
@@ -252,17 +260,15 @@ bool BrowserWindow::Navigate(const wchar_t* navigateUrl) {
     }
     return true;
 }
-void BrowserWindow::CloseBrowserControl() {
+void BrowserWindow::CloseWebBrowser2() {
+    // This function may be called from window.external.CloseWindow()
+    // or BrowserWindow::CloseBrowserControl().
     if (!webBrowser2_)
         return;
     HRESULT hr;
 
     UnadviseEvent(webBrowser2_, DIID_DWebBrowserEvents2,
-                    dWebBrowserEvents2Cookie_);
-
-    _ASSERT(oleInPlaceActiveObject_);
-    oleInPlaceActiveObject_.Release();
-
+            dWebBrowserEvents2Cookie_);
     // This is important, otherwise getting unhandled exceptions,
     // scenario: open popup, close it, navigate in main window,
     // exception! after DispatchMessage(), msg.message = 32770.
@@ -275,11 +281,29 @@ void BrowserWindow::CloseBrowserControl() {
     _ASSERT(SUCCEEDED(hr));
     hr = webBrowser2_->put_Visible(VARIANT_FALSE);
     _ASSERT(SUCCEEDED(hr));        
+    
     // WebBrowser object (CLSID_WebBrowser) cannot call Quit(),
     // it is for Internet Explorer object (CLSID_InternetExplorer).
     // hr = webBrowser2_->Quit();
     // _ASSERT(SUCCEEDED(hr));
+
+    // When called from window.external.CloseWindow() we must execute
+    // OLECMDID_CLOSE before posting WM_CLOSE message, otherwise
+    // access violation occurs.
+    webBrowser2_->ExecWB(OLECMDID_CLOSE, OLECMDEXECOPT_DONTPROMPTUSER, 0, 0);
+    
     webBrowser2_.Release();
+}
+void BrowserWindow::CloseBrowserControl() {
+    LOG_DEBUG << "BrowserWindow::CloseBrowserControl()";
+    if (!webBrowser2_)
+        return;
+    HRESULT hr;
+
+    CloseWebBrowser2();
+    
+    _ASSERT(oleInPlaceActiveObject_);
+    oleInPlaceActiveObject_.Release();
 
     IOleInPlaceObjectPtr inPlaceObject;
     hr = oleObject_->QueryInterface(IID_IOleInPlaceObject,
@@ -296,12 +320,12 @@ void BrowserWindow::CloseBrowserControl() {
     // It is important to set client site to NULL, otherwise
     // you will get first-chance exceptions when calling Close().
     _ASSERT(oleObject_);
-    hr = OleSetContainedObject(static_cast<IUnknown*>(oleObject_), FALSE);
-    _ASSERT(SUCCEEDED(hr));
     hr = oleObject_->DoVerb(OLEIVERB_HIDE, NULL, oleClientSite_.get(), 0, 
             windowHandle_, NULL);
     _ASSERT(SUCCEEDED(hr));
     hr = oleObject_->Close(OLECLOSE_NOSAVE);
+    _ASSERT(SUCCEEDED(hr));
+    hr = OleSetContainedObject(static_cast<IUnknown*>(oleObject_), FALSE);
     _ASSERT(SUCCEEDED(hr));
     hr = oleObject_->SetClientSite(0);
     _ASSERT(SUCCEEDED(hr));
@@ -558,11 +582,17 @@ bool BrowserWindow::GetActiveHtmlElement(wchar_t* outTag, int outTagSize,
     return true;
 }
 int BrowserWindow::ExternalIdentifier(wchar_t* function) {
-    LOG_DEBUG << "BrowserWindow::ExternalIdentifier(): function = "
-              << WideToUtf8(function);
+    if (wcscmp(function, L"CloseWindow") == 0) {
+        return EXTERNAL_CLOSE_WINDOW;
+    }
     return 0;
 }
-bool BrowserWindow::ExternalCall(int functionIdentifier) {
+bool BrowserWindow::ExternalCall(int functionId) {
+    if (functionId == EXTERNAL_CLOSE_WINDOW) {
+        CloseWebBrowser2();
+        PostMessage(windowHandle_, WM_CLOSE, 0, 0);
+        return true;
+    }
     return false;
 }
 void BrowserWindow::SetAllowedUrl(const wchar_t* inUrl) {

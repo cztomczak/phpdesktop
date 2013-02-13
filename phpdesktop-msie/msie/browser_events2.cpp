@@ -105,7 +105,8 @@ HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke(
         LOG_DEBUG << "BrowserEvents2::NewWindow3()";            
         if (pDispParams->cArgs != 5) {
             LOG_WARNING << "BrowserEvents2::NewWindow3() failed: "
-                    "Wrong number of arguments, expected 5";
+                    "Expected 5 arguments";
+            _ASSERT(false);
             return DISP_E_BADPARAMCOUNT;
         }
         // ppDisp
@@ -200,7 +201,8 @@ HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke(
         LOG_DEBUG << "BrowserEvents2::NavigateError()";
         if (pDispParams->cArgs != 5) {
             LOG_WARNING << "BrowserEvents2::NavigateError() failed: "
-                    "Wrong number of arguments, expected 5";
+                    "Expected 5 arguments";
+            _ASSERT(false);
             return DISP_E_BADPARAMCOUNT;
         }
         // pDisp
@@ -227,6 +229,28 @@ HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke(
             *pDispParams->rgvarg[0].pboolVal = VARIANT_FALSE;
             return S_OK;
         }
+    } else if (dispId == DISPID_WINDOWCLOSING) {
+        // Seems like this event is never being called, it should be 
+        // called when executing "window.close()", but it's not.
+        // Use WM_PARENTNOTIFY instead to be notified when window is closing.
+        LOG_DEBUG << "BrowserEvents2::WindowClosing()";
+        return S_OK;
+        /*
+        if (pDispParams->cArgs != 2) {
+            LOG_WARNING << "BrowserEvents2::WindowClosing() failed: "
+                    "Expected 2 arguments";
+            _ASSERT(false);
+            return DISP_E_BADPARAMCOUNT;
+        }
+        // bIsChildWindow 
+        _ASSERT(pDispParams->rgvarg[1].vt == VT_BOOL);
+        // Cancel
+        _ASSERT(pDispParams->rgvarg[0].vt == (VT_BOOL | VT_BYREF));
+
+        // VARIANT_FALSE - window is allowed to close..
+        *pDispParams->rgvarg[0].pboolVal = VARIANT_FALSE;
+        return S_OK;
+        */
     }
     return S_OK;
 }    

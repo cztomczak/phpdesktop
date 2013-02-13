@@ -42,6 +42,7 @@ public:
     ~BrowserWindow();
     bool CreateBrowserControl(const wchar_t* navigateUrl);
     bool Navigate(const wchar_t* navigateUrl);
+    void CloseWebBrowser2();
     void CloseBrowserControl();
     bool DetachClickEvents();
     bool TryAttachClickEvents();

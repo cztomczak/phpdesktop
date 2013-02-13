@@ -6,6 +6,12 @@
 #include <windows.h>
 #include <stdio.h>
 
+char* WCHAR_TO_CHAR(wchar_t* wide) {
+	int asciisize = WideCharToMultiByte(CP_UTF8, 0, wide, -1, 0, 0, 0, 0);
+	char* ascii = (char*)malloc(asciisize * sizeof(char));
+	WideCharToMultiByte(CP_UTF8, 0, wide, -1, ascii, asciisize, 0, 0);
+	return ascii;
+}
 void GUID_TO_CHAR(const GUID* guid, char* outString, size_t outStringSize)
 {
     sprintf_s(outString, outStringSize,

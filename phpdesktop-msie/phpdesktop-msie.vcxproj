@@ -76,6 +76,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalOptions>/DDEBUG %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -138,13 +140,11 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mongoose.c" />
     <ClCompile Include="msie\host_dispatch.cpp" />
+    <ClCompile Include="msie\ole_command_target.cpp" />
     <ClCompile Include="registry.cpp" />
     <ClCompile Include="settings.cpp" />
     <ClCompile Include="string_utils.cpp" />
-    <ClCompile Include="web_server.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="web_server.cpp" />
     <ClCompile Include="window_utils.cpp" />
     <ClCompile Include="msie\browser_events2.cpp" />
     <ClCompile Include="msie\click_events.cpp" />
@@ -164,6 +164,7 @@
     <ClInclude Include="msie\click_events.h" />
     <ClInclude Include="msie\com_utils.h" />
     <ClInclude Include="msie\host_dispatch.h" />
+    <ClInclude Include="msie\ole_command_target.h" />
     <ClInclude Include="registry.h" />
     <ClInclude Include="WebBrowser\CompareIEVersions.h" />
     <ClInclude Include="debug.h" />
@@ -197,16 +198,15 @@
     <ClInclude Include="window_utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="before_release.txt" />
     <None Include="msie\fullscreen_frame.txt" />
     <None Include="icon.ico" />
     <None Include=".gitignore" />
-    <None Include="before-release.txt" />
     <None Include="icon.png" />
     <None Include="www\index.php" />
     <None Include="license.txt" />
     <None Include="www\phpinfo.php" />
     <None Include="resource.aps" />
-    <None Include="run.js" />
     <None Include="www\test-controls.php" />
     <None Include="www\test-forms.php" />
     <None Include="www\test-javascript-errors.php" />

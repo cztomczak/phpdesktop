@@ -54,12 +54,7 @@
         MessageBoxA(NULL, tmpstr, "DEBUG2", MB_ICONINFORMATION);\
     }
 
-char* WCHAR_TO_CHAR(wchar_t* wide) {
-	int asciisize = WideCharToMultiByte(CP_UTF8, 0, wide, -1, 0, 0, 0, 0);
-	char* ascii = (char*)malloc(asciisize * sizeof(char));
-	WideCharToMultiByte(CP_UTF8, 0, wide, -1, ascii, asciisize, 0, 0);
-	return ascii;
-}
+char* WCHAR_TO_CHAR(wchar_t* wide);
 
 #define DEBUG_WCHAR(A)\
     {\

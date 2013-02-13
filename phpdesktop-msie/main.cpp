@@ -23,6 +23,7 @@
 #include "single_instance_application.h"
 #include "string_utils.h"
 #include "web_server.h"
+//#include "php_server.h"
 #include "window_utils.h"
 
 #define BROWSER_GENERIC_TIMER 1
@@ -32,6 +33,7 @@ wchar_t* g_singleInstanceApplicationGuid = 0;
 wchar_t g_windowClassName[256] = L"";
 int g_windowCount = 0;
 HINSTANCE g_hInstance = 0;
+extern std::string g_webServerUrl;
 
 HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title);
 void InitLogging(bool show_console, std::string log_level, 
@@ -42,17 +44,21 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
     BrowserWindow* browser = 0;
     UINT_PTR timer = 0;
     BOOL b = 0;
+    WORD childEvent = 0;
+    HWND childHandle = 0;
+    HWND shellBrowserHandle = 0;
+
     switch (uMsg) {
         case WM_SIZE:
             browser = GetBrowserWindow(hwnd);
             if (browser) {
                 browser->OnResize(uMsg, wParam, lParam);
+                return 0;
             } else {
                 LOG_WARNING << "WindowProc(): event WM_SIZE: "
                                "could not fetch BrowserWindow";
-                return 1;
             }
-            return 0;
+            break;
         case WM_CREATE:
             g_windowCount++;
             browser = new BrowserWindow(hwnd);
@@ -69,45 +75,75 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             _ASSERT(b);
             RemoveBrowserWindow(hwnd);
             if (g_windowCount <= 0) {
-                TerminateWebServer();
+                //LOG_DEBUG << "DISABLED: StopWebServer()";
+                StopWebServer();
+#ifdef DEBUG
+                // Debugging mongoose, see InitLogging().
+                printf("----------------------------------------");
+                printf("----------------------------------------\n");
+#endif
                 PostQuitMessage(0);
             }
-            return 1;
+            break;
         case WM_TIMER:
             if (wParam == BROWSER_GENERIC_TIMER) {
                 browser = GetBrowserWindow(hwnd);
                 if (browser) {
                     browser->OnTimer(uMsg, wParam, lParam);
+                    return 0;
                 } else {
                     LOG_WARNING << "WindowProc(): event WM_TIMER failed: "
                                    "could not fetch BrowserWindow";
-                    return 1;
                 }
-                return 0;
             }
-            return 1;
+            break;
         case WM_GETMINMAXINFO:
             browser = GetBrowserWindow(hwnd);
             if (browser) {
                 browser->OnGetMinMaxInfo(uMsg, wParam, lParam);
+                return 0;
             } else {
                 // GetMinMaxInfo may fail during window creation, so
                 // log severity is only DEBUG.
                 LOG_DEBUG << "WindowProc(): event WM_GETMINMAXINFO: "
                              "could not fetch BrowserWindow";
-                return 1;
             }
-            return 0;
+            break;
         case WM_SETFOCUS:
             browser = GetBrowserWindow(hwnd);
             if (browser) {
                 browser->SetFocus();
+                return 0;
             } else {
                 LOG_DEBUG << "WindowProc(): event WM_SETFOCUS: "
                              "could not fetch BrowserWindow";
-                return 1;
             }
-            return 0;
+            break;
+        /*
+        case WM_PARENTNOTIFY:
+            LOG_DEBUG << "WM_PARENTNOTIFY";
+            browser = GetBrowserWindow(hwnd);
+            if (browser) {
+                childEvent = LOWORD(wParam);
+                // For example WM_LBUTTONDOWN.
+                LOG_DEBUG << "childEvent = " << childEvent;
+                if (childEvent == WM_DESTROY) {
+                    LOG_DEBUG << "childEvent == WM_DESTROY";
+                    childHandle = (HWND)HIWORD(wParam);
+                    shellBrowserHandle = browser->GetShellBrowserHandle();
+                    LOG_DEBUG << "childHandle = " << childHandle;
+                    LOG_DEBUG << "shellBrowserHandle = " << shellBrowserHandle;
+                    if (childHandle && shellBrowserHandle
+                            && childHandle == shellBrowserHandle) {
+                        LOG_DEBUG << "!!!!!!!!!!!!!!!!";
+                    }
+                }
+            } else {
+                LOG_DEBUG << "WindowProc(): event WM_PARENTNOTIFY: "
+                        "could not fetch BrowserWindow";
+            }
+            break;
+        */
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
@@ -189,8 +225,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    Utf8ToWide(GetExecutableName()).c_str());
     }
 
+    //LOG_DEBUG << "DISABLED: StartWebServer()";
+    //g_webServerUrl = "http://127.0.0.1:54007/";
     if (!StartWebServer()) {
-        FatalError(NULL, "Could not start internal web-server.\n"
+        FatalError(NULL, "Could not start internal web server.\n"
                    "Exiting application.");
     }
 
@@ -234,7 +272,7 @@ HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title) {
         default_height = CW_USEDEFAULT;
     }
 
-    WNDCLASSEX wc = {};
+    WNDCLASSEX wc = {0};
     wc.cbSize = sizeof(wc);
     wc.hbrBackground = (HBRUSH)GetSysColorBrush(COLOR_WINDOW);
     wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDR_MAINWINDOW));
@@ -271,6 +309,14 @@ void InitLogging(bool show_console, std::string log_level,
         freopen_s(&freopen_file, "CONOUT$", "wb", stdout);
         freopen_s(&freopen_file, "CONOUT$", "wb", stderr);
     }
+
+#ifdef DEBUG
+    // Debugging mongoose web server.
+    FILE* mongoose_file;
+    freopen_s(&mongoose_file,
+            GetExecutableDirectory().append("\\debug_mongoose.log").c_str(),
+            "ab", stdout);
+#endif
     
     if (log_level.length())
         FILELog::ReportingLevel() = FILELog::FromString(log_level);

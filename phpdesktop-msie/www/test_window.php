@@ -5,6 +5,8 @@
 <title>Test window</title>
 <h1>Test window</h1>
 
+<h2>window.resizeTo(), window.moveTo()</h2>
+
 <a href="javascript:void(0)" onclick="window.resizeTo(640, 480)">
     window.resizeTo(640, 480)
 </a>
@@ -15,7 +17,7 @@
     window.moveTo(0, 0)
 </a>
 
-<h2>Test alert</h2>
+<h2>window.alert()</h2>
 
 <a href="javascript:void(0)" onclick="window.alert(1)">
     window.alert(1)
@@ -23,3 +25,21 @@
 
 <p>Set "hide_dialog_boxes" to true in settings.json to disable
     alerts.</p>
+
+<h2>window.close() - do not use</h2>
+
+<p>window.close() does not work as expected, do not use it, you have to call
+window.external.CloseWindow() instead, try it: </p>
+
+<p>
+    <a href="javascript:void(0)"
+        onclick="window.external.CloseWindow()">window.external.CloseWindow()</a>
+</p>
+
+<p>You might override window.close() implementation using this code:</p>
+
+<pre style="background: #ddd;">
+window.close = function() {
+    window.external.CloseWindow();
+}
+</pre>

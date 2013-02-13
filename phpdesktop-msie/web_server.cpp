@@ -4,7 +4,6 @@
 
 #include "defines.h"
 #include <windows.h>
-#include <Shellapi.h>
 #include <stdio.h>
 #include <wchar.h>
 
@@ -14,33 +13,33 @@
 #include "mongoose.h"
 #include "settings.h"
 #include "string_utils.h"
-#include "web_server.h"
 
 std::string g_webServerUrl;
 struct mg_context* g_mongooseContext = 0;
 
-void* MongooseEvent(enum mg_event ev, struct mg_connection* conn) {
-    if (ev == MG_REQUEST_COMPLETE) {
-        struct mg_request_info* request = mg_get_request_info(conn);
-        std::string message;
-        message.append(request->request_method);
-        message.append(" ");
-        message.append(request->uri);
-        if (request->query_string) {
-            message.append("?");
-            message.append(request->query_string);
-        }
-        LOG_INFO << message;
-    } else if (ev == MG_EVENT_LOG) {
-        LOG_WARNING << (const char *) mg_get_request_info(conn)->ev_data;
+static int log_message(const struct mg_connection* conn, const char *message) {
+    LOG_WARNING << message;
+    return 0;
+}
+static void end_request(const struct mg_connection* conn, int reply_status_code) {
+    mg_request_info* request = mg_get_request_info(const_cast<mg_connection*>(conn));
+    std::string message;
+    message.append(request->request_method);
+    message.append(" ");
+    message.append(IntToString(reply_status_code));
+    message.append(" ");
+    message.append(request->uri);
+    if (request->query_string) {
+        message.append("?");
+        message.append(request->query_string);
     }
-    return NULL;
+    LOG_INFO << message;
 }
 bool StartWebServer() {
-    LOG_INFO << "Starting Mongoose web-server";
+    LOG_INFO << "Starting Mongoose web server";
     json_value* settings = GetApplicationSettings();
 
-    // Web-server url from settings.
+    // Web server url from settings.
     std::string ipAddress = (*settings)["web_server"]["listen_on"][0];
     std::string port = (*settings)["web_server"]["listen_on"][1];
     long portInt = (*settings)["web_server"]["listen_on"][1];
@@ -51,7 +50,7 @@ bool StartWebServer() {
         port = "54007";
     }
     g_webServerUrl = "http://" + ipAddress + ":" + port + "/";
-    LOG_INFO << "Web-server url: " << g_webServerUrl;
+    LOG_INFO << "Web server url: " << g_webServerUrl;
 
     // WWW directory from settings.
     std::string wwwDirectory = (*settings)["web_server"]["www_directory"];
@@ -101,7 +100,7 @@ bool StartWebServer() {
         cgiPattern = "**.php$";
     LOG_INFO << "CGI pattern: " << cgiPattern;
 
-    // Mongoose web-server.
+    // Mongoose web server.
     std::string listening_ports = ipAddress + ":" + port;
     const char* options[] = {
         "document_root", wwwDirectory.c_str(),
@@ -109,19 +108,20 @@ bool StartWebServer() {
         "index_files", indexFiles.c_str(),
         "cgi_interpreter", cgiInterpreter.c_str(),
         "cgi_pattern", cgiPattern.c_str(),
-        // 200 - hint for the freezing problem.
-        "num_threads", "200", // By default: 20.
         NULL
     };
-    g_mongooseContext = mg_start(&MongooseEvent, NULL, options);
+    mg_callbacks callbacks = {0};
+    callbacks.log_message = &log_message;
+    callbacks.end_request = &end_request;
+    g_mongooseContext = mg_start(&callbacks, NULL, options);
     if (g_mongooseContext == NULL)
         return false;
     else
         return true;
 }
-void TerminateWebServer() {
+void StopWebServer() {
     if (g_mongooseContext) {
-        LOG_INFO << "Stopping Mongoose web-server";
+        LOG_INFO << "Stopping Mongoose web server";
         mg_stop(g_mongooseContext);
     }
 }

@@ -2,6 +2,9 @@
 // Microsoft Visual C++ generated include file.
 // Used by resource.rc
 //
+
+#include <Windows.h>
+
 #define IDR_MAINWINDOW                   128
 
 // Next default values for new objects
