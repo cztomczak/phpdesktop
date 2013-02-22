@@ -74,7 +74,7 @@ function PDO_Execute($query, $params=null)
         $PDO->query($query);
     }
 }
-function PDO_InsertId()
+function PDO_LastInsertId()
 {
     global $PDO;
     return $PDO->lastInsertId();
