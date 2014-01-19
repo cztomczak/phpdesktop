@@ -7,5 +7,6 @@ ipch/
 *.aps
 *.sdf
 *.opensdf
-php/
+*.dll
+*.exe
 debug.log

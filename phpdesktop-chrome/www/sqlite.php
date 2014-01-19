@@ -8,7 +8,7 @@
 
 error_reporting(-1);
 include "./_pdo.php";
-$db_file = "./sqlite-database.sqlite3";
+$db_file = "./sqlite-db-file.db";
 PDO_Connect("sqlite:$db_file");
 echo("PDO_Connect(): success!<br> $db_file file created");
 
