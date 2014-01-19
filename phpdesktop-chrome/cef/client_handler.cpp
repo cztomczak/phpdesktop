@@ -193,3 +193,19 @@ void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> cefBrowser,
         }
     }
 }
+
+///
+// Called before a context menu is displayed. |params| provides information
+// about the context menu state. |model| initially contains the default
+// context menu. The |model| can be cleared to show no context menu or
+// modified to show a custom menu. Do not keep references to |params| or
+// |model| outside of this callback.
+///
+/*--cef()--*/
+void ClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
+                                CefRefPtr<CefFrame> frame,
+                                CefRefPtr<CefContextMenuParams> params,
+                                CefRefPtr<CefMenuModel> model) {
+    model->Remove(MENU_ID_VIEW_SOURCE);
+}
+

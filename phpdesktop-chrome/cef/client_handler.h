@@ -11,7 +11,8 @@
 class ClientHandler : public CefClient,
                       public CefDisplayHandler,
                       public CefLifeSpanHandler,
-                      public CefLoadHandler {
+                      public CefLoadHandler,
+                      public CefContextMenuHandler {
  public:
   ClientHandler();
   ~ClientHandler();
@@ -27,6 +28,9 @@ class ClientHandler : public CefClient,
     return this;
   }
   virtual CefRefPtr<CefLoadHandler> GetLoadHandler() OVERRIDE {
+    return this;
+  }
+  virtual CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() {
     return this;
   }
 
@@ -53,6 +57,12 @@ class ClientHandler : public CefClient,
                            ErrorCode errorCode,
                            const CefString& errorText,
                            const CefString& failedUrl) OVERRIDE;
+
+  // CefContextMenuHandler methods:
+  virtual void OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
+                                   CefRefPtr<CefFrame> frame,
+                                   CefRefPtr<CefContextMenuParams> params,
+                                   CefRefPtr<CefMenuModel> model) OVERRIDE;
     
  private:
   // List of existing browser windows. Only accessed on the CEF UI thread.
