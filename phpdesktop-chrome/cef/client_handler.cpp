@@ -40,6 +40,49 @@ ClientHandler* ClientHandler::GetInstance() {
     return g_instance;
 }
 
+void SetBrowserDpiSettings(CefRefPtr<CefBrowser> cefBrowser) {
+    // Setting zoom level immediately after browser was created
+    // won't work. We need to wait a moment before we can set it.
+    REQUIRE_UI_THREAD();
+
+    double oldZoomLevel = cefBrowser->GetHost()->GetZoomLevel();
+    double newZoomLevel = 0.0;
+
+    // Win7:
+    // text size Larger 150% => ppix/ppiy 144
+    // text size Medium 125% => ppix/ppiy 120
+    // text size Smaller 100% => ppix/ppiy 96
+    HWND cefHandle = cefBrowser->GetHost()->GetWindowHandle();
+    HDC hdc = GetDC(cefHandle);
+    int ppix = GetDeviceCaps(hdc, LOGPIXELSX);
+    int ppiy = GetDeviceCaps(hdc, LOGPIXELSY);
+    ReleaseDC(cefHandle, hdc);
+    
+    if (ppix > 96) {
+        newZoomLevel = (ppix - 96) / 24;
+    }
+    
+    if (oldZoomLevel != newZoomLevel) {
+        cefBrowser->GetHost()->SetZoomLevel(newZoomLevel);
+        if (cefBrowser->GetHost()->GetZoomLevel() != oldZoomLevel) {
+            // Succes.
+            LOG_DEBUG << "DPI, ppix = " << ppix << ", ppiy = " << ppiy;
+            LOG_DEBUG << "DPI, browser zoom level = " 
+                      << cefBrowser->GetHost()->GetZoomLevel();
+        } else {
+            CefPostDelayedTask(
+                    TID_UI, 
+                    NewCefRunnableFunction(&SetBrowserDpiSettings, cefBrowser),
+                    13);
+        }
+    } else {
+        // Success.
+        LOG_DEBUG << "DPI, ppix = " << ppix << ", ppiy = " << ppiy;
+        LOG_DEBUG << "DPI, browser zoom level = " 
+                  << cefBrowser->GetHost()->GetZoomLevel();
+    }
+}
+
 void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> cefBrowser) {
     REQUIRE_UI_THREAD();
 
@@ -59,8 +102,11 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> cefBrowser) {
         phpBrowser->SetCefBrowser(cefBrowser);
         phpBrowser->SetIconFromSettings();
         phpBrowser->SetTitleFromSettings();
+        phpBrowser->SetFocus();
     }
 
+    SetBrowserDpiSettings(cefBrowser);
+    
     // Add to the list of existing browsers.
     browser_list_.push_back(cefBrowser);
 }
@@ -165,6 +211,19 @@ void ClientHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
             " with error " << std::string(errorText) << " (" << errorCode <<
             ").</h2></body></html>";
     frame->LoadString(ss.str(), failedUrl);
+}
+
+///
+// Called when the loading state has changed. This callback will be executed
+// twice -- once when loading is initiated either programmatically or by user
+// action, and once when loading is terminated due to completion, cancellation
+// of failure.
+///
+/*--cef()--*/
+void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
+                                bool isLoading,
+                                bool canGoBack,
+                                bool canGoForward) {
 }
 
 void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> cefBrowser,

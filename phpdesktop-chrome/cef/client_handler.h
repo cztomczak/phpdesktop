@@ -8,6 +8,8 @@
 #include "include/cef_client.h"
 #include <list>
 
+void SetBrowserDpiSettings(CefRefPtr<CefBrowser> cefBrowser);
+
 class ClientHandler : public CefClient,
                       public CefDisplayHandler,
                       public CefLifeSpanHandler,
@@ -57,6 +59,10 @@ class ClientHandler : public CefClient,
                            ErrorCode errorCode,
                            const CefString& errorText,
                            const CefString& failedUrl) OVERRIDE;
+  virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
+                                    bool isLoading,
+                                    bool canGoBack,
+                                    bool canGoForward) OVERRIDE;
 
   // CefContextMenuHandler methods:
   virtual void OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,

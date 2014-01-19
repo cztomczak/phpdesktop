@@ -12,6 +12,7 @@
 #include <crtdbg.h> // _ASSERT() macro
 #include "resource.h"
 #include <iostream>
+#include <cmath>
 
 #include "executable.h"
 #include "fatal_error.h"
@@ -243,7 +244,42 @@ HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title) {
     bool disable_maximize_button =
             (*settings)["main_window"]["disable_maximize_button"];
     bool center_on_screen = (*settings)["main_window"]["center_on_screen"];
-    if (!default_width || !default_height) {
+    if (default_width && default_height) {
+        // Win7 DPI:
+        // text size Larger 150% => ppix/ppiy 144
+        // text size Medium 125% => ppix/ppiy 120
+        // text size Smaller 100% => ppix/ppiy 96
+        HDC hdc = GetDC(HWND_DESKTOP);
+        int ppix = GetDeviceCaps(hdc, LOGPIXELSX);
+        int ppiy = GetDeviceCaps(hdc, LOGPIXELSY);
+        ReleaseDC(HWND_DESKTOP, hdc);
+        double newZoomLevel = 0.0;
+        if (ppix > 96) {
+            newZoomLevel = (ppix - 96) / 24;
+        }
+        if (newZoomLevel > 0.0) {
+            default_width = default_width + (int)ceil(newZoomLevel * 0.25 * default_width);
+            default_height = default_height + (int)ceil(newZoomLevel * 0.25 * default_height);
+            LOG_DEBUG << "DPI, main window width/height = " << default_width
+                      << "/" << default_height << ", enlarged by "
+                      << ceil(newZoomLevel * 0.25 * 100) << "%";
+        }
+        int max_width = GetSystemMetrics(SM_CXMAXIMIZED) - 96;
+        int max_height = GetSystemMetrics(SM_CYMAXIMIZED) - 64;
+        LOG_DEBUG << "Window max width/height = " << max_width << "/" << max_height;
+        bool max_size_exceeded = (default_width > max_width \
+                || default_height > max_height);
+        if (default_width > max_width) {
+            default_width = max_width;
+        }
+        if (default_height > max_height) {
+            default_height = max_height;
+        }
+        if (max_size_exceeded) {
+            LOG_DEBUG << "Main window max size exceeded, new width/height = "
+                      << default_width << "/" << default_height;
+        }
+    } else {
         default_width = CW_USEDEFAULT;
         default_height = CW_USEDEFAULT;
     }
