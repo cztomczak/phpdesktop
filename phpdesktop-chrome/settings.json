@@ -1,6 +1,7 @@
 {
     "application": {
-        "single_instance_guid": ""
+        "single_instance_guid": "",
+        "dpi_aware": true
     },
     "debugging": {
         "show_console": true,

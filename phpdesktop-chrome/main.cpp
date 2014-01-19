@@ -143,11 +143,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     }
 
     g_hInstance = hInstance;
-    json_value* settings = GetApplicationSettings();
+    json_value* appSettings = GetApplicationSettings();
     // Debugging options.
-    bool show_console = (*settings)["debugging"]["show_console"];
-    std::string log_level = (*settings)["debugging"]["log_level"];
-    std::string log_file = (*settings)["debugging"]["log_file"];
+    bool show_console = (*appSettings)["debugging"]["show_console"];
+    std::string log_level = (*appSettings)["debugging"]["log_level"];
+    std::string log_file = (*appSettings)["debugging"]["log_file"];
     if (log_file.length()) {
         log_file = GetExecutableDirectory() + "\\" + log_file;
         log_file = GetRealPath(log_file);
@@ -165,13 +165,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
              << FILELog::ToString(FILELog::ReportingLevel());
 
     // Main window title option.
-    std::string main_window_title = (*settings)["main_window"]["title"];
+    std::string main_window_title = (*appSettings)["main_window"]["title"];
     if (main_window_title.empty())
         main_window_title = GetExecutableName();
 
     // Single instance guid option.
     const char* single_instance_guid =
-            (*settings)["application"]["single_instance_guid"];
+            (*appSettings)["application"]["single_instance_guid"];
     if (single_instance_guid && single_instance_guid[0] != 0) {
         int guidSize = strlen(single_instance_guid) + 1;
         g_singleInstanceApplicationGuid = new wchar_t[guidSize];
@@ -238,12 +238,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     return 0;
 }
 HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title) {
-    json_value* settings = GetApplicationSettings();
-    long default_width = (*settings)["main_window"]["default_size"][0];
-    long default_height = (*settings)["main_window"]["default_size"][1];
+    json_value* appSettings = GetApplicationSettings();
+    long default_width = (*appSettings)["main_window"]["default_size"][0];
+    long default_height = (*appSettings)["main_window"]["default_size"][1];
     bool disable_maximize_button =
-            (*settings)["main_window"]["disable_maximize_button"];
-    bool center_on_screen = (*settings)["main_window"]["center_on_screen"];
+            (*appSettings)["main_window"]["disable_maximize_button"];
+    bool center_on_screen = (*appSettings)["main_window"]["center_on_screen"];
+    bool dpi_aware = (*appSettings)["application"]["dpi_aware"];
+
     if (default_width && default_height) {
         // Win7 DPI:
         // text size Larger 150% => ppix/ppiy 144
@@ -257,7 +259,7 @@ HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title) {
         if (ppix > 96) {
             newZoomLevel = (ppix - 96) / 24;
         }
-        if (newZoomLevel > 0.0) {
+        if (dpi_aware && newZoomLevel > 0.0) {
             default_width = default_width + (int)ceil(newZoomLevel * 0.25 * default_width);
             default_height = default_height + (int)ceil(newZoomLevel * 0.25 * default_height);
             LOG_DEBUG << "DPI, main window width/height = " << default_width

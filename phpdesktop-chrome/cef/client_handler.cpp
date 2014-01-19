@@ -45,6 +45,11 @@ void SetBrowserDpiSettings(CefRefPtr<CefBrowser> cefBrowser) {
     // won't work. We need to wait a moment before we can set it.
     REQUIRE_UI_THREAD();
 
+    json_value* appSettings = GetApplicationSettings();
+    if (!(*appSettings)["application"]["dpi_aware"]) {
+        return;
+    }
+
     double oldZoomLevel = cefBrowser->GetHost()->GetZoomLevel();
     double newZoomLevel = 0.0;
 
@@ -69,18 +74,31 @@ void SetBrowserDpiSettings(CefRefPtr<CefBrowser> cefBrowser) {
             LOG_DEBUG << "DPI, ppix = " << ppix << ", ppiy = " << ppiy;
             LOG_DEBUG << "DPI, browser zoom level = " 
                       << cefBrowser->GetHost()->GetZoomLevel();
-        } else {
-            CefPostDelayedTask(
-                    TID_UI, 
-                    NewCefRunnableFunction(&SetBrowserDpiSettings, cefBrowser),
-                    13);
         }
     } else {
-        // Success.
-        LOG_DEBUG << "DPI, ppix = " << ppix << ", ppiy = " << ppiy;
-        LOG_DEBUG << "DPI, browser zoom level = " 
-                  << cefBrowser->GetHost()->GetZoomLevel();
+        // This code block running can also be a result of executing
+        // SetZoomLevel(), as GetZoomLevel() didn't return the new
+        // value that was set. Documentation says that if SetZoomLevel
+        // is called on the UI thread, then GetZoomLevel should
+        // immediately return the same value that was set. Unfortunately
+        // this seems not to be true.
+        static bool already_logged = false;
+        if (!already_logged) {
+            already_logged = true;
+            // Success.
+            LOG_DEBUG << "DPI, ppix = " << ppix << ", ppiy = " << ppiy;
+            LOG_DEBUG << "DPI, browser zoom level = " 
+                      << cefBrowser->GetHost()->GetZoomLevel();
+        }
     }
+    // We need to check zooming constantly, during loading of pages.
+    // If we set zooming to 2.0 for localhost/ and then it navigates
+    // to google.com, then the zomming is back at 0.0 and needs to
+    // be set again.
+    CefPostDelayedTask(
+            TID_UI, 
+            NewCefRunnableFunction(&SetBrowserDpiSettings, cefBrowser),
+            50);
 }
 
 void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> cefBrowser) {
@@ -132,9 +150,9 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 }
 
 HWND CreatePopupWindow(HWND parentHandle) {
-    json_value* settings = GetApplicationSettings();    
+    json_value* appSettings = GetApplicationSettings();    
     bool center_relative_to_parent = 
-            (*settings)["popup_window"]["center_relative_to_parent"];
+            (*appSettings)["popup_window"]["center_relative_to_parent"];
 
     // Title will be set in BrowserWindow::BrowserWindow().
     // CW_USEDEFAULT cannot be used with WS_POPUP.
@@ -220,7 +238,7 @@ void ClientHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
 // of failure.
 ///
 /*--cef()--*/
-void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
+void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> cefBrowser,
                                 bool isLoading,
                                 bool canGoBack,
                                 bool canGoForward) {
@@ -231,16 +249,16 @@ void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> cefBrowser,
     REQUIRE_UI_THREAD();
     LOG_DEBUG << "ClientHandler::OnTitleChange(), title = "
               << WideToUtf8(cefTitle);
-    json_value* settings = GetApplicationSettings();
+    json_value* appSettings = GetApplicationSettings();
     HWND cefHandle = cefBrowser->GetHost()->GetWindowHandle();
     BrowserWindow* browser = GetBrowserWindow(cefHandle);
     if (browser && browser->IsPopup()) {
         if (browser->IsUsingMetaTitle()) {
-            std::string ipAddress = (*settings)["web_server"]["listen_on"][0];
+            std::string ipAddress = (*appSettings)["web_server"]["listen_on"][0];
             if (cefTitle.empty() || cefTitle.ToString().find(ipAddress) == 0) {
                 // Use main window title if no title provided in popup.
                 // If there is not meta title, then CEF sets url as a title.
-                std::string main_window_title = (*settings)["main_window"]["title"];
+                std::string main_window_title = (*appSettings)["main_window"]["title"];
                 if (main_window_title.empty())
                     main_window_title = GetExecutableName();
                 browser->SetTitle(Utf8ToWide(main_window_title).c_str());
