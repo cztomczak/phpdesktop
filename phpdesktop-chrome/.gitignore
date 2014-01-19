@@ -1,0 +1,11 @@
+Release/
+Debug/
+ipch/
+*.ncb
+*.suo
+*.user
+*.aps
+*.sdf
+*.opensdf
+php/
+debug.log

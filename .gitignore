@@ -1,0 +1,5 @@
+php-desktop-msie_v10/
+*.zip
+*.7z
+cef_binary_*
+cefsimple
