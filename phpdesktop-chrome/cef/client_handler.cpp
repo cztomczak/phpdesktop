@@ -247,8 +247,6 @@ void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> cefBrowser,
 void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> cefBrowser,
                                   const CefString& cefTitle) {
     REQUIRE_UI_THREAD();
-    LOG_DEBUG << "ClientHandler::OnTitleChange(), title = "
-              << WideToUtf8(cefTitle);
     json_value* appSettings = GetApplicationSettings();
     HWND cefHandle = cefBrowser->GetHost()->GetWindowHandle();
     BrowserWindow* browser = GetBrowserWindow(cefHandle);
