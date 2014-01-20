@@ -37,5 +37,12 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-This product includes PHP software, freely available from
-<http://www.php.net/software/>.
+This product includes the following third party libraries:
+* Chromium Embedded Framework licensed under the BSD 3-clause license.
+  See: https://code.google.com/p/chromiumembedded/
+* PHP Software licensed under the PHP License 3.0.1.
+  See: http://www.php.net/software/
+* Mongoose webserver revision 04fc209 licensed under the MIT license.
+  See: https://github.com/cesanta/mongoose/tree/04fc209644b414d915c446bb1815b55e9fe63acc
+* JSON parser licensed under the BSD 2-clause license.
+  See: https://github.com/udp/json-parser
