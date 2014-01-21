@@ -16,6 +16,7 @@
 #include "../settings.h"
 #include "../log.h"
 #include "../executable.h"
+#include "../string_utils.h"
 
 extern HINSTANCE g_hInstance;
 extern wchar_t g_windowClassName[256];
@@ -126,8 +127,14 @@ HWND CreatePopupWindow(HWND parentHandle) {
 }
 
 bool ShowDevTools(CefRefPtr<CefBrowser> cefBrowser) {
-    CefString devtools_url = cefBrowser->GetHost()->GetDevToolsURL(true);
-    LOG_INFO << "DevTools url: " << devtools_url.ToString();
+    std::string devtools_url = cefBrowser->GetHost()->GetDevToolsURL(true);
+    // Example url returned:
+    //     http://localhost:54008/devtools/devtools.html?ws=localhost:54008
+    //     /devtools/page/1538ed984a2a4a90e5ed941c7d142a12
+    // Let's replace "localhost" with "127.0.0.1", using the ip address
+    // is more reliable.
+    devtools_url = ReplaceString(devtools_url, "localhost:", "127.0.0.1:");
+    LOG_INFO << "DevTools url: " << devtools_url;
     if (devtools_url.empty()) {
         LOG_WARNING << "GetDevToolsURL() returned an empty string. "
                         "Make sure you've set the remote-debugging-port switch";
