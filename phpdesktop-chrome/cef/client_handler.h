@@ -14,7 +14,9 @@ class ClientHandler : public CefClient,
                       public CefDisplayHandler,
                       public CefLifeSpanHandler,
                       public CefLoadHandler,
-                      public CefContextMenuHandler {
+                      public CefContextMenuHandler,
+                      public CefDragHandler,
+                      public CefRequestHandler {
  public:
   ClientHandler();
   ~ClientHandler();
@@ -33,6 +35,12 @@ class ClientHandler : public CefClient,
     return this;
   }
   virtual CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() {
+    return this;
+  }
+  virtual CefRefPtr<CefDragHandler> GetDragHandler() {
+    return this;
+  }
+  virtual CefRefPtr<CefRequestHandler> GetRequestHandler() {
     return this;
   }
 
@@ -69,7 +77,18 @@ class ClientHandler : public CefClient,
                                    CefRefPtr<CefFrame> frame,
                                    CefRefPtr<CefContextMenuParams> params,
                                    CefRefPtr<CefMenuModel> model) OVERRIDE;
-    
+
+  // CefDragHandler methods:
+  virtual bool OnDragEnter(CefRefPtr<CefBrowser> browser,
+                           CefRefPtr<CefDragData> dragData,
+                           DragOperationsMask mask) OVERRIDE;
+
+  // CefRequestHandler methods:
+  virtual bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
+                              CefRefPtr<CefFrame> frame,
+                              CefRefPtr<CefRequest> request,
+                              bool is_redirect) OVERRIDE;
+
  private:
   // List of existing browser windows. Only accessed on the CEF UI thread.
   typedef std::list<CefRefPtr<CefBrowser> > BrowserList;

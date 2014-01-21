@@ -29,6 +29,8 @@
         "cgi_extensions": ["php"]
     },
     "chrome": {
-        "cache_path": "webcache"
+        "cache_path": "webcache",
+        "external_drag": false,
+        "external_navigation": false
     }
 }

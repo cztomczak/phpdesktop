@@ -19,6 +19,7 @@
 
 extern HINSTANCE g_hInstance;
 extern wchar_t g_windowClassName[256];
+extern std::string g_webServerUrl;
 
 namespace {
 
@@ -62,17 +63,17 @@ void SetBrowserDpiSettings(CefRefPtr<CefBrowser> cefBrowser) {
     int ppix = GetDeviceCaps(hdc, LOGPIXELSX);
     int ppiy = GetDeviceCaps(hdc, LOGPIXELSY);
     ReleaseDC(cefHandle, hdc);
-    
+
     if (ppix > 96) {
         newZoomLevel = (ppix - 96) / 24;
     }
-    
+
     if (oldZoomLevel != newZoomLevel) {
         cefBrowser->GetHost()->SetZoomLevel(newZoomLevel);
         if (cefBrowser->GetHost()->GetZoomLevel() != oldZoomLevel) {
             // Succes.
             LOG_DEBUG << "DPI, ppix = " << ppix << ", ppiy = " << ppiy;
-            LOG_DEBUG << "DPI, browser zoom level = " 
+            LOG_DEBUG << "DPI, browser zoom level = "
                       << cefBrowser->GetHost()->GetZoomLevel();
         }
     } else {
@@ -87,7 +88,7 @@ void SetBrowserDpiSettings(CefRefPtr<CefBrowser> cefBrowser) {
             already_logged = true;
             // Success.
             LOG_DEBUG << "DPI, ppix = " << ppix << ", ppiy = " << ppiy;
-            LOG_DEBUG << "DPI, browser zoom level = " 
+            LOG_DEBUG << "DPI, browser zoom level = "
                       << cefBrowser->GetHost()->GetZoomLevel();
         }
     }
@@ -96,11 +97,73 @@ void SetBrowserDpiSettings(CefRefPtr<CefBrowser> cefBrowser) {
     // to google.com, then the zomming is back at 0.0 and needs to
     // be set again.
     CefPostDelayedTask(
-            TID_UI, 
+            TID_UI,
             NewCefRunnableFunction(&SetBrowserDpiSettings, cefBrowser),
             50);
 }
 
+HWND CreatePopupWindow(HWND parentHandle) {
+    json_value* appSettings = GetApplicationSettings();
+    bool center_relative_to_parent =
+            (*appSettings)["popup_window"]["center_relative_to_parent"];
+
+    // Title will be set in BrowserWindow::BrowserWindow().
+    // CW_USEDEFAULT cannot be used with WS_POPUP.
+    HWND hwnd = CreateWindowEx(0, g_windowClassName,
+            0, WS_OVERLAPPEDWINDOW,
+            CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+            parentHandle, 0, g_hInstance, 0);
+    _ASSERT(hwnd);
+    if (center_relative_to_parent) {
+        // This won't work properly as real width/height is set later
+        // when BrowserEvents2::WindowSetWidth() / WindowSetHeight()
+        // are triggered. TODO.
+        // CenterWindow(hwnd);
+    }
+    ShowWindow(hwnd, SW_SHOWNORMAL);
+    UpdateWindow(hwnd);
+    return hwnd;
+}
+
+// ----------------------------------------------------------------------------
+// CefDisplayHandler methods
+// ----------------------------------------------------------------------------
+
+///
+// Called when the page title changes.
+///
+void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> cefBrowser,
+                                  const CefString& cefTitle) {
+    REQUIRE_UI_THREAD();
+    json_value* appSettings = GetApplicationSettings();
+    HWND cefHandle = cefBrowser->GetHost()->GetWindowHandle();
+    BrowserWindow* browser = GetBrowserWindow(cefHandle);
+    if (browser && browser->IsPopup()) {
+        if (browser->IsUsingMetaTitle()) {
+            std::string ipAddress = (*appSettings)["web_server"]["listen_on"][0];
+            if (cefTitle.empty() || cefTitle.ToString().find(ipAddress) == 0) {
+                // Use main window title if no title provided in popup.
+                // If there is not meta title, then CEF sets url as a title.
+                std::string main_window_title = (*appSettings)["main_window"]["title"];
+                if (main_window_title.empty())
+                    main_window_title = GetExecutableName();
+                browser->SetTitle(Utf8ToWide(main_window_title).c_str());
+            } else {
+                browser->SetTitle(std::wstring(cefTitle).c_str());
+            }
+        } else {
+            browser->SetTitleFromSettings();
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+// CefLifeSpanHandler methods
+// ----------------------------------------------------------------------------
+
+///
+// Called after a new browser is created.
+///
 void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> cefBrowser) {
     REQUIRE_UI_THREAD();
 
@@ -124,11 +187,19 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> cefBrowser) {
     }
 
     SetBrowserDpiSettings(cefBrowser);
-    
+
     // Add to the list of existing browsers.
     browser_list_.push_back(cefBrowser);
 }
 
+///
+// Called just before a browser is destroyed. Release all references to the
+// browser object and do not attempt to execute any methods on the browser
+// object after this callback returns. If this is a modal window and a custom
+// modal loop implementation was provided in RunModal() this callback should
+// be used to exit the custom modal loop. See DoClose() documentation for
+// additional usage information.
+///
 void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     REQUIRE_UI_THREAD();
 
@@ -147,29 +218,6 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
         // All browser windows have closed. Quit the application message loop.
         CefQuitMessageLoop();
     }
-}
-
-HWND CreatePopupWindow(HWND parentHandle) {
-    json_value* appSettings = GetApplicationSettings();    
-    bool center_relative_to_parent = 
-            (*appSettings)["popup_window"]["center_relative_to_parent"];
-
-    // Title will be set in BrowserWindow::BrowserWindow().
-    // CW_USEDEFAULT cannot be used with WS_POPUP.
-    HWND hwnd = CreateWindowEx(0, g_windowClassName, 
-            0, WS_OVERLAPPEDWINDOW, 
-            CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 
-            parentHandle, 0, g_hInstance, 0);
-    _ASSERT(hwnd);
-    if (center_relative_to_parent) {
-        // This won't work properly as real width/height is set later
-        // when BrowserEvents2::WindowSetWidth() / WindowSetHeight()
-        // are triggered. TODO.
-        // CenterWindow(hwnd);
-    }
-    ShowWindow(hwnd, SW_SHOWNORMAL);
-    UpdateWindow(hwnd); 
-    return hwnd;
 }
 
 ///
@@ -194,23 +242,33 @@ bool ClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser,
                             CefRefPtr<CefClient>& client,
                             CefBrowserSettings& settings,
                             bool* no_javascript_access) {
-    /*
-    HWND cefHandle = browser->GetHost()->GetWindowHandle();
-    HWND outerHandle = GetParent(cefHandle);
-    if (outerHandle) {
-        HWND popupHandle = CreatePopupWindow(outerHandle);
-        RECT rect;
-        GetWindowRect(popupHandle, &rect);
-        windowInfo.SetAsChild(popupHandle, rect);
+    json_value* appSettings = GetApplicationSettings();
+    bool external_navigation = (*appSettings)["chrome"]["external_navigation"];
+    if (target_url.ToString().find(g_webServerUrl) == 0) {
+        // Allow to create.
+        return false; 
     } else {
-        LOG_ERROR << "GetParent() for cef browser failed "
-                     "in ClientHandler::OnBeforePopup()";
+        if (external_navigation) {
+            // Allow to create.
+            return false; 
+        } else {
+            // Open in system default browser.
+            ShellExecute(0, L"open", target_url.ToWString().c_str(), 0, 0, SW_SHOWNORMAL);
+            return true;
+        }
     }
-    */
-    
-    return false;
 }
 
+// ----------------------------------------------------------------------------
+// CefLoadHandler methods
+// ----------------------------------------------------------------------------
+
+///
+// Called when the resource load for a navigation fails or is canceled.
+// |errorCode| is the error code number, |errorText| is the error text and
+// |failedUrl| is the URL that failed to load. See net\base\net_error_list.h
+// for complete descriptions of the error codes.
+///
 void ClientHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
                                 CefRefPtr<CefFrame> frame,
                                 ErrorCode errorCode,
@@ -244,30 +302,9 @@ void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> cefBrowser,
                                 bool canGoForward) {
 }
 
-void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> cefBrowser,
-                                  const CefString& cefTitle) {
-    REQUIRE_UI_THREAD();
-    json_value* appSettings = GetApplicationSettings();
-    HWND cefHandle = cefBrowser->GetHost()->GetWindowHandle();
-    BrowserWindow* browser = GetBrowserWindow(cefHandle);
-    if (browser && browser->IsPopup()) {
-        if (browser->IsUsingMetaTitle()) {
-            std::string ipAddress = (*appSettings)["web_server"]["listen_on"][0];
-            if (cefTitle.empty() || cefTitle.ToString().find(ipAddress) == 0) {
-                // Use main window title if no title provided in popup.
-                // If there is not meta title, then CEF sets url as a title.
-                std::string main_window_title = (*appSettings)["main_window"]["title"];
-                if (main_window_title.empty())
-                    main_window_title = GetExecutableName();
-                browser->SetTitle(Utf8ToWide(main_window_title).c_str());
-            } else {
-                browser->SetTitle(std::wstring(cefTitle).c_str());
-            }
-        } else {
-            browser->SetTitleFromSettings();
-        }
-    }
-}
+// ----------------------------------------------------------------------------
+// CefContextMenuHandler methods
+// ----------------------------------------------------------------------------
 
 ///
 // Called before a context menu is displayed. |params| provides information
@@ -284,3 +321,63 @@ void ClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
     model->Remove(MENU_ID_VIEW_SOURCE);
 }
 
+// ----------------------------------------------------------------------------
+// CefDragHandler methods
+// ----------------------------------------------------------------------------
+
+///
+// Called when an external drag event enters the browser window. |dragData|
+// contains the drag event data and |mask| represents the type of drag
+// operation. Return false for default drag handling behavior or true to
+// cancel the drag event.
+///
+bool ClientHandler::OnDragEnter(CefRefPtr<CefBrowser> browser,
+                       CefRefPtr<CefDragData> dragData,
+                       DragOperationsMask mask) {
+    json_value* appSettings = GetApplicationSettings();
+    bool external_drag = (*appSettings)["chrome"]["external_drag"];
+    if (external_drag) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+// ----------------------------------------------------------------------------
+// CefRequestHandler methods
+// ----------------------------------------------------------------------------
+
+///
+// Called on the UI thread before browser navigation. Return true to cancel
+// the navigation or false to allow the navigation to proceed. The |request|
+// object cannot be modified in this callback.
+// CefLoadHandler::OnLoadingStateChange will be called twice in all cases.
+// If the navigation is allowed CefLoadHandler::OnLoadStart and
+// CefLoadHandler::OnLoadEnd will be called. If the navigation is canceled
+// CefLoadHandler::OnLoadError will be called with an |errorCode| value of
+// ERR_ABORTED.
+///
+/*--cef()--*/
+bool ClientHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
+                            CefRefPtr<CefFrame> frame,
+                            CefRefPtr<CefRequest> request,
+                            bool is_redirect) {
+    REQUIRE_UI_THREAD();
+    // See also OnBeforePopup.
+    json_value* appSettings = GetApplicationSettings();
+    bool external_navigation = (*appSettings)["chrome"]["external_navigation"];
+    CefString newUrl = request->GetURL();
+    if (newUrl.ToString().find(g_webServerUrl) == 0) {
+        // Allow to open in phpdesktop browser.
+        return false;
+    } else {
+        if (external_navigation) {
+            // Allow to open in phpdesktop browser.
+            return false;
+        } else {
+            // Open in system default browser.
+            ShellExecute(0, L"open", newUrl.ToWString().c_str(), 0, 0, SW_SHOWNORMAL);
+            return true;
+        }
+    }
+}
