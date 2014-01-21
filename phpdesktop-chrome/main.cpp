@@ -269,14 +269,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     CreateMainWindow(hInstance, nCmdShow, main_window_title);
     CefRunMessageLoop();
     CefShutdown();
-    
+
+    LOG_INFO << "Ended application";
+    LOG_INFO << "--------------------------------------------------------";
+
     // See InitLogging().
     if (g_logFileHandle) {
         CloseHandle(g_logFileHandle);
     }
-
-    LOG_INFO << "Ended application";
-    LOG_INFO << "--------------------------------------------------------";
 
     return 0;
 }

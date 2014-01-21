@@ -265,6 +265,8 @@
     <None Include="settings.json">
       <FileType>Document</FileType>
     </None>
+    <None Include="www\cookies.php" />
+    <None Include="www\forms.php" />
     <None Include="www\google.php" />
     <None Include="www\html5-video.php" />
     <None Include="www\index.php" />
@@ -272,6 +274,7 @@
     <None Include="www\phpinfo.php" />
     <None Include="resource.aps" />
     <None Include="www\chrome-version.php" />
+    <None Include="www\popup.php" />
     <None Include="www\sqlite.php" />
     <None Include="www\_pdo.php" />
   </ItemGroup>
