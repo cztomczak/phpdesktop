@@ -126,7 +126,8 @@ HWND CreatePopupWindow(HWND parentHandle) {
 }
 
 bool ShowDevTools(CefRefPtr<CefBrowser> cefBrowser) {
-    CefString devtools_url = cefBrowser->GetHost()->GetDevToolsURL(false);
+    CefString devtools_url = cefBrowser->GetHost()->GetDevToolsURL(true);
+    LOG_INFO << "DevTools url: " << devtools_url.ToString();
     if (devtools_url.empty()) {
         LOG_WARNING << "GetDevToolsURL() returned an empty string. "
                         "Make sure you've set the remote-debugging-port switch";
