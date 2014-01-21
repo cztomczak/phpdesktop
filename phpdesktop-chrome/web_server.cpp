@@ -54,11 +54,14 @@ bool StartWebServer() {
 
     // WWW directory from settings.
     std::string wwwDirectory = (*settings)["web_server"]["www_directory"];
-    if (wwwDirectory.empty())
+    if (wwwDirectory.empty()) {
         wwwDirectory = "www";
-    wwwDirectory = GetExecutableDirectory().append("\\").append(wwwDirectory);
-    // Mongoose won't accept "..\\" in a path, need a real path.
-    wwwDirectory = GetRealPath(wwwDirectory);
+    }
+    if (wwwDirectory.length() && wwwDirectory.find(":") == std::string::npos) {
+        wwwDirectory = GetExecutableDirectory() + "\\" + wwwDirectory;
+        // Mongoose won't accept "..\\" in a path, need a real path.
+        wwwDirectory = GetRealPath(wwwDirectory);
+    }
     LOG_INFO << "WWW directory: " << wwwDirectory;
 
     // Index files from settings.
@@ -78,10 +81,13 @@ bool StartWebServer() {
 
     // CGI interpreter from settings.
     std::string cgiInterpreter = (*settings)["web_server"]["cgi_interpreter"];
-    if (cgiInterpreter.empty())
+    if (cgiInterpreter.empty()) {
         cgiInterpreter = "php\\php-cgi.exe";
-    cgiInterpreter.insert(0, GetExecutableDirectory() + "\\");
-    cgiInterpreter = GetRealPath(cgiInterpreter);
+    }
+    if (cgiInterpreter.length() && cgiInterpreter.find(":") == std::string::npos) {
+        cgiInterpreter = GetExecutableDirectory() + "\\" + cgiInterpreter;
+        cgiInterpreter = GetRealPath(cgiInterpreter);
+    }
     LOG_INFO << "CGI interpreter: " << cgiInterpreter;
 
     // CGI extensions from settings.

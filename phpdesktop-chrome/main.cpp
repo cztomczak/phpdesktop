@@ -148,7 +148,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     bool show_console = (*appSettings)["debugging"]["show_console"];
     std::string log_level = (*appSettings)["debugging"]["log_level"];
     std::string log_file = (*appSettings)["debugging"]["log_file"];
-    if (log_file.length()) {
+    if (log_file.length() && log_file.find(":") == std::string::npos) {
         log_file = GetExecutableDirectory() + "\\" + log_file;
         log_file = GetRealPath(log_file);
     }
@@ -210,6 +210,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     }
 
     CefSettings cef_settings;
+    std::string cache_path = (*appSettings)["chrome"]["cache_path"];
+    if (cache_path.length() && cache_path.find(":") == std::string::npos) {
+        cache_path = GetExecutableDirectory() + "\\" + cache_path;
+        cache_path = GetRealPath(cache_path);
+    }
+    CefString(&cef_settings.cache_path) = cache_path; 
     CefInitialize(main_args, cef_settings, app.get());
     CreateMainWindow(hInstance, nCmdShow, main_window_title);
     CefRunMessageLoop();

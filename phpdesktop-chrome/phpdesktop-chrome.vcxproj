@@ -97,6 +97,9 @@
     <Manifest>
       <AdditionalManifestFiles>DeclareDPIAware.manifest %(AdditionalManifestFiles)</AdditionalManifestFiles>
     </Manifest>
+    <PreBuildEvent>
+      <Command>copy /y "$(ProjectDir)settings.json" "$(ProjectDir)$(Configuration)/settings.json" </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
@@ -133,6 +136,9 @@
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <PreBuildEvent>
+      <Command>copy /y "$(ProjectDir)settings.json" "$(ProjectDir)$(Configuration)/settings.json" </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cef\app.cpp" />
@@ -256,7 +262,9 @@
     <None Include="icon.ico" />
     <None Include=".gitignore" />
     <None Include="icon.png" />
-    <None Include="settings.json" />
+    <None Include="settings.json">
+      <FileType>Document</FileType>
+    </None>
     <None Include="www\google.php" />
     <None Include="www\html5-video.php" />
     <None Include="www\index.php" />
