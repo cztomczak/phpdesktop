@@ -35,6 +35,8 @@
         "cache_path": "webcache",
         "external_drag": false,
         "external_navigation": true,
+        "reload_page_F5": true,
+        "devtools_F12": true,
         "command_line_switches": {
             "remote-debugging-port": "54008"
         }

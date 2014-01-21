@@ -9,6 +9,8 @@
 #include <list>
 
 void SetBrowserDpiSettings(CefRefPtr<CefBrowser> cefBrowser);
+HWND CreatePopupWindow(HWND parentHandle);
+bool ShowDevTools(CefRefPtr<CefBrowser> cefBrowser);
 
 class ClientHandler : public CefClient,
                       public CefDisplayHandler,
@@ -16,7 +18,8 @@ class ClientHandler : public CefClient,
                       public CefLoadHandler,
                       public CefContextMenuHandler,
                       public CefDragHandler,
-                      public CefRequestHandler {
+                      public CefRequestHandler,
+                      public CefKeyboardHandler {
  public:
   ClientHandler();
   ~ClientHandler();
@@ -41,6 +44,9 @@ class ClientHandler : public CefClient,
     return this;
   }
   virtual CefRefPtr<CefRequestHandler> GetRequestHandler() {
+    return this;
+  }
+  virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() {
     return this;
   }
 
@@ -77,6 +83,13 @@ class ClientHandler : public CefClient,
                                    CefRefPtr<CefFrame> frame,
                                    CefRefPtr<CefContextMenuParams> params,
                                    CefRefPtr<CefMenuModel> model) OVERRIDE;
+  virtual bool OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
+                                    CefRefPtr<CefFrame> frame,
+                                    CefRefPtr<CefContextMenuParams> params,
+                                    int command_id,
+                                    EventFlags event_flags) OVERRIDE;
+  virtual void OnContextMenuDismissed(CefRefPtr<CefBrowser> browser,
+                                      CefRefPtr<CefFrame> frame) OVERRIDE;
 
   // CefDragHandler methods:
   virtual bool OnDragEnter(CefRefPtr<CefBrowser> browser,
@@ -88,6 +101,11 @@ class ClientHandler : public CefClient,
                               CefRefPtr<CefFrame> frame,
                               CefRefPtr<CefRequest> request,
                               bool is_redirect) OVERRIDE;
+
+  // CefKeyboardHandler methods:
+  virtual bool OnKeyEvent(CefRefPtr<CefBrowser> browser,
+                          const CefKeyEvent& event,
+                          CefEventHandle os_event) OVERRIDE;
 
  private:
   // List of existing browser windows. Only accessed on the CEF UI thread.

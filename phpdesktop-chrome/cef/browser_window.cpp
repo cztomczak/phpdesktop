@@ -99,15 +99,13 @@ void BrowserWindow::SetCefBrowser(CefRefPtr<CefBrowser> cefBrowser) {
     cefBrowser_ = cefBrowser;
     // OnSize was called from WM_SIZE, but cefBrowser_ was not yet
     // set, so the window wasn't yet positioned correctly.
-    if (!this->IsPopup()) {
-        this->OnSize();
-    }
+    this->OnSize();
 }
 bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     LOG_DEBUG << "BrowserWindow::CreateBrowserControl()";
     // This is called only for the main window.
     // Popup cef browsers are created internally by CEF,
-    // see OnBeforePopup, OnAfterCreated, CreatePopupWindow.
+    // see OnBeforePopup, OnAfterCreated.
     json_value* settings = GetApplicationSettings();
     
     RECT rect;

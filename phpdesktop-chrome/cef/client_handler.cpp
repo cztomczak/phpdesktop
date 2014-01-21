@@ -125,6 +125,38 @@ HWND CreatePopupWindow(HWND parentHandle) {
     return hwnd;
 }
 
+bool ShowDevTools(CefRefPtr<CefBrowser> cefBrowser) {
+    CefString devtools_url = cefBrowser->GetHost()->GetDevToolsURL(false);
+    if (devtools_url.empty()) {
+        LOG_WARNING << "GetDevToolsURL() returned an empty string. "
+                        "Make sure you've set the remote-debugging-port switch";
+        return false;
+    }
+    CefWindowInfo windowInfo;
+    CefBrowserSettings browser_settings;        
+    BrowserWindow* phpBrowser = GetBrowserWindow(cefBrowser->GetHost()->GetWindowHandle());
+    if (!phpBrowser) {
+        LOG_ERROR << "GetBrowserWindow() failed in ClientHandler::OnKeyEvent";
+        return false;
+    }
+    HWND popupHandle = CreatePopupWindow(phpBrowser->GetWindowHandle());
+    if (!popupHandle) {
+        LOG_ERROR << "CreatePopupWindow() failed in ClientHandler::OnKeyEvent";
+        return false;
+    }
+    RECT rect;
+    GetWindowRect(popupHandle, &rect);
+    windowInfo.SetAsChild(popupHandle, rect);
+    bool created = CefBrowserHost::CreateBrowser(
+            windowInfo, cefBrowser->GetHost()->GetClient(), devtools_url,
+            browser_settings, NULL);
+    if (!created) {
+        LOG_ERROR << "CreateBrowser() failed in ClientHandler::OnKeyEvent";
+        return false;
+    }
+    return true;
+}
+
 // ----------------------------------------------------------------------------
 // CefDisplayHandler methods
 // ----------------------------------------------------------------------------
@@ -306,6 +338,9 @@ void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> cefBrowser,
 // CefContextMenuHandler methods
 // ----------------------------------------------------------------------------
 
+#define MY_MENU_ID_DEVTOOLS MENU_ID_USER_FIRST + 1
+#define MY_MENU_ID_RELOAD_PAGE MENU_ID_USER_FIRST + 2
+
 ///
 // Called before a context menu is displayed. |params| provides information
 // about the context menu state. |model| initially contains the default
@@ -318,7 +353,56 @@ void ClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
                                 CefRefPtr<CefFrame> frame,
                                 CefRefPtr<CefContextMenuParams> params,
                                 CefRefPtr<CefMenuModel> model) {
+    json_value* appSettings = GetApplicationSettings();
+    bool reload_page_F5 = (*appSettings)["chrome"]["reload_page_F5"];
+    bool devtools_F12 = (*appSettings)["chrome"]["devtools_F12"];
+
     model->Remove(MENU_ID_VIEW_SOURCE);
+    if (!params->IsEditable() && params->GetSelectionText().empty()
+            && (params->GetPageUrl().length() 
+                    || params->GetFrameUrl().length())) {
+        if (reload_page_F5) {
+            model->AddItem(MY_MENU_ID_RELOAD_PAGE, "Reload page");
+        }
+        if (devtools_F12) {
+            model->AddSeparator();
+            model->AddItem(MY_MENU_ID_DEVTOOLS, "Show Developer Tools");
+        }
+    }
+}
+
+///
+// Called to execute a command selected from the context menu. Return true if
+// the command was handled or false for the default implementation. See
+// cef_menu_id_t for the command ids that have default implementations. All
+// user-defined command ids should be between MENU_ID_USER_FIRST and
+// MENU_ID_USER_LAST. |params| will have the same values as what was passed to
+// OnBeforeContextMenu(). Do not keep a reference to |params| outside of this
+// callback.
+///
+/*--cef()--*/
+bool ClientHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
+                                CefRefPtr<CefFrame> frame,
+                                CefRefPtr<CefContextMenuParams> params,
+                                int command_id,
+                                EventFlags event_flags) {
+    if (command_id == MY_MENU_ID_RELOAD_PAGE) {
+        browser->ReloadIgnoreCache();
+        return true;
+    } else if (command_id == MY_MENU_ID_DEVTOOLS) {
+        ShowDevTools(browser);
+        return true;
+    }
+    return false; 
+}
+
+///
+// Called when the context menu is dismissed irregardless of whether the menu
+// was empty or a command was selected.
+///
+/*--cef()--*/
+void ClientHandler::OnContextMenuDismissed(CefRefPtr<CefBrowser> browser,
+                                    CefRefPtr<CefFrame> frame) {
 }
 
 // ----------------------------------------------------------------------------
@@ -380,4 +464,40 @@ bool ClientHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
             return true;
         }
     }
+}
+
+// ----------------------------------------------------------------------------
+// CefKeyboardHandler methods
+// ----------------------------------------------------------------------------
+
+///
+// Called after the renderer and JavaScript in the page has had a chance to
+// handle the event. |event| contains information about the keyboard event.
+// |os_event| is the operating system event message, if any. Return true if
+// the keyboard event was handled or false otherwise.
+///
+/*--cef()--*/
+bool ClientHandler::OnKeyEvent(CefRefPtr<CefBrowser> cefBrowser,
+                        const CefKeyEvent& event,
+                        CefEventHandle os_event) {
+    REQUIRE_UI_THREAD();
+    
+    json_value* appSettings = GetApplicationSettings();
+    bool reload_page_F5 = (*appSettings)["chrome"]["reload_page_F5"];
+    bool devtools_F12 = (*appSettings)["chrome"]["devtools_F12"];
+    
+    if (reload_page_F5 && event.windows_key_code == VK_F5 
+            && event.type == KEYEVENT_RAWKEYDOWN) {
+        LOG_DEBUG << "F5 pressed, reloading page";
+        cefBrowser->ReloadIgnoreCache();
+        return false;
+    } else if (devtools_F12 && event.windows_key_code == VK_F12 
+            && event.type == KEYEVENT_RAWKEYDOWN) {
+        LOG_DEBUG << "F12 pressed, opening developer tools";
+        if (!ShowDevTools(cefBrowser)) {
+            return false;
+        }
+        return true;
+    }
+    return false;
 }

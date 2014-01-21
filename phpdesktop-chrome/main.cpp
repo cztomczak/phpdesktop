@@ -61,7 +61,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             break;
         case WM_CREATE:
             g_windowCount++;
-            browser = new BrowserWindow(hwnd, false);
+            if (GetWindow(hwnd, GW_OWNER)) {
+                browser = new BrowserWindow(hwnd, true);
+            } else {
+                browser = new BrowserWindow(hwnd, false);
+            }
             StoreBrowserWindow(hwnd, browser);
             return 0;
         case WM_DESTROY:
