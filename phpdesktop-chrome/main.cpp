@@ -13,6 +13,8 @@
 #include "resource.h"
 #include <iostream>
 #include <cmath>
+#include <io.h>
+#include <Fcntl.h>
 
 #include "executable.h"
 #include "fatal_error.h"
@@ -32,6 +34,7 @@ wchar_t* g_singleInstanceApplicationGuid = 0;
 wchar_t g_windowClassName[256] = L"";
 int g_windowCount = 0;
 HINSTANCE g_hInstance = 0;
+HANDLE g_logFileHandle = NULL;
 extern std::string g_webServerUrl;
 
 HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title);
@@ -133,27 +136,40 @@ bool ProcessKeyboardMessage(MSG* msg) {
 }
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPTSTR lpstrCmdLine, int nCmdShow) {
-
-    // CEF subprocesses.
-    CefMainArgs main_args(hInstance);
-    CefRefPtr<App> app(new App);
-    int exit_code = CefExecuteProcess(main_args, app.get());
-    if (exit_code >= 0) {
-        return exit_code;
-    }
-
     g_hInstance = hInstance;
     json_value* appSettings = GetApplicationSettings();
+    
     // Debugging options.
     bool show_console = (*appSettings)["debugging"]["show_console"];
+    bool subprocess_show_console = (*appSettings)["debugging"]["subprocess_show_console"];
     std::string log_level = (*appSettings)["debugging"]["log_level"];
     std::string log_file = (*appSettings)["debugging"]["log_file"];
     if (log_file.length() && log_file.find(":") == std::string::npos) {
         log_file = GetExecutableDirectory() + "\\" + log_file;
         log_file = GetRealPath(log_file);
     }
+    
+    // Initialize logging.
+    if (std::wstring(lpstrCmdLine).find(L"--type=") != std::string::npos) {
+        // This is a subprocess.
+        InitLogging(subprocess_show_console, log_level, log_file);
+    } else {
+        // Main browser process.
+        InitLogging(show_console, log_level, log_file);
+    }
+    
+    // CEF subprocesses.
+    CefMainArgs main_args(hInstance);
+    CefRefPtr<App> app(new App);    
+    int exit_code = CefExecuteProcess(main_args, app.get());
+    if (exit_code >= 0) {
+        // See InitLogging().
+        if (g_logFileHandle) {
+            CloseHandle(g_logFileHandle);
+        }
+        return exit_code;
+    }
 
-    InitLogging(show_console, log_level, log_file);
     LOG_INFO << "--------------------------------------------------------";
     LOG_INFO << "Started application";
 
@@ -210,33 +226,50 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     }
 
     CefSettings cef_settings;
+
+    // log_file
+    std::string chrome_log_file = (*appSettings)["chrome"]["log_file"];
+    if (chrome_log_file.length() && chrome_log_file.find(":") == std::string::npos) {
+        chrome_log_file = GetExecutableDirectory() + "\\" + chrome_log_file;
+        chrome_log_file = GetRealPath(chrome_log_file);
+    }
+    CefString(&cef_settings.log_file) = chrome_log_file;
+    
+    // log_severity
+    std::string chrome_log_severity = (*appSettings)["chrome"]["log_severity"];
+    cef_log_severity_t log_severity = LOGSEVERITY_DEFAULT;
+    if (chrome_log_severity == "verbose") {
+        log_severity = LOGSEVERITY_VERBOSE;
+    } else if (chrome_log_severity == "info") {
+        log_severity = LOGSEVERITY_INFO;
+    } else if (chrome_log_severity == "warning") {
+        log_severity = LOGSEVERITY_WARNING;
+    } else if (chrome_log_severity == "error") {
+        log_severity = LOGSEVERITY_ERROR;
+    } else if (chrome_log_severity == "error-report") {
+        log_severity = LOGSEVERITY_ERROR_REPORT;
+    } else if (chrome_log_severity == "disable") {
+        log_severity = LOGSEVERITY_DISABLE;
+    }
+    cef_settings.log_severity = log_severity;
+    
+    // cache_path
     std::string cache_path = (*appSettings)["chrome"]["cache_path"];
     if (cache_path.length() && cache_path.find(":") == std::string::npos) {
         cache_path = GetExecutableDirectory() + "\\" + cache_path;
         cache_path = GetRealPath(cache_path);
     }
-    CefString(&cef_settings.cache_path) = cache_path; 
+    CefString(&cef_settings.cache_path) = cache_path;
+
     CefInitialize(main_args, cef_settings, app.get());
     CreateMainWindow(hInstance, nCmdShow, main_window_title);
     CefRunMessageLoop();
     CefShutdown();
-
-    /*
-    MSG msg;
-    int ret;
-    while ((ret = GetMessage(&msg, 0, 0, 0)) != 0) {
-        if (ret == -1) {
-            LOG_ERROR << "WinMain.GetMessage() returned -1";
-            _ASSERT(false);
-            break;
-        } else {
-            if (!ProcessKeyboardMessage(&msg)) {
-                TranslateMessage(&msg);
-                DispatchMessage(&msg);
-            }
-        }
+    
+    // See InitLogging().
+    if (g_logFileHandle) {
+        CloseHandle(g_logFileHandle);
     }
-    */
 
     LOG_INFO << "Ended application";
     LOG_INFO << "--------------------------------------------------------";
@@ -335,7 +368,7 @@ void InitLogging(bool show_console, std::string log_level,
     // Debugging mongoose web server.
     FILE* mongoose_file;
     freopen_s(&mongoose_file,
-            GetExecutableDirectory().append("\\debug_mongoose.log").c_str(),
+            GetExecutableDirectory().append("\\debug-mongoose.log").c_str(),
             "ab", stdout);
 #endif
 
@@ -345,10 +378,45 @@ void InitLogging(bool show_console, std::string log_level,
         FILELog::ReportingLevel() = logINFO;
 
     if (log_file.length()) {
-        FILE* pFile;
+        // The log file needs to be opened in shared mode so that
+        // CEF subprocesses can also append to this file.
+        // Converting HANDLE to FILE*:
+        // http://stackoverflow.com/a/7369662/623622
+        g_logFileHandle = CreateFile(
+                    Utf8ToWide(log_file).c_str(),
+                    GENERIC_WRITE,
+                    FILE_SHARE_WRITE,
+                    NULL,
+                    OPEN_ALWAYS,
+                    FILE_ATTRIBUTE_NORMAL,
+                    NULL);
+        // Calling CloseHandle after CefShutdown.
+        if (g_logFileHandle == INVALID_HANDLE_VALUE) {
+            g_logFileHandle = NULL;
+            LOG_ERROR << "Opening log file for appending failed";
+            return;
+        }
+        int fd = _open_osfhandle((intptr_t)g_logFileHandle, _O_APPEND | _O_RDONLY);
+        if (fd == -1) {
+            LOG_ERROR << "Opening log file for appending failed, "
+                      << "_open_osfhandle() failed";
+            return;
+        }
+        FILE* pFile = _fdopen(fd, "a+");
+        if (pFile == 0) {
+            _close(fd);
+            LOG_ERROR << "Opening log file for appending failed, "
+                      << "_fdopen() failed";
+            return;
+        }
+        // TODO: should we call fclose(pFile) later?
+        Output2FILE::Stream() = pFile;
+        /*
+        OLD WAY:
         if (0 == _wfopen_s(&pFile, Utf8ToWide(log_file).c_str(), L"a"))
             Output2FILE::Stream() = pFile;
         else
-            LOG_INFO << "Opening log file for writing failed";
+            LOG_ERROR << "Opening log file for appending failed";
+        */
     }
 }
