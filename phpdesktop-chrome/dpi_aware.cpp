@@ -82,9 +82,9 @@ void GetDpiAwareWindowSize(int* width, int* height) {
         newZoomLevel = (ppix - 96) / 24;
     }
     if (newZoomLevel > 0.0) {
-        *width = *width + (int)ceil(newZoomLevel * 0.25 * *width);
-        *height = *height + (int)ceil(newZoomLevel * 0.25 * *height);
-        LOG_INFO << "DPI, main window enlarged by " 
+        *width = *width + (int)ceil(newZoomLevel * 0.25 * (*width));
+        *height = *height + (int)ceil(newZoomLevel * 0.25 * (*height));
+        LOG_INFO << "DPI, window enlarged by " 
                   << ceil(newZoomLevel * 0.25 * 100) << "%"
                   << " new width/height = " << *width << "/" << *height;
     }

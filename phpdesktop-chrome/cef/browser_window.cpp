@@ -15,10 +15,12 @@
 #include "../fatal_error.h"
 #include "../file_utils.h"
 #include "../window_utils.h"
+#include "../resource.h"
 
 std::map<HWND, BrowserWindow*> g_browserWindows;
 extern std::string g_webServerUrl;
 extern wchar_t g_windowClassName[256];
+extern HINSTANCE g_hInstance; // main.cpp
 
 BrowserWindow* GetBrowserWindow(HWND hwnd) {
     std::map<HWND, BrowserWindow*>::iterator it;
@@ -60,10 +62,16 @@ void StoreBrowserWindow(HWND hwnd, BrowserWindow* browser) {
 }
 void RemoveBrowserWindow(HWND hwnd) {
     LOG_DEBUG << "RemoveBrowserWindow(): hwnd = " << (int)hwnd;
+    BrowserWindow* browser = GetBrowserWindow(hwnd);
+    if (!browser) {
+        LOG_WARNING << "RemoveBrowserWindow() failed: "
+                    << "GetBrowserWindow() failed";
+        return;
+    }
     std::map<HWND, BrowserWindow*>::iterator it;
-    it = g_browserWindows.find(hwnd);
+    it = g_browserWindows.find(browser->GetWindowHandle());
     if (it != g_browserWindows.end()) {
-        BrowserWindow* browser = it->second;
+        // BrowserWindow* browser = it->second;
         g_browserWindows.erase(it);
         delete browser;
     } else {
@@ -207,8 +215,7 @@ void BrowserWindow::SetIconFromSettings() {
         iconPath = (*settings)["main_window"]["icon"];
     if (iconPath && iconPath[0] != 0) {
         wchar_t iconPathW[MAX_PATH];
-        Utf8ToWide(iconPath, iconPathW, _countof(iconPathW));
-
+        Utf8ToWide(iconPath, iconPathW, _countof(iconPathW));        
         int bigX = GetSystemMetrics(SM_CXICON);
         int bigY = GetSystemMetrics(SM_CYICON);
         HANDLE bigIcon = LoadImage(0, iconPathW, IMAGE_ICON, bigX, bigY, 
@@ -228,6 +235,16 @@ void BrowserWindow::SetIconFromSettings() {
         } else {
             LOG_WARNING << "Setting icon from settings file failed "
                            "(ICON_SMALL)";
+        }
+    } else if (IsPopup()) {
+        // CEF did not set icon for the popup window, even though the opener
+        // window had an icon set.
+        HICON smallIcon = LoadIcon(g_hInstance, MAKEINTRESOURCE(IDR_MAINWINDOW));
+        if (smallIcon) {
+            SendMessage(windowHandle_, WM_SETICON, ICON_SMALL, (LPARAM)smallIcon);
+        } else {
+            LOG_WARNING << "LoadIcon(IDR_MAINWINDOW) failed "
+                        << "in BrowserWindow::SetIconFromSettings()";
         }
     }
 }

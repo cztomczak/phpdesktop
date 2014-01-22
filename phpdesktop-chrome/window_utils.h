@@ -7,5 +7,5 @@
 #include "defines.h"
 
 void CenterWindow(HWND hwnd);
-bool CenterWindowRelativeToParent(HWND window);
+bool CenterWindowRelativeToParent(HWND window, HWND parent);
 void GetCorrectWindowSize(int* width, int* height);

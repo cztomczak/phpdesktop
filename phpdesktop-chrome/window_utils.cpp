@@ -15,16 +15,11 @@ void CenterWindow(HWND wnd) {
       (r.right-r.left), (r.bottom-r.top),0);
 }
 
-bool CenterWindowRelativeToParent(HWND window) {
-    HWND parent;
+bool CenterWindowRelativeToParent(HWND window, HWND parent) {
     RECT rect, parentRect;
     int width, height;      
     int screenWidth, screenHeight;
-    int x, y; 
-    parent = GetWindow(window, GW_OWNER);
-    if (!parent) {
-        return false;
-    }     
+    int x, y;  
     GetWindowRect(window, &rect);
     GetWindowRect(parent, &parentRect);     
     width  = rect.right  - rect.left;
@@ -33,17 +28,21 @@ bool CenterWindowRelativeToParent(HWND window) {
     y = ((parentRect.bottom - parentRect.top) - height) / 2 + parentRect.top;    
     screenWidth  = GetSystemMetrics(SM_CXSCREEN);
     screenHeight = GetSystemMetrics(SM_CYSCREEN);
-    if (x < 0) {
-        x = 0;
-    }
-    if (y < 0) {
-        y = 0;
-    }
+    if (x < 0) { x = 0; }
+    if (y < 0) { y = 0; }
     if (x + width > screenWidth)  {
         x = screenWidth  - width;
     }
     if (y + height > screenHeight) {
         y = screenHeight - height;
+    }
+    // Move it a bit so that popup window does not overlay the parent
+    // window completely, when it is of the same size or a bit smaller.
+    if (x >= parentRect.left && x < parentRect.left + 48) {
+        x = parentRect.left + 48;
+    }
+    if (y >= parentRect.top && y < parentRect.top + 32) {
+        y = parentRect.top + 32;
     }
     MoveWindow(window, x, y, width, height, FALSE);
     return true;

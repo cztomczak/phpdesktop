@@ -6,12 +6,18 @@
 <title>Popup</title>
 <h1>Popup</h1>
 
-<a href="javascript:window.open('index.php')">window.open('index.php')</a>
-<br><br>
+<p>
+  When creating a window, the ["application"]["dpi_aware"] setting is taken
+  into account. If it's set to true, then application window will be resized
+  automatically using the current OS DPI settings.
+</p>
 
-<a href="javascript:window.open('index.php', '', 'width=1024,height=768')">
-        window.open('index.php', '', 'width=1024,height=768')</a>
-<br><br>
+<p>
+  <a href="javascript:window.open('index.php', '', 'width=800,height=600')">
+    window.open('index.php', '', 'width=800,height=600')
+  </a>
+</p>
 
+<p>
 <a href="index.php" target="_blank">target="_blank"</a>
-<br><br>
+</p>

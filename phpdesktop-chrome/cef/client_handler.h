@@ -104,10 +104,6 @@ class ClientHandler : public CefClient,
                           CefEventHandle os_event) OVERRIDE;
 
  private:
-  // List of existing browser windows. Only accessed on the CEF UI thread.
-  typedef std::list<CefRefPtr<CefBrowser> > BrowserList;
-  BrowserList browser_list_;
-
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(SimpleHandler);
 };

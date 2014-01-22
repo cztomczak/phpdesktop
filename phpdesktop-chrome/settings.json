@@ -20,7 +20,9 @@
     },
     "popup_window": {
         "icon": "",
-        "fixed_title": ""
+        "fixed_title": "",
+        "center_relative_to_parent": true,
+        "default_size": [1024, 768]
     },
     "web_server": {
         "listen_on": ["127.0.0.1", 54007],

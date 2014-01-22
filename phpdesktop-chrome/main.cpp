@@ -30,9 +30,9 @@
 SingleInstanceApplication g_singleInstanceApplication;
 wchar_t* g_singleInstanceApplicationGuid = 0;
 wchar_t g_windowClassName[256] = L"";
-int g_windowCount = 0;
 HINSTANCE g_hInstance = 0;
 extern std::string g_webServerUrl;
+extern std::map<HWND, BrowserWindow*> g_browserWindows; // browser_window.cpp
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                             LPARAM lParam) {
@@ -53,7 +53,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             }
             break;
         case WM_CREATE:
-            g_windowCount++;
             if (GetWindow(hwnd, GW_OWNER)) {
                 browser = new BrowserWindow(hwnd, true);
             } else {
@@ -62,10 +61,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             StoreBrowserWindow(hwnd, browser);
             return 0;
         case WM_DESTROY:
-            g_windowCount--;
             LOG_DEBUG << "WM_DESTROY";
             RemoveBrowserWindow(hwnd);
-            if (g_windowCount <= 0) {
+            if (g_browserWindows.empty()) {
                 StopWebServer();
 #ifdef DEBUG
                 // Debugging mongoose, see InitializeLogging().

@@ -22,6 +22,7 @@
 extern HINSTANCE g_hInstance;
 extern wchar_t g_windowClassName[256];
 extern std::string g_webServerUrl;
+extern std::map<HWND, BrowserWindow*> g_browserWindows; // browser_window.cpp
 
 namespace {
 
@@ -84,10 +85,14 @@ void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> cefBrowser,
 ///
 void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> cefBrowser) {
     REQUIRE_UI_THREAD();
-
+    LOG_DEBUG << "ClientHandler::OnAfterCreated()";
+    json_value* appSettings = GetApplicationSettings();
+    bool center_relative_to_parent = \
+            (*appSettings)["popup_window"]["center_relative_to_parent"];
     HWND cefHandle = cefBrowser->GetHost()->GetWindowHandle();
     BrowserWindow* phpBrowser = GetBrowserWindow(cefHandle);
     if (phpBrowser) {
+        // This block of code gets called for Main window & Devtools window.
         ASSERT(!phpBrowser->GetCefBrowser().get());
         if (!phpBrowser->GetCefBrowser().get()) {
             LOG_DEBUG << "SetCefBrowser() called in "
@@ -102,12 +107,21 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> cefBrowser) {
         phpBrowser->SetIconFromSettings();
         phpBrowser->SetTitleFromSettings();
         phpBrowser->SetFocus();
+        if (center_relative_to_parent) {
+            // It would be best to provide x,y coordinates in OnBeforePopup,
+            // but setting windowInfo.x and windowInfo.y there doesn't work.
+            // These coordinates are probably used only when calling SetAsChild().
+            // So we have to center it after the window was created.
+            HWND openerHandle = cefBrowser->GetHost()->GetOpenerWindowHandle();
+            BrowserWindow* openerPhpBrowser = GetBrowserWindow(openerHandle);
+            if (openerPhpBrowser) {
+                openerHandle = openerPhpBrowser->GetWindowHandle();
+            }
+            LOG_DEBUG << "Centering popup window relative to its parent";
+            CenterWindowRelativeToParent(cefHandle, openerHandle);
+        }
     }
-
     SetBrowserDpiSettings(cefBrowser);
-
-    // Add to the list of existing browsers.
-    browser_list_.push_back(cefBrowser);
 }
 
 ///
@@ -120,20 +134,8 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> cefBrowser) {
 ///
 void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     REQUIRE_UI_THREAD();
-
     RemoveBrowserWindow(browser->GetHost()->GetWindowHandle());
-
-    // Remove from the list of existing browsers.
-    BrowserList::iterator bit = browser_list_.begin();
-    for (; bit != browser_list_.end(); ++bit) {
-        if ((*bit)->IsSame(browser)) {
-            browser_list_.erase(bit);
-            break;
-        }
-    }
-
-    if (browser_list_.empty()) {
-        // All browser windows have closed. Quit the application message loop.
+    if (g_browserWindows.empty()) {
         CefQuitMessageLoop();
     }
 }
@@ -160,8 +162,42 @@ bool ClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser,
                             CefRefPtr<CefClient>& client,
                             CefBrowserSettings& settings,
                             bool* no_javascript_access) {
+    LOG_DEBUG << "ClientHandler::OnBeforePopup()";
+    // OnBeforePopup does not get called for the DevTools popup window.
+    // The devtools window is created using CreatePopupWindow
+    // ----
+    // This popup window will be created internally by CEF.
+    // Its parent hwnd won't be the current browser. To get
+    // the browser that opened the popup call CefBrowserHost
+    // GetOpenerWindowHandle().
     json_value* appSettings = GetApplicationSettings();
     bool external_navigation = (*appSettings)["chrome"]["external_navigation"];
+    bool dpi_aware = (*appSettings)["application"]["dpi_aware"];
+    // windowInfo.width and windowInfo.height will be set when there
+    // was specified width/height for a popup. If it wasn't then these
+    // values will be like 1073741824 (some garbage as memory wasn't set).
+    // Although we can set it to something normal and it will be used
+    // for the window size.
+    int max_width = GetSystemMetrics(SM_CXMAXIMIZED);
+    int max_height = GetSystemMetrics(SM_CYMAXIMIZED);
+    if (windowInfo.width > max_width || windowInfo.height > max_height
+            || windowInfo.width <= 0 || windowInfo.height <= 0) {
+        // Use default size for a popup only when no size was provided.
+        int default_width = static_cast<long>(\
+                (*appSettings)["popup_window"]["default_size"][0]);
+        int default_height = static_cast<long>(\
+                (*appSettings)["popup_window"]["default_size"][1]);
+        if (default_width && default_height) {
+            LOG_INFO << "Setting default size for a popup window "
+                     << default_width << "/" << default_height;
+            windowInfo.width = default_width;
+            windowInfo.height = default_height;
+        }
+    }
+    if (dpi_aware) {
+        GetDpiAwareWindowSize(&windowInfo.width, &windowInfo.height);
+    }
+    GetCorrectWindowSize(&windowInfo.width, &windowInfo.height);    
     if (target_url.ToString().find(g_webServerUrl) == 0) {
         // Allow to create.
         return false; 
