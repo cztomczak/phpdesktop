@@ -31,12 +31,12 @@ HRESULT STDMETHODCALLTYPE OleCommandTarget::QueryStatus(
         /* [out][in] */ OLECMDTEXT *pCmdText) {
     if (prgCmds == NULL)
         return E_POINTER;
-    LOG_DEBUG << "OleCommandTarget::QueryStatus()";
-	bool cmdGroupFound = false;
-	for (ULONG nCmd = 0; nCmd < cCmds; nCmd++) {
-		prgCmds[nCmd].cmdf = 0;
-	}
-	return OLECMDERR_E_UNKNOWNGROUP;
+    bool cmdGroupFound = false;
+    for (ULONG nCmd = 0; nCmd < cCmds; nCmd++) {
+        LOG_DEBUG << "OleCommandTarget::QueryStatus(): cmdID = " << prgCmds[nCmd].cmdID;
+        prgCmds[nCmd].cmdf = 0;
+    }
+    return OLECMDERR_E_UNKNOWNGROUP;
 }
 HRESULT STDMETHODCALLTYPE OleCommandTarget::Exec( 
         /* [in] */ const GUID *pguidCmdGroup,
@@ -44,7 +44,7 @@ HRESULT STDMETHODCALLTYPE OleCommandTarget::Exec(
         /* [in] */ DWORD nCmdexecopt,
         /* [in] */ VARIANT *pvaIn,
         /* [out][in] */ VARIANT *pvaOut) {
-    LOG_DEBUG << "OleCommandTarget::Exec()";
+    // LOG_DEBUG << "OleCommandTarget::Exec(): nCmdID = " << nCmdID;
     if (nCmdID == OLECMDID_CLOSE) {
         // Window is being closed.
     }

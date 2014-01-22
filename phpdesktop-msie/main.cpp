@@ -231,8 +231,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    "Exiting application.");
     }
 
-    HRESULT hr = CoInitializeEx(0, COINIT_APARTMENTTHREADED 
-                                | COINIT_DISABLE_OLE1DDE);
+    // From the MSDN "WebBrowser Customization" docs:
+    //   Your application should use OleInitialize rather than CoInitialize
+    //   to start COM. OleInitialize enables support for the Clipboard, 
+    //   drag-and-drop operations, OLE, and in-place activation.
+    // See: http://msdn.microsoft.com/en-us/library/aa770041(v=vs.85).aspx
+    HRESULT hr = OleInitialize(NULL);
     _ASSERT(SUCCEEDED(hr));
 
     SetInternetFeatures();
@@ -253,7 +257,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         }
     }
 
-    CoUninitialize();
+    OleUninitialize();
+
     LOG_INFO << "Ended application";
     LOG_INFO << "--------------------------------------------------------";
 

@@ -100,7 +100,8 @@ HRESULT STDMETHODCALLTYPE OleClientSite::QueryInterface(
         *ppvObject = static_cast<IOleCommandTarget*>(&oleCommandTarget_);
         static bool logged = false;
         if (!logged) {
-            LOG_DEBUG << "OleClientSite::QueryInterface(): IOleCommandTarget";
+            // Too many debug messages, turning off:
+            // LOG_DEBUG << "OleClientSite::QueryInterface(): IOleCommandTarget";
             logged = true;
         }*/
     } else if (   riid == IID_IDocHostUIHandler2
@@ -114,8 +115,10 @@ HRESULT STDMETHODCALLTYPE OleClientSite::QueryInterface(
         if (FILELog::ReportingLevel() >= logDEBUG) {
             char riid_name[128];
             GUID_TO_CHAR(&riid, riid_name, _countof(riid_name));
-            LOG_DEBUG << "OleClientSite::QueryInterface(): "
-                         "unknown interface, riid = " << riid_name;
+            if (std::string(riid_name) != "{c90db44a-1902-451e-bdf0-5c89660b528c}") {
+                LOG_DEBUG << "OleClientSite::QueryInterface(): "
+                             "unknown interface, riid = " << riid_name;
+            }
         }
         *ppvObject = 0;
         return E_NOINTERFACE;
