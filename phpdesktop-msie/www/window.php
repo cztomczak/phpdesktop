@@ -7,19 +7,19 @@
 
 <h2>window.resizeTo(), window.moveTo()</h2>
 
-<a href="javascript:void(0)" onclick="window.resizeTo(640, 480)">
+<a href="#" onclick="window.resizeTo(640, 480)">
     window.resizeTo(640, 480)
 </a>
 
 <br><br>
 
-<a href="javascript:void(0)" onclick="window.moveTo(0, 0)">
+<a href="#" onclick="window.moveTo(0, 0)">
     window.moveTo(0, 0)
 </a>
 
 <h2>window.alert()</h2>
 
-<a href="javascript:void(0)" onclick="window.alert(1)">
+<a href="#" onclick="window.alert(1)">
     window.alert(1)
 </a>
 
@@ -32,7 +32,7 @@
 window.external.CloseWindow() instead, try it: </p>
 
 <p>
-    <a href="javascript:void(0)"
+    <a href="#"
         onclick="window.external.CloseWindow()">window.external.CloseWindow()</a>
 </p>
 

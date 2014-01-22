@@ -31,7 +31,7 @@ function CreatePopup(url, name) {
 </script>
 
 <p>
-    <a href="javascript:void(0)" onclick="CreatePopup('/phpinfo.php')">
+    <a href="#" onclick="CreatePopup('/phpinfo.php')">
         CreatePopup('/phpinfo.php')
     </a>
 </p>

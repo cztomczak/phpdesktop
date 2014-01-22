@@ -242,6 +242,9 @@
     <None Include="www\sqlite.php" />
     <None Include="www\text-selection.php" />
     <None Include="www\window.php" />
+    <None Include="www\no-cache.php" />
+    <None Include="www\session.php" />
+    <None Include="www\upload.php" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">

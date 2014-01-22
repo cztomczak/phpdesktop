@@ -219,9 +219,11 @@
     <None Include="www\javascript-errors.php" />
     <None Include="www\links.php" />
     <None Include="www\msie-version.php" />
+    <None Include="www\no-cache.php" />
     <None Include="www\phpinfo.php" />
     <None Include="resource.aps" />
     <None Include="www\popups.php" />
+    <None Include="www\session.php" />
     <None Include="www\sqlite.php" />
     <None Include="www\test-controls.php" />
     <None Include="www\test-forms.php" />
@@ -231,6 +233,7 @@
     <None Include="www\test-popups.php" />
     <None Include="www\test-window.php" />
     <None Include="www\text-selection.php" />
+    <None Include="www\upload.php" />
     <None Include="www\window.php" />
     <None Include="www\_error-page.html" />
     <None Include="www\_pdo.php" />

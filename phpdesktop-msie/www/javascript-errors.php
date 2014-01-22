@@ -25,17 +25,17 @@ function DisableErrorHandler() {
 
 <h2>Enable or disable error handler</h2>
 
-<a href="javascript:void(0)"
+<a href="#"
     onclick="EnableErrorHandler()">EnableErrorHandler()</a>
 
 <br><br>
 
-<a href="javascript:void(0)"
+<a href="#"
     onclick="DisableErrorHandler()">DisableErrorHandler()</a>
 
 <h2>Test error</h2>
 
-<a href="javascript:void(0)"
+<a href="#"
     onclick="NonExistent()">NonExistent()</a>
 
 <div style="background-color: rgb(250, 200, 200); margin-top: 1.5em;"

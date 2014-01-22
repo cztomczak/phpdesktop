@@ -4,4 +4,4 @@
 <title>Test MSIE version</title>
 <h1>Test MSIE version</h1>
 
-<script>document.write(navigator.userAgent);</script>
+<?php echo $_SERVER["HTTP_USER_AGENT"]; ?>
