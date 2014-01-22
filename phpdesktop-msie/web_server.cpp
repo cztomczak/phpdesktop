@@ -39,6 +39,14 @@ bool StartWebServer() {
     LOG_INFO << "Starting Mongoose " << mg_version() << " web server";
     json_value* settings = GetApplicationSettings();
 
+    std::string cgiEnvironment = "";
+    char tempPath[MAX_PATH];
+    GetTempPathA(MAX_PATH, tempPath);
+    cgiEnvironment.append("TMP=").append(tempPath).append(",");
+    cgiEnvironment.append("TEMP=").append(tempPath).append(",");
+    cgiEnvironment.append("TMPDIR=").append(tempPath);
+    LOG_INFO << "CGI environment variables set: " << cgiEnvironment;
+
     // Web server url from settings.
     std::string ipAddress = (*settings)["web_server"]["listen_on"][0];
     std::string port = (*settings)["web_server"]["listen_on"][1];
@@ -108,6 +116,7 @@ bool StartWebServer() {
         "index_files", indexFiles.c_str(),
         "cgi_interpreter", cgiInterpreter.c_str(),
         "cgi_pattern", cgiPattern.c_str(),
+        "cgi_environment", cgiEnvironment.c_str(),
         NULL
     };
     mg_callbacks callbacks = {0};
