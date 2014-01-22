@@ -1,3 +1,4 @@
+// Modified by Czarek Tomczak for the PHP Desktop project.
 // Copyright (c) 2004-2013 Sergey Lyubka
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -2430,7 +2431,7 @@ static char *mg_fgets(char *buf, size_t size, struct file *filep, char **p) {
     } else {
       eof = memend; // Copy remaining data
     }
-    len = (size_t) (eof - *p) > size - 1 ? size - 1 : (size_t) (eof - *p);  
+    len = (size_t) (eof - *p) > size - 1 ? size - 1 : (size_t) (eof - *p);
     memcpy(buf, *p, len);
     buf[len] = '\0';
     *p += len;
