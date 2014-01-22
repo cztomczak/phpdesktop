@@ -39,15 +39,6 @@ bool StartWebServer() {
     LOG_INFO << "Starting Mongoose " << mg_version() << " web server";
     json_value* settings = GetApplicationSettings();
 
-    // CGI environment variables.
-    std::string cgiEnvironment = "";
-    char tempPath[MAX_PATH];
-    GetTempPathA(MAX_PATH, tempPath);
-    cgiEnvironment.append("TMP=").append(tempPath).append(",");
-    cgiEnvironment.append("TEMP=").append(tempPath).append(",");
-    cgiEnvironment.append("TMPDIR=").append(tempPath);
-    LOG_INFO << "CGI environment variables set: " << cgiEnvironment;
-
     // Web server url from settings.
     std::string ipAddress = (*settings)["web_server"]["listen_on"][0];
     std::string port = (*settings)["web_server"]["listen_on"][1];
@@ -114,6 +105,17 @@ bool StartWebServer() {
     if (cgiPattern.empty())
         cgiPattern = "**.php$";
     LOG_INFO << "CGI pattern: " << cgiPattern;
+
+    // CGI environment variables.
+    std::string cgiEnvironment = "";
+    char tempPath[MAX_PATH];
+    GetTempPathA(MAX_PATH, tempPath);
+    cgiEnvironment.append("TMP=").append(tempPath).append(",");
+    cgiEnvironment.append("TEMP=").append(tempPath).append(",");
+    cgiEnvironment.append("TMPDIR=").append(tempPath).append(",");
+    // Mongoose sets SERVER_NAME to "mydomain.com"
+    cgiEnvironment.append("SERVER_NAME=").append(ipAddress);
+    LOG_INFO << "CGI environment variables set: " << cgiEnvironment;
 
     // Mongoose web server.
     std::string listening_ports = ipAddress + ":" + port;
