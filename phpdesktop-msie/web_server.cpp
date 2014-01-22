@@ -39,6 +39,7 @@ bool StartWebServer() {
     LOG_INFO << "Starting Mongoose " << mg_version() << " web server";
     json_value* settings = GetApplicationSettings();
 
+    // CGI environment variables.
     std::string cgiEnvironment = "";
     char tempPath[MAX_PATH];
     GetTempPathA(MAX_PATH, tempPath);

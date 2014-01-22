@@ -1,8 +1,9 @@
 <?php
 
 error_reporting(-1);
+
 header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-header("Cache-Control: no-cache");
+header("Cache-Control: no-cache, no-store, must-revalidate");
 header("Pragma: no-cache");
 
 ?>

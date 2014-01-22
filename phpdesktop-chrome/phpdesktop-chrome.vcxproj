@@ -281,11 +281,14 @@
     <None Include="www\html5-video.php" />
     <None Include="www\index.php" />
     <None Include="license.txt" />
+    <None Include="www\no-cache.php" />
     <None Include="www\phpinfo.php" />
     <None Include="resource.aps" />
     <None Include="www\chrome-version.php" />
     <None Include="www\popup.php" />
+    <None Include="www\session.php" />
     <None Include="www\sqlite.php" />
+    <None Include="www\upload.php" />
     <None Include="www\_pdo.php" />
   </ItemGroup>
   <ItemGroup>
