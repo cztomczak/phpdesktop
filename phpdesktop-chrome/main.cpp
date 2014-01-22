@@ -33,6 +33,7 @@ wchar_t g_windowClassName[256] = L"";
 HINSTANCE g_hInstance = 0;
 extern std::string g_webServerUrl;
 extern std::map<HWND, BrowserWindow*> g_browserWindows; // browser_window.cpp
+std::string g_cgiEnvironmentFromArgv = "";
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                             LPARAM lParam) {
@@ -132,6 +133,26 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     } else {
         // Main browser process.
         InitializeLogging(show_console, log_level, log_file);
+    }
+
+    // Command line arguments
+    LPWSTR *argv;
+    int argc;
+    argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+    if (argv) {
+        for (int i = 0; i < argc; i++) {
+            std::string argument = WideToUtf8(std::wstring(argv[i]));
+            size_t pos = argument.find("=");
+            if (pos != std::string::npos) {
+                std::string name = argument.substr(0, pos);
+                std::string value = argument.substr(pos+1, std::string::npos);
+                if (name == "--cgi-environment" && value.length()) {
+                    g_cgiEnvironmentFromArgv.assign(value);
+                }
+            }
+        }
+    } else {
+        LOG_WARNING << "CommandLineToArgvW() failed";
     }
     
     // CEF subprocesses.

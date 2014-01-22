@@ -16,6 +16,7 @@
 
 std::string g_webServerUrl;
 struct mg_context* g_mongooseContext = 0;
+extern std::string g_cgiEnvironmentFromArgv;
 
 static int log_message(const struct mg_connection* conn, const char *message) {
     LOG_WARNING << message;
@@ -115,6 +116,9 @@ bool StartWebServer() {
     cgiEnvironment.append("TMPDIR=").append(tempPath).append(",");
     // Mongoose sets SERVER_NAME to "mydomain.com"
     cgiEnvironment.append("SERVER_NAME=").append(ipAddress);
+    if (g_cgiEnvironmentFromArgv.length()) {
+        cgiEnvironment.append(",").append(g_cgiEnvironmentFromArgv);
+    }
     LOG_INFO << "CGI environment variables set: " << cgiEnvironment;
 
     // Mongoose web server.

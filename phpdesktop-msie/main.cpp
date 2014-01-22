@@ -34,6 +34,7 @@ wchar_t g_windowClassName[256] = L"";
 int g_windowCount = 0;
 HINSTANCE g_hInstance = 0;
 extern std::string g_webServerUrl;
+std::string g_cgiEnvironmentFromArgv = "";
 
 HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title);
 void InitLogging(bool show_console, std::string log_level, 
@@ -185,6 +186,26 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         LOG_INFO << "No logging file set";
     LOG_INFO << "Log level = "
              << FILELog::ToString(FILELog::ReportingLevel());
+
+    // Command line arguments
+    LPWSTR *argv;
+    int argc;
+    argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+    if (argv) {
+        for (int i = 0; i < argc; i++) {
+            std::string argument = WideToUtf8(std::wstring(argv[i]));
+            size_t pos = argument.find("=");
+            if (pos != std::string::npos) {
+                std::string name = argument.substr(0, pos);
+                std::string value = argument.substr(pos+1, std::string::npos);
+                if (name == "--cgi-environment" && value.length()) {
+                    g_cgiEnvironmentFromArgv.assign(value);
+                }
+            }
+        }
+    } else {
+        LOG_WARNING << "CommandLineToArgvW() failed";
+    }
 
     // Main window title option.
     std::string main_window_title = (*settings)["main_window"]["title"];

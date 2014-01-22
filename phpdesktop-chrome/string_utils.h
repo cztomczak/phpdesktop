@@ -17,6 +17,8 @@ std::string WideToUtf8(const std::wstring& wideString);
 std::string IntToString(long number);
 std::string BoolToString(bool value);
 
+std::string UpperString(std::string str);
+
 std::string ReplaceString(std::string subject, const std::string& search,
                           const std::string& replace);
 void ReplaceStringInPlace(std::string& subject, const std::string& search,

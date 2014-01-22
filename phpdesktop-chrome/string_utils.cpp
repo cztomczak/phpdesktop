@@ -6,6 +6,7 @@
 #include <windows.h>
 #include <string>
 #include <sstream>
+#include <algorithm>
 
 void Utf8ToWide(const char* utf8String, wchar_t* wideString, int wideSize) {
     int copiedCharacters = MultiByteToWideChar(CP_UTF8, 0, utf8String, -1, 
@@ -48,6 +49,10 @@ std::string WideToUtf8(const wchar_t* wideString) {
     delete[] utf8String;
     utf8String = 0;
     return returnedString;
+}
+std::string UpperString(std::string str) {
+    std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+    return str;
 }
 std::string WideToUtf8(const std::wstring& wideString) {    
     int requiredSize = WideCharToMultiByte(CP_UTF8, 0, wideString.c_str(), -1,
