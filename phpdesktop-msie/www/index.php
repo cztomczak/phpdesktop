@@ -3,7 +3,7 @@
 <title>Welcome to PHP Desktop</title>
 <h1>Welcome to PHP Desktop</h1>
 
-<p>Scripts in www/ directory:</h1>
+<p>Scripts in the www/ directory:</h1>
 
 <?php
 
@@ -14,7 +14,15 @@ foreach ($files as $file) {
 }
 
 ?>
-<br><hr>
+
+<h2>Notes</h2>
+
+<ul>
+<li>To disable debugging console window, edit the settings.json
+    file and change the "show_console" setting to false.</li>
+</ul>
+
+<hr>
 Project website:
 <a href="http://code.google.com/p/phpdesktop/">
     http://code.google.com/p/phpdesktop/

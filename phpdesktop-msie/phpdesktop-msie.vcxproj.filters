@@ -228,6 +228,7 @@
     <None Include="www\test-popups.php" />
     <None Include="www\test-window.php" />
     <None Include="before_release.txt" />
+    <None Include="settings.json" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">

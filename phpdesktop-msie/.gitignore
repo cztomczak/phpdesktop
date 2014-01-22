@@ -7,3 +7,7 @@ ipch/
 *.aps
 *.sdf
 *.opensdf
+
+*.dll
+*.exe
+debug.log

@@ -1,0 +1,46 @@
+{
+    "application": {
+        "single_instance_guid": ""
+    },
+    "debugging": {
+        "show_console": true,
+        "log_level": "DEBUG4",
+        "log_file": "debug.log"
+    },
+    "main_window": {
+        "title": "PHP Desktop MSIE",
+        "icon": "",
+        "default_size": [1024, 768],
+        "minimum_size": [800, 600],
+        "maximum_size": [0, 0],
+        "disable_maximize_button": false,
+        "center_on_screen": true
+    },
+    "popup_window": {
+        "icon": "",
+        "fixed_title": ""
+    },
+    "web_server": {
+        "listen_on": ["127.0.0.1", 54007],
+        "www_directory": "../www",
+        "index_files": ["index.html", "index.php"],
+        "cgi_interpreter": "../php/php-cgi.exe",
+        "cgi_extensions": ["php"]
+    },
+    "msie": {
+        "error_page": "../www/_error_page.html",
+        "smooth_scroll": false,
+        "enable_f5_refresh": true,
+        "show_context_menu": true,
+        "use_themes": true,
+        "disable_script_debugger": false,
+        "hide_dialog_boxes": false,
+        "silent_operations": false,
+        "autocomplete_forms": false,
+        "windowed_select_control": true,
+        "disable_scrollbars": false,
+        "flat_scrollbars": false,
+        "utf8_url_encoding": true,
+        "dpi_aware": false
+    }
+}
