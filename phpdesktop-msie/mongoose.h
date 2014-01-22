@@ -162,6 +162,7 @@ struct mg_context *mg_start(const struct mg_callbacks *callbacks,
 // release all associated resources. This function blocks until all Mongoose
 // threads are stopped. Context pointer becomes invalid.
 void mg_stop(struct mg_context *);
+void mg_stop_immediately(struct mg_context *);
 
 
 // Get the value of particular configuration parameter.

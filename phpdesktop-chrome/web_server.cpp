@@ -128,6 +128,18 @@ bool StartWebServer() {
 void StopWebServer() {
     if (g_mongooseContext) {
         LOG_INFO << "Stopping Mongoose web server";
-        mg_stop(g_mongooseContext);
+        /* 
+        Stoppping Mongoose webserver freezes for about 30 seconds
+        on Win7/MSIE if we call mg_stop(). Introduced new function
+        mg_stop_immediately() that does not free mongoose resources.
+        See Issue 61 for more details:
+        https://code.google.com/p/phpdesktop/issues/detail?id=61
+        -----------------------------------------------------------------
+        This issue was only seen to happen when using the MSIE webbrowser
+        control. But it won't hurt to secure ourselves against this bug
+        happening in the future when used with the Chrome browser.
+        */
+        mg_stop_immediately(g_mongooseContext);
+        LOG_DEBUG << "Mongoose webserver stopped immediately";
     }
 }

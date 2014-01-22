@@ -249,7 +249,7 @@ typedef int SOCKET;
 
 #include "mongoose.h"
 
-#define MONGOOSE_VERSION "3.9"
+#define MONGOOSE_VERSION "3.9b"
 #define PASSWORDS_FILE_NAME ".htpasswd"
 #define CGI_ENVIRONMENT_SIZE 4096
 #define MAX_CGI_ENVIR_VARS 64
@@ -5359,6 +5359,19 @@ void mg_stop(struct mg_context *ctx) {
 #if defined(_WIN32) && !defined(__SYMBIAN32__)
   (void) WSACleanup();
 #endif // _WIN32
+}
+
+void mg_stop_immediately(struct mg_context *ctx) {
+    // Stopping Mongoose and freeing resources will hang when
+    // used with IE webbrowser control. It seems that IE is not
+    // freeing reources properly, it does it with some delay.
+    // See Issue 61 in PHP Desktop:
+    // https://code.google.com/p/phpdesktop/issues/detail?id=61
+    // The solution is not to release mongoose resources at all,
+    // if application quits then it does not need to do so, see
+    // this post by Sergey Lyubka:
+    // https://groups.google.com/d/msg/mongoose-users/qLNrY6asGms/zGC-rIHMO5oJ
+    // Do nothing in this function.
 }
 
 struct mg_context *mg_start(const struct mg_callbacks *callbacks,

@@ -76,7 +76,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             RemoveBrowserWindow(hwnd);
             if (g_windowCount <= 0) {
                 StopWebServer();
-                LOG_DEBUG << "Mongoose webserver stopped";
 #ifdef DEBUG
                 // Debugging mongoose, see InitLogging().
                 printf("----------------------------------------");
@@ -314,7 +313,7 @@ void InitLogging(bool show_console, std::string log_level,
     // Debugging mongoose web server.
     FILE* mongoose_file;
     freopen_s(&mongoose_file,
-            GetExecutableDirectory().append("\\debug_mongoose.log").c_str(),
+            GetExecutableDirectory().append("\\debug-mongoose.log").c_str(),
             "ab", stdout);
 #endif
     
