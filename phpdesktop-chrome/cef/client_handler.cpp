@@ -9,14 +9,15 @@
 
 #include "util.h"
 #include "include/cef_app.h"
-#include "include/cef_runnable.h"
-
 #include "browser_window.h"
-#include "../window_utils.h"
+#include "devtools.h"
+
 #include "../settings.h"
 #include "../log.h"
 #include "../executable.h"
 #include "../string_utils.h"
+#include "../dpi_aware.h"
+#include "../window_utils.h"
 
 extern HINSTANCE g_hInstance;
 extern wchar_t g_windowClassName[256];
@@ -40,129 +41,6 @@ ClientHandler::~ClientHandler() {
 // static
 ClientHandler* ClientHandler::GetInstance() {
     return g_instance;
-}
-
-void SetBrowserDpiSettings(CefRefPtr<CefBrowser> cefBrowser) {
-    // Setting zoom level immediately after browser was created
-    // won't work. We need to wait a moment before we can set it.
-    REQUIRE_UI_THREAD();
-
-    json_value* appSettings = GetApplicationSettings();
-    if (!(*appSettings)["application"]["dpi_aware"]) {
-        return;
-    }
-
-    double oldZoomLevel = cefBrowser->GetHost()->GetZoomLevel();
-    double newZoomLevel = 0.0;
-
-    // Win7:
-    // text size Larger 150% => ppix/ppiy 144
-    // text size Medium 125% => ppix/ppiy 120
-    // text size Smaller 100% => ppix/ppiy 96
-    HWND cefHandle = cefBrowser->GetHost()->GetWindowHandle();
-    HDC hdc = GetDC(cefHandle);
-    int ppix = GetDeviceCaps(hdc, LOGPIXELSX);
-    int ppiy = GetDeviceCaps(hdc, LOGPIXELSY);
-    ReleaseDC(cefHandle, hdc);
-
-    if (ppix > 96) {
-        newZoomLevel = (ppix - 96) / 24;
-    }
-
-    if (oldZoomLevel != newZoomLevel) {
-        cefBrowser->GetHost()->SetZoomLevel(newZoomLevel);
-        if (cefBrowser->GetHost()->GetZoomLevel() != oldZoomLevel) {
-            // Succes.
-            LOG_DEBUG << "DPI, ppix = " << ppix << ", ppiy = " << ppiy;
-            LOG_DEBUG << "DPI, browser zoom level = "
-                      << cefBrowser->GetHost()->GetZoomLevel();
-        }
-    } else {
-        // This code block running can also be a result of executing
-        // SetZoomLevel(), as GetZoomLevel() didn't return the new
-        // value that was set. Documentation says that if SetZoomLevel
-        // is called on the UI thread, then GetZoomLevel should
-        // immediately return the same value that was set. Unfortunately
-        // this seems not to be true.
-        static bool already_logged = false;
-        if (!already_logged) {
-            already_logged = true;
-            // Success.
-            LOG_DEBUG << "DPI, ppix = " << ppix << ", ppiy = " << ppiy;
-            LOG_DEBUG << "DPI, browser zoom level = "
-                      << cefBrowser->GetHost()->GetZoomLevel();
-        }
-    }
-    // We need to check zooming constantly, during loading of pages.
-    // If we set zooming to 2.0 for localhost/ and then it navigates
-    // to google.com, then the zomming is back at 0.0 and needs to
-    // be set again.
-    CefPostDelayedTask(
-            TID_UI,
-            NewCefRunnableFunction(&SetBrowserDpiSettings, cefBrowser),
-            50);
-}
-
-HWND CreatePopupWindow(HWND parentHandle) {
-    json_value* appSettings = GetApplicationSettings();
-    bool center_relative_to_parent =
-            (*appSettings)["popup_window"]["center_relative_to_parent"];
-
-    // Title will be set in BrowserWindow::BrowserWindow().
-    // CW_USEDEFAULT cannot be used with WS_POPUP.
-    HWND hwnd = CreateWindowEx(0, g_windowClassName,
-            0, WS_OVERLAPPEDWINDOW,
-            CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-            parentHandle, 0, g_hInstance, 0);
-    _ASSERT(hwnd);
-    if (center_relative_to_parent) {
-        // This won't work properly as real width/height is set later
-        // when BrowserEvents2::WindowSetWidth() / WindowSetHeight()
-        // are triggered. TODO.
-        // CenterWindow(hwnd);
-    }
-    ShowWindow(hwnd, SW_SHOWNORMAL);
-    UpdateWindow(hwnd);
-    return hwnd;
-}
-
-bool ShowDevTools(CefRefPtr<CefBrowser> cefBrowser) {
-    std::string devtools_url = cefBrowser->GetHost()->GetDevToolsURL(true);
-    // Example url returned:
-    //     http://localhost:54008/devtools/devtools.html?ws=localhost:54008
-    //     /devtools/page/1538ed984a2a4a90e5ed941c7d142a12
-    // Let's replace "localhost" with "127.0.0.1", using the ip address
-    // is more reliable.
-    devtools_url = ReplaceString(devtools_url, "localhost:", "127.0.0.1:");
-    LOG_INFO << "DevTools url: " << devtools_url;
-    if (devtools_url.empty()) {
-        LOG_WARNING << "GetDevToolsURL() returned an empty string. "
-                        "Make sure you've set the remote-debugging-port switch";
-        return false;
-    }
-    CefWindowInfo windowInfo;
-    CefBrowserSettings browser_settings;        
-    BrowserWindow* phpBrowser = GetBrowserWindow(cefBrowser->GetHost()->GetWindowHandle());
-    if (!phpBrowser) {
-        LOG_ERROR << "GetBrowserWindow() failed in ClientHandler::OnKeyEvent";
-        return false;
-    }
-    HWND popupHandle = CreatePopupWindow(phpBrowser->GetWindowHandle());
-    if (!popupHandle) {
-        LOG_ERROR << "CreatePopupWindow() failed in ClientHandler::OnKeyEvent";
-        return false;
-    }
-    RECT rect;
-    GetWindowRect(popupHandle, &rect);
-    windowInfo.SetAsChild(popupHandle, rect);
-    bool created = CefBrowserHost::CreateBrowser(
-            windowInfo, cefBrowser->GetHost()->GetClient(), devtools_url,
-            browser_settings, NULL);
-    if (!created) {
-        LOG_ERROR << "CreateBrowser() failed in ClientHandler::OnKeyEvent";
-        return false;
-    }
-    return true;
 }
 
 // ----------------------------------------------------------------------------

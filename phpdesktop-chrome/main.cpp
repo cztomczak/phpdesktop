@@ -3,6 +3,7 @@
 // Website: http://code.google.com/p/phpdesktop/
 
 #include "defines.h"
+#include <Windows.h>
 
 #pragma comment(linker, "/manifestdependency:\"type='win32' "\
     "name='Microsoft.Windows.Common-Controls' version='6.0.0.0' "\
@@ -11,11 +12,9 @@
 
 #include <crtdbg.h> // _ASSERT() macro
 #include "resource.h"
-#include <iostream>
-#include <cmath>
-#include <io.h>
-#include <Fcntl.h>
 
+#include "main_window.h"
+#include "logging.h"
 #include "executable.h"
 #include "fatal_error.h"
 #include "file_utils.h"
@@ -25,8 +24,7 @@
 #include "single_instance_application.h"
 #include "string_utils.h"
 #include "web_server.h"
-//#include "php_server.h"
-#include "window_utils.h"
+// #include "php_server.h"
 #include "cef/app.h"
 
 SingleInstanceApplication g_singleInstanceApplication;
@@ -34,12 +32,7 @@ wchar_t* g_singleInstanceApplicationGuid = 0;
 wchar_t g_windowClassName[256] = L"";
 int g_windowCount = 0;
 HINSTANCE g_hInstance = 0;
-HANDLE g_logFileHandle = NULL;
 extern std::string g_webServerUrl;
-
-HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title);
-void InitLogging(bool show_console, std::string log_level,
-                 std::string log_file);
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                             LPARAM lParam) {
@@ -73,10 +66,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             LOG_DEBUG << "WM_DESTROY";
             RemoveBrowserWindow(hwnd);
             if (g_windowCount <= 0) {
-                //LOG_DEBUG << "DISABLED: StopWebServer()";
                 StopWebServer();
 #ifdef DEBUG
-                // Debugging mongoose, see InitLogging().
+                // Debugging mongoose, see InitializeLogging().
                 printf("----------------------------------------");
                 printf("----------------------------------------\n");
 #endif
@@ -120,24 +112,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
-bool ProcessKeyboardMessage(MSG* msg) {
-    /*
-    if (msg->message == WM_KEYDOWN
-            || msg->message == WM_KEYUP
-            || msg->message == WM_SYSKEYDOWN
-            || msg->message == WM_SYSKEYUP) {
-        HWND root = GetAncestor(msg->hwnd, GA_ROOT);
-        BrowserWindow* browser = GetBrowserWindow(root);
-        if (browser) {
-            if (browser->TranslateAccelerator(msg))
-                return true;
-        } else {
-            LOG_DEBUG << "ProcessKeyboardMessage(): could not fetch BrowserWindow";
-        }
-    }
-    */
-    return false;
-}
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPTSTR lpstrCmdLine, int nCmdShow) {
     g_hInstance = hInstance;
@@ -156,10 +130,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     // Initialize logging.
     if (std::wstring(lpstrCmdLine).find(L"--type=") != std::string::npos) {
         // This is a subprocess.
-        InitLogging(subprocess_show_console, log_level, log_file);
+        InitializeLogging(subprocess_show_console, log_level, log_file);
     } else {
         // Main browser process.
-        InitLogging(show_console, log_level, log_file);
+        InitializeLogging(show_console, log_level, log_file);
     }
     
     // CEF subprocesses.
@@ -167,10 +141,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     CefRefPtr<App> app(new App);    
     int exit_code = CefExecuteProcess(main_args, app.get());
     if (exit_code >= 0) {
-        // See InitLogging().
-        if (g_logFileHandle) {
-            CloseHandle(g_logFileHandle);
-        }
+        ShutdownLogging();
         return exit_code;
     }
 
@@ -222,8 +193,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    Utf8ToWide(GetExecutableName()).c_str());
     }
 
-    // LOG_DEBUG << "DISABLED: StartWebServer()";
-    // g_webServerUrl = "http://127.0.0.1:54007/";
     if (!StartWebServer()) {
         FatalError(NULL, "Could not start internal web server.\n"
                    "Exiting application.");
@@ -273,154 +242,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     LOG_INFO << "Ended application";
     LOG_INFO << "--------------------------------------------------------";
 
-    // See InitLogging().
-    if (g_logFileHandle) {
-        CloseHandle(g_logFileHandle);
-    }
+    ShutdownLogging();
 
     return 0;
-}
-HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title) {
-    json_value* appSettings = GetApplicationSettings();
-    long default_width = (*appSettings)["main_window"]["default_size"][0];
-    long default_height = (*appSettings)["main_window"]["default_size"][1];
-    bool disable_maximize_button =
-            (*appSettings)["main_window"]["disable_maximize_button"];
-    bool center_on_screen = (*appSettings)["main_window"]["center_on_screen"];
-    bool dpi_aware = (*appSettings)["application"]["dpi_aware"];
-
-    if (default_width && default_height) {
-        // Win7 DPI:
-        // text size Larger 150% => ppix/ppiy 144
-        // text size Medium 125% => ppix/ppiy 120
-        // text size Smaller 100% => ppix/ppiy 96
-        HDC hdc = GetDC(HWND_DESKTOP);
-        int ppix = GetDeviceCaps(hdc, LOGPIXELSX);
-        int ppiy = GetDeviceCaps(hdc, LOGPIXELSY);
-        ReleaseDC(HWND_DESKTOP, hdc);
-        double newZoomLevel = 0.0;
-        if (ppix > 96) {
-            newZoomLevel = (ppix - 96) / 24;
-        }
-        if (dpi_aware && newZoomLevel > 0.0) {
-            default_width = default_width + (int)ceil(newZoomLevel * 0.25 * default_width);
-            default_height = default_height + (int)ceil(newZoomLevel * 0.25 * default_height);
-            LOG_DEBUG << "DPI, main window width/height = " << default_width
-                      << "/" << default_height << ", enlarged by "
-                      << ceil(newZoomLevel * 0.25 * 100) << "%";
-        }
-        int max_width = GetSystemMetrics(SM_CXMAXIMIZED) - 96;
-        int max_height = GetSystemMetrics(SM_CYMAXIMIZED) - 64;
-        LOG_DEBUG << "Window max width/height = " << max_width << "/" << max_height;
-        bool max_size_exceeded = (default_width > max_width \
-                || default_height > max_height);
-        if (default_width > max_width) {
-            default_width = max_width;
-        }
-        if (default_height > max_height) {
-            default_height = max_height;
-        }
-        if (max_size_exceeded) {
-            LOG_DEBUG << "Main window max size exceeded, new width/height = "
-                      << default_width << "/" << default_height;
-        }
-    } else {
-        default_width = CW_USEDEFAULT;
-        default_height = CW_USEDEFAULT;
-    }
-
-    WNDCLASSEX wc = {0};
-    wc.cbSize = sizeof(wc);
-    wc.hbrBackground = (HBRUSH)GetSysColorBrush(COLOR_WINDOW);
-    wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDR_MAINWINDOW));
-    wc.hInstance = hInstance;
-    wc.lpfnWndProc = WindowProc;
-    wc.lpszClassName = g_windowClassName;
-
-    ATOM atom = RegisterClassEx(&wc);
-    _ASSERT(atom);
-
-    HWND hwnd = CreateWindowEx(0, g_windowClassName,
-            Utf8ToWide(title).c_str(), WS_OVERLAPPEDWINDOW,
-            CW_USEDEFAULT, CW_USEDEFAULT, default_width, default_height,
-            HWND_DESKTOP, 0, hInstance, 0);
-    _ASSERT(hwnd);
-    if (disable_maximize_button) {
-        int style = GetWindowLong(hwnd, GWL_STYLE);
-        _ASSERT(style);
-        int ret = SetWindowLong(hwnd, GWL_STYLE, style &~WS_MAXIMIZEBOX);
-        _ASSERT(ret);
-    }
-    if (center_on_screen)
-        CenterWindow(hwnd);
-
-    ShowWindow(hwnd, nCmdShow);
-    UpdateWindow(hwnd);
-    return hwnd;
-}
-void InitLogging(bool show_console, std::string log_level,
-                 std::string log_file) {
-    if (show_console) {
-        AllocConsole();
-        FILE* freopen_file;
-        freopen_s(&freopen_file, "CONIN$", "rb", stdin);
-        freopen_s(&freopen_file, "CONOUT$", "wb", stdout);
-        freopen_s(&freopen_file, "CONOUT$", "wb", stderr);
-    }
-
-#ifdef DEBUG
-    // Debugging mongoose web server.
-    FILE* mongoose_file;
-    freopen_s(&mongoose_file,
-            GetExecutableDirectory().append("\\debug-mongoose.log").c_str(),
-            "ab", stdout);
-#endif
-
-    if (log_level.length())
-        FILELog::ReportingLevel() = FILELog::FromString(log_level);
-    else
-        FILELog::ReportingLevel() = logINFO;
-
-    if (log_file.length()) {
-        // The log file needs to be opened in shared mode so that
-        // CEF subprocesses can also append to this file.
-        // Converting HANDLE to FILE*:
-        // http://stackoverflow.com/a/7369662/623622
-        g_logFileHandle = CreateFile(
-                    Utf8ToWide(log_file).c_str(),
-                    GENERIC_WRITE,
-                    FILE_SHARE_WRITE,
-                    NULL,
-                    OPEN_ALWAYS,
-                    FILE_ATTRIBUTE_NORMAL,
-                    NULL);
-        // Calling CloseHandle after CefShutdown.
-        if (g_logFileHandle == INVALID_HANDLE_VALUE) {
-            g_logFileHandle = NULL;
-            LOG_ERROR << "Opening log file for appending failed";
-            return;
-        }
-        int fd = _open_osfhandle((intptr_t)g_logFileHandle, _O_APPEND | _O_RDONLY);
-        if (fd == -1) {
-            LOG_ERROR << "Opening log file for appending failed, "
-                      << "_open_osfhandle() failed";
-            return;
-        }
-        FILE* pFile = _fdopen(fd, "a+");
-        if (pFile == 0) {
-            _close(fd);
-            LOG_ERROR << "Opening log file for appending failed, "
-                      << "_fdopen() failed";
-            return;
-        }
-        // TODO: should we call fclose(pFile) later?
-        Output2FILE::Stream() = pFile;
-        /*
-        OLD WAY:
-        if (0 == _wfopen_s(&pFile, Utf8ToWide(log_file).c_str(), L"a"))
-            Output2FILE::Stream() = pFile;
-        else
-            LOG_ERROR << "Opening log file for appending failed";
-        */
-    }
 }

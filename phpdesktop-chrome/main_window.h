@@ -5,7 +5,7 @@
 #pragma once
 
 #include "defines.h"
+#include <Windows.h>
+#include <string>
 
-void CenterWindow(HWND hwnd);
-bool CenterWindowRelativeToParent(HWND window);
-void GetCorrectWindowSize(int* width, int* height);
+HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title);

@@ -5,7 +5,8 @@
 #pragma once
 
 #include "defines.h"
+#include <string>
 
-void CenterWindow(HWND hwnd);
-bool CenterWindowRelativeToParent(HWND window);
-void GetCorrectWindowSize(int* width, int* height);
+void InitializeLogging(bool show_console, std::string log_level,
+                 std::string log_file);
+void ShutdownLogging();

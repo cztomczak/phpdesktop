@@ -182,7 +182,7 @@ void BrowserWindow::OnSize() {
                 SWP_NOZORDER);
         EndDeferWindowPos(hdwp);
     } else {
-        LOG_WARNING << "BrowserWindow::OnSize() failed: "
+        LOG_DEBUG << "BrowserWindow::OnSize() failed: "
                        "CefBrowser object not created yet";
     }
 }

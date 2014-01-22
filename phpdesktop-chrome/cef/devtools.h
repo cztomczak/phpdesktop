@@ -4,8 +4,7 @@
 
 #pragma once
 
-#include "defines.h"
+#include "../defines.h"
+#include "include/cef_app.h"
 
-void CenterWindow(HWND hwnd);
-bool CenterWindowRelativeToParent(HWND window);
-void GetCorrectWindowSize(int* width, int* height);
+bool ShowDevTools(CefRefPtr<CefBrowser> cefBrowser);

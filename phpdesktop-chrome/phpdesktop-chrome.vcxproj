@@ -145,6 +145,8 @@
     <ClCompile Include="cef\browser_window.cpp" />
     <ClCompile Include="cef\client_handler.cpp" />
     <ClCompile Include="debug.cpp" />
+    <ClCompile Include="cef\devtools.cpp" />
+    <ClCompile Include="dpi_aware.cpp" />
     <ClCompile Include="executable.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
@@ -152,8 +154,11 @@
     <ClCompile Include="fatal_error.cpp" />
     <ClCompile Include="file_utils.cpp" />
     <ClCompile Include="json.c" />
+    <ClCompile Include="logging.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="main_window.cpp" />
     <ClCompile Include="mongoose.c" />
+    <ClCompile Include="popup_window.cpp" />
     <ClCompile Include="settings.cpp" />
     <ClCompile Include="string_utils.cpp" />
     <ClCompile Include="web_server.cpp" />
@@ -241,13 +246,18 @@
     <ClInclude Include="cef\util.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="defines.h" />
+    <ClInclude Include="cef\devtools.h" />
+    <ClInclude Include="dpi_aware.h" />
     <ClInclude Include="executable.h" />
     <ClInclude Include="fatal_error.h" />
     <ClInclude Include="file_utils.h" />
     <ClInclude Include="json.h" />
     <ClInclude Include="log.h" />
+    <ClInclude Include="logging.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="main_window.h" />
     <ClInclude Include="mongoose.h" />
+    <ClInclude Include="popup_window.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="settings.h" />
     <ClInclude Include="single_instance_application.h" />

@@ -9,5 +9,9 @@
 <a href="javascript:window.open('index.php')">window.open('index.php')</a>
 <br><br>
 
+<a href="javascript:window.open('index.php', '', 'width=1024,height=768')">
+        window.open('index.php', '', 'width=1024,height=768')</a>
+<br><br>
+
 <a href="index.php" target="_blank">target="_blank"</a>
 <br><br>

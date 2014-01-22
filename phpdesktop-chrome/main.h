@@ -3,6 +3,7 @@
 // Website: http://code.google.com/p/phpdesktop/
 
 #include "defines.h"
+#include <windows.h>
 
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, 
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                             LPARAM lParam);

@@ -8,10 +8,6 @@
 #include "include/cef_client.h"
 #include <list>
 
-void SetBrowserDpiSettings(CefRefPtr<CefBrowser> cefBrowser);
-HWND CreatePopupWindow(HWND parentHandle);
-bool ShowDevTools(CefRefPtr<CefBrowser> cefBrowser);
-
 class ClientHandler : public CefClient,
                       public CefDisplayHandler,
                       public CefLifeSpanHandler,

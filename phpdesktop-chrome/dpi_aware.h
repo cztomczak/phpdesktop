@@ -5,7 +5,8 @@
 #pragma once
 
 #include "defines.h"
+#include "include/cef_app.h"
+#include "cef/util.h"
 
-void CenterWindow(HWND hwnd);
-bool CenterWindowRelativeToParent(HWND window);
-void GetCorrectWindowSize(int* width, int* height);
+void SetBrowserDpiSettings(CefRefPtr<CefBrowser> cefBrowser);
+void GetDpiAwareWindowSize(int* width, int* height);

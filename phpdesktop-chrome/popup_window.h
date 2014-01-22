@@ -5,7 +5,6 @@
 #pragma once
 
 #include "defines.h"
+#include <Windows.h>
 
-void CenterWindow(HWND hwnd);
-bool CenterWindowRelativeToParent(HWND window);
-void GetCorrectWindowSize(int* width, int* height);
+HWND CreatePopupWindow(HWND parentHandle);
