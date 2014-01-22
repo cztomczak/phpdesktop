@@ -10,6 +10,9 @@
 $files = glob("./*");
 foreach ($files as $file) {
 	$file = basename($file);
+    if ($file and $file[0] == "_") {
+        continue;
+    }
 	printf("<a href='%s'>%s</a><br>", $file, $file);
 }
 

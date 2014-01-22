@@ -36,7 +36,7 @@ static void end_request(const struct mg_connection* conn, int reply_status_code)
     LOG_INFO << message;
 }
 bool StartWebServer() {
-    LOG_INFO << "Starting Mongoose web server";
+    LOG_INFO << "Starting Mongoose " << mg_version() << " web server";
     json_value* settings = GetApplicationSettings();
 
     // Web server url from settings.

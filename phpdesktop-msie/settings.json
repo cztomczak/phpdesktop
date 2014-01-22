@@ -28,7 +28,7 @@
         "cgi_extensions": ["php"]
     },
     "msie": {
-        "error_page": "../www/_error_page.html",
+        "error_page": "../www/_error-page.html",
         "smooth_scroll": false,
         "enable_f5_refresh": true,
         "show_context_menu": true,

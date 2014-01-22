@@ -3,7 +3,7 @@
 <title>Welcome to PHP Desktop Chrome</title>
 <h1>Welcome to PHP Desktop Chrome</h1>
 
-<p>Scripts in www/ directory:</p>
+<p>Scripts in the www/ directory:</p>
 
 <?php
 
@@ -17,7 +17,15 @@ foreach ($files as $file) {
 }
 
 ?>
-<br><hr>
+
+<h2>Notes</h2>
+
+<ul>
+<li>To disable debugging console window, edit the settings.json
+    file and change the "show_console" setting to false.</li>
+</ul>
+
+<hr>
 Project website:
 <a href="http://code.google.com/p/phpdesktop/">
     http://code.google.com/p/phpdesktop/

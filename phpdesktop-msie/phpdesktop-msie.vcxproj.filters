@@ -229,6 +229,19 @@
     <None Include="www\test-window.php" />
     <None Include="before_release.txt" />
     <None Include="settings.json" />
+    <None Include="www\_error-page.html" />
+    <None Include="www\404.php" />
+    <None Include="www\_pdo.php" />
+    <None Include="www\context-menu.php" />
+    <None Include="www\cookies.php" />
+    <None Include="www\forms.php" />
+    <None Include="www\javascript-errors.php" />
+    <None Include="www\links.php" />
+    <None Include="www\msie-version.php" />
+    <None Include="www\popups.php" />
+    <None Include="www\sqlite.php" />
+    <None Include="www\text-selection.php" />
+    <None Include="www\window.php" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">

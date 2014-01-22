@@ -210,10 +210,19 @@
     <None Include=".gitignore" />
     <None Include="icon.png" />
     <None Include="settings.json" />
+    <None Include="www\404.php" />
+    <None Include="www\context-menu.php" />
+    <None Include="www\cookies.php" />
+    <None Include="www\forms.php" />
     <None Include="www\index.php" />
     <None Include="license.txt" />
+    <None Include="www\javascript-errors.php" />
+    <None Include="www\links.php" />
+    <None Include="www\msie-version.php" />
     <None Include="www\phpinfo.php" />
     <None Include="resource.aps" />
+    <None Include="www\popups.php" />
+    <None Include="www\sqlite.php" />
     <None Include="www\test-controls.php" />
     <None Include="www\test-forms.php" />
     <None Include="www\test-javascript-errors.php" />
@@ -221,6 +230,10 @@
     <None Include="msie\todo.txt" />
     <None Include="www\test-popups.php" />
     <None Include="www\test-window.php" />
+    <None Include="www\text-selection.php" />
+    <None Include="www\window.php" />
+    <None Include="www\_error-page.html" />
+    <None Include="www\_pdo.php" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">

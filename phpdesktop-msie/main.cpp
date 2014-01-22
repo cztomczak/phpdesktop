@@ -75,8 +75,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             _ASSERT(b);
             RemoveBrowserWindow(hwnd);
             if (g_windowCount <= 0) {
-                //LOG_DEBUG << "DISABLED: StopWebServer()";
                 StopWebServer();
+                LOG_DEBUG << "Mongoose webserver stopped";
 #ifdef DEBUG
                 // Debugging mongoose, see InitLogging().
                 printf("----------------------------------------");
