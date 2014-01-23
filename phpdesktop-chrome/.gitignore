@@ -1,5 +1,5 @@
-Release/
-Debug/
+/Release/
+/Debug/
 ipch/
 *.ncb
 *.suo
@@ -10,3 +10,4 @@ ipch/
 *.dll
 *.exe
 debug.log
+*.lib
