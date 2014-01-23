@@ -19,6 +19,7 @@ HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title) {
             (*appSettings)["main_window"]["disable_maximize_button"];
     bool center_on_screen = (*appSettings)["main_window"]["center_on_screen"];
     bool dpi_aware = (*appSettings)["application"]["dpi_aware"];
+    bool start_maximized = (*appSettings)["main_window"]["start_maximized"];
 
     if (default_width && default_height) {
         if (dpi_aware) {
@@ -55,7 +56,11 @@ HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title) {
     if (center_on_screen)
         CenterWindow(hwnd);
 
-    ShowWindow(hwnd, nCmdShow);
+    if (start_maximized) {
+        ShowWindow(hwnd, SW_MAXIMIZE);
+    } else {
+        ShowWindow(hwnd, nCmdShow);
+    }
     UpdateWindow(hwnd);
     return hwnd;
 }
