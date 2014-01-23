@@ -161,6 +161,7 @@
     <ClCompile Include="popup_window.cpp" />
     <ClCompile Include="settings.cpp" />
     <ClCompile Include="string_utils.cpp" />
+    <ClCompile Include="version.cpp" />
     <ClCompile Include="web_server.cpp" />
     <ClCompile Include="window_utils.cpp" />
   </ItemGroup>
@@ -263,6 +264,7 @@
     <ClInclude Include="single_instance_application.h" />
     <ClInclude Include="srand2.h" />
     <ClInclude Include="string_utils.h" />
+    <ClInclude Include="version.h" />
     <ClInclude Include="web_server.h" />
     <ClInclude Include="window_utils.h" />
   </ItemGroup>
