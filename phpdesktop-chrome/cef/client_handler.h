@@ -15,7 +15,8 @@ class ClientHandler : public CefClient,
                       public CefContextMenuHandler,
                       public CefDragHandler,
                       public CefRequestHandler,
-                      public CefKeyboardHandler {
+                      public CefKeyboardHandler,
+                      public CefDownloadHandler {
  public:
   ClientHandler();
   ~ClientHandler();
@@ -43,6 +44,9 @@ class ClientHandler : public CefClient,
     return this;
   }
   virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() {
+    return this;
+  }
+  virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() {
     return this;
   }
 
@@ -102,6 +106,17 @@ class ClientHandler : public CefClient,
   virtual bool OnKeyEvent(CefRefPtr<CefBrowser> browser,
                           const CefKeyEvent& event,
                           CefEventHandle os_event) OVERRIDE;
+
+  // CefDownloadHandler methods:
+  virtual void OnBeforeDownload(
+      CefRefPtr<CefBrowser> browser,
+      CefRefPtr<CefDownloadItem> download_item,
+      const CefString& suggested_name,
+      CefRefPtr<CefBeforeDownloadCallback> callback) OVERRIDE;
+  virtual void OnDownloadUpdated(
+      CefRefPtr<CefBrowser> browser,
+      CefRefPtr<CefDownloadItem> download_item,
+      CefRefPtr<CefDownloadItemCallback> callback) OVERRIDE;
 
  private:
   // Include the default reference counting implementation.

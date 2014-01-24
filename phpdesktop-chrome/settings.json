@@ -42,6 +42,7 @@
         "devtools_F12": true,
         "command_line_switches": {
             "remote-debugging-port": "54008"
-        }
+        },
+        "enable_downloads": true
     }
 }

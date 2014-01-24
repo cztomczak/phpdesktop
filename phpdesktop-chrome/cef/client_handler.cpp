@@ -423,3 +423,48 @@ bool ClientHandler::OnKeyEvent(CefRefPtr<CefBrowser> cefBrowser,
     }
     return false;
 }
+
+// ----------------------------------------------------------------------------
+// CefDownloadHandler methods
+// ----------------------------------------------------------------------------
+
+///
+// Called before a download begins. |suggested_name| is the suggested name for
+// the download file. By default the download will be canceled. Execute
+// |callback| either asynchronously or in this method to continue the download
+// if desired. Do not keep a reference to |download_item| outside of this
+// method.
+///
+/*--cef()--*/
+void ClientHandler::OnBeforeDownload(CefRefPtr<CefBrowser> browser,
+                        CefRefPtr<CefDownloadItem> download_item,
+                        const CefString& suggested_name,
+                        CefRefPtr<CefBeforeDownloadCallback> callback) {
+    json_value* appSettings = GetApplicationSettings();
+    bool enable_downloads = (*appSettings)["chrome"]["enable_downloads"];
+    if (enable_downloads) {
+        LOG_INFO << "About to download a file: " << suggested_name.ToString();
+        callback->Continue(suggested_name, true);
+    } else {
+        LOG_INFO << "Tried to download a file, but downloads are disabled";
+    }
+}
+
+///
+// Called when a download's status or progress information has been updated.
+// This may be called multiple times before and after OnBeforeDownload().
+// Execute |callback| either asynchronously or in this method to cancel the
+// download if desired. Do not keep a reference to |download_item| outside of
+// this method.
+///
+/*--cef()--*/
+void ClientHandler::OnDownloadUpdated(
+        CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefDownloadItem> download_item,
+        CefRefPtr<CefDownloadItemCallback> callback) {
+    if (download_item->IsComplete()) {
+        LOG_INFO << "Download completed, saved to: " << download_item->GetFullPath().ToString();
+    } else if (download_item->IsCanceled()) {
+        LOG_INFO << "Download was cancelled";
+    }
+}
