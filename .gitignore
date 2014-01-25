@@ -7,3 +7,6 @@ phpdesktop-chrome-*
 mongoose-*
 phpdesktop-msie-*
 cef3-*
+php-*
+*.ini-development
+*.ini-production

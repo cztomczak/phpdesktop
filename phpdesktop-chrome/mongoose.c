@@ -1298,6 +1298,13 @@ static void trim_trailing_whitespaces(char *s) {
   }
 }
 
+// Copied from string_utils.cpp - cannot include string utils here
+// as this is C code.
+void Utf8ToWide(const char* utf8String, wchar_t* wideString, int wideSize) {
+    int copiedCharacters = MultiByteToWideChar(CP_UTF8, 0, utf8String, -1, 
+            wideString, wideSize);
+}
+
 static pid_t spawn_process(struct mg_connection *conn, const char *prog,
                            char *envblk, char *envp[], int fdin,
                            int fdout, const char *dir) {
@@ -1309,8 +1316,9 @@ static pid_t spawn_process(struct mg_connection *conn, const char *prog,
   char *p, *interp, full_interp[PATH_MAX], full_dir[PATH_MAX],
        cmdline[1024], buf[PATH_MAX];
   struct file file = STRUCT_FILE_INITIALIZER;
-  STARTUPINFOA si;
+  STARTUPINFOW si;
   PROCESS_INFORMATION pi = { 0 };
+  wchar_t cmdlinew[1024];
 
   (void) envp;
 
@@ -1359,7 +1367,12 @@ static pid_t spawn_process(struct mg_connection *conn, const char *prog,
               interp, interp[0] == '\0' ? "" : " ", full_dir, prog);
 
   DEBUG_TRACE(("Running [%s]", cmdline));
-  if (CreateProcessA(NULL, cmdline, NULL, NULL, TRUE,
+  // PHP Desktop Fix:
+  //   Changed STARTUPINFOA to STARTUPINFOW and CreateProcessA to CreateProcessW
+  //   to support unicode characters in path. See Issue 33:
+  //   https://code.google.com/p/phpdesktop/issues/detail?id=33
+  Utf8ToWide(cmdline, cmdlinew, 1024);
+  if (CreateProcessW(NULL, cmdlinew, NULL, NULL, TRUE,
         CREATE_NEW_PROCESS_GROUP, envblk, NULL, &si, &pi) == 0) {
     cry(conn, "%s: CreateProcess(%s): %ld",
         __func__, cmdline, ERRNO);
