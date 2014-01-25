@@ -18,7 +18,7 @@
         "disable_maximize_button": false,
         "center_on_screen": true,
         "start_maximized": false,
-        "start_fullscreen": true
+        "start_fullscreen": false
     },
     "popup_window": {
         "icon": "",
