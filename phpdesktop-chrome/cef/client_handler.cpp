@@ -18,10 +18,10 @@
 #include "../string_utils.h"
 #include "../dpi_aware.h"
 #include "../window_utils.h"
+#include "../web_server.h"
 
 extern HINSTANCE g_hInstance;
 extern wchar_t g_windowClassName[256];
-extern std::string g_webServerUrl;
 extern std::map<HWND, BrowserWindow*> g_browserWindows; // browser_window.cpp
 
 namespace {
@@ -59,8 +59,8 @@ void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> cefBrowser,
     BrowserWindow* browser = GetBrowserWindow(cefHandle);
     if (browser && browser->IsPopup()) {
         if (browser->IsUsingMetaTitle()) {
-            std::string ipAddress = (*appSettings)["web_server"]["listen_on"][0];
-            if (cefTitle.empty() || cefTitle.ToString().find(ipAddress) == 0) {
+            if (cefTitle.empty() 
+                    || cefTitle.ToString().find(GetWebServerIpAddress()) == 0) {
                 // Use main window title if no title provided in popup.
                 // If there is not meta title, then CEF sets url as a title.
                 std::string main_window_title = (*appSettings)["main_window"]["title"];
@@ -198,7 +198,7 @@ bool ClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser,
         GetDpiAwareWindowSize(&windowInfo.width, &windowInfo.height);
     }
     GetCorrectWindowSize(&windowInfo.width, &windowInfo.height);
-    if (target_url.ToString().find(g_webServerUrl) == 0) {
+    if (target_url.ToString().find(GetWebServerUrl()) == 0) {
         // Allow to create.
         return false;
     } else {
@@ -373,7 +373,7 @@ bool ClientHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
     json_value* appSettings = GetApplicationSettings();
     bool external_navigation = (*appSettings)["chrome"]["external_navigation"];
     CefString newUrl = request->GetURL();
-    if (newUrl.ToString().find(g_webServerUrl) == 0) {
+    if (newUrl.ToString().find(GetWebServerUrl()) == 0) {
         // Allow to open in phpdesktop browser.
         return false;
     } else {

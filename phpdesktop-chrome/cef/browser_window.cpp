@@ -16,9 +16,9 @@
 #include "../file_utils.h"
 #include "../window_utils.h"
 #include "../resource.h"
+#include "../web_server.h"
 
 std::map<HWND, BrowserWindow*> g_browserWindows;
-extern std::string g_webServerUrl;
 extern wchar_t g_windowClassName[256];
 extern HINSTANCE g_hInstance; // main.cpp
 
@@ -90,7 +90,7 @@ BrowserWindow::BrowserWindow(HWND inWindowHandle, bool isPopup)
     if (IsPopup()) {
         LOG_DEBUG << "BrowserWindow::BrowserWindow() created for Popup";
     } else {
-        if (!CreateBrowserControl(Utf8ToWide(g_webServerUrl).c_str())) {
+        if (!CreateBrowserControl(Utf8ToWide(GetWebServerUrl()).c_str())) {
             FatalError(windowHandle_, "Could not create Browser control.\n"
                     "Exiting application.");
         }
@@ -131,8 +131,9 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     // Specify CEF browser settings here.
     CefBrowserSettings browser_settings;
     // Create the first browser window.
-    CefBrowserHost::CreateBrowser(window_info, handler.get(), g_webServerUrl,
-                                      browser_settings, NULL);
+    CefBrowserHost::CreateBrowser(
+            window_info, handler.get(), 
+            GetWebServerUrl(), browser_settings, NULL);
 
     return true;
 }

@@ -33,7 +33,6 @@ wchar_t* g_singleInstanceApplicationGuid = 0;
 wchar_t g_windowClassName[256] = L"";
 int g_windowCount = 0;
 HINSTANCE g_hInstance = 0;
-extern std::string g_webServerUrl;
 std::string g_cgiEnvironmentFromArgv = "";
 
 HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title);
@@ -245,8 +244,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    Utf8ToWide(GetExecutableName()).c_str());
     }
 
-    //LOG_DEBUG << "DISABLED: StartWebServer()";
-    //g_webServerUrl = "http://127.0.0.1:54007/";
     if (!StartWebServer()) {
         FatalError(NULL, "Could not start internal web server.\n"
                    "Exiting application.");

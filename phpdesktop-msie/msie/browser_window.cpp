@@ -34,11 +34,11 @@
 #include "../fatal_error.h"
 #include "../file_utils.h"
 #include "../window_utils.h"
+#include "../web_server.h"
 
 #define EXTERNAL_CLOSE_WINDOW 1
 
 std::map<HWND, BrowserWindow*> g_browserWindows;
-extern std::string g_webServerUrl;
 extern wchar_t g_windowClassName[256];
 
 BrowserWindow* GetBrowserWindow(HWND hwnd) {
@@ -110,7 +110,7 @@ BrowserWindow::BrowserWindow(HWND inWindowHandle)
     _ASSERT(windowHandle_);
     SetTitleFromSettings();
     SetIconFromSettings();
-    SetAllowedUrl(Utf8ToWide(g_webServerUrl).c_str());
+    SetAllowedUrl(Utf8ToWide(GetWebServerUrl()).c_str());
     if (IsPopup()) {
         if (!CreateBrowserControl(0)) {
             LOG_ERROR << "BrowserWindow::CreateBrowserControl() "
@@ -120,7 +120,7 @@ BrowserWindow::BrowserWindow(HWND inWindowHandle)
             return;
         }
     } else {
-        if (!CreateBrowserControl(Utf8ToWide(g_webServerUrl).c_str())) {
+        if (!CreateBrowserControl(Utf8ToWide(GetWebServerUrl()).c_str())) {
             FatalError(windowHandle_, "Could not create Browser control.\n"
                     "Exiting application.");
         }

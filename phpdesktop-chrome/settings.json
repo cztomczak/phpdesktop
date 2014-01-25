@@ -26,7 +26,7 @@
         "default_size": [1024, 768]
     },
     "web_server": {
-        "listen_on": ["127.0.0.1", 54007],
+        "listen_on": ["127.0.0.1", 0],
         "www_directory": "../www",
         "index_files": ["index.html", "index.php"],
         "cgi_interpreter": "../php/php-cgi.exe",

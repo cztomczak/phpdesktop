@@ -2,7 +2,8 @@
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
-#include "defines.h"
+#include "web_server.h"
+
 #include <Windows.h>
 #include <stdio.h>
 #include <wchar.h>
@@ -15,7 +16,10 @@
 #include "string_utils.h"
 #include "version.h"
 
-std::string g_webServerUrl;
+int g_webServerPort = 0;
+std::string g_webServerIpAddress = "";
+std::string g_webServerUrl = "";
+
 struct mg_context* g_mongooseContext = 0;
 extern std::string g_cgiEnvironmentFromArgv;
 
@@ -41,18 +45,19 @@ bool StartWebServer() {
     LOG_INFO << "Starting Mongoose " << mg_version() << " web server";
     json_value* settings = GetApplicationSettings();
 
-    // Web server url from settings.
+    // Ip address and port. If port was set to 0, then real port
+    // will be known only after the webserver was started.
     std::string ipAddress = (*settings)["web_server"]["listen_on"][0];
     std::string port = (*settings)["web_server"]["listen_on"][1];
     long portInt = (*settings)["web_server"]["listen_on"][1];
     if (portInt)
         port = IntToString(portInt);
-    if (ipAddress.empty() || port.empty()) {
+    if (ipAddress.empty()) {
         ipAddress = "127.0.0.1";
-        port = "54007";
     }
-    g_webServerUrl = "http://" + ipAddress + ":" + port + "/";
-    LOG_INFO << "Web server url: " << g_webServerUrl;
+    if (port.empty()) {
+        port = "0";
+    }
 
     // WWW directory from settings.
     std::string wwwDirectory = (*settings)["web_server"]["www_directory"];
@@ -143,9 +148,16 @@ bool StartWebServer() {
     g_mongooseContext = mg_start(&callbacks, NULL, options);
     if (g_mongooseContext == NULL)
         return false;
-    else
-        return true;
+    
+    // When port was set to 0 then a random free port was assigned.
+    g_webServerPort = mg_get_listening_port(g_mongooseContext);
+    g_webServerIpAddress = ipAddress;
+    g_webServerUrl = "http://" + ipAddress + ":" + IntToString(g_webServerPort) + "/";
+    LOG_INFO << "Web server url: " << g_webServerUrl;
+
+    return true;
 }
+
 void StopWebServer() {
     if (g_mongooseContext) {
         LOG_INFO << "Stopping Mongoose web server";
@@ -164,3 +176,16 @@ void StopWebServer() {
         LOG_DEBUG << "Mongoose webserver stopped immediately";
     }
 }
+
+int GetWebServerPort() {
+    return g_webServerPort;
+}
+
+std::string GetWebServerIpAddress() {
+    return g_webServerIpAddress;
+}
+
+std::string GetWebServerUrl() {
+    return g_webServerUrl;
+}
+

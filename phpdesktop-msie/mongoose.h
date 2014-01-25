@@ -164,6 +164,7 @@ struct mg_context *mg_start(const struct mg_callbacks *callbacks,
 // threads are stopped. Context pointer becomes invalid.
 void mg_stop(struct mg_context *);
 void mg_stop_immediately(struct mg_context *);
+int mg_get_listening_port(struct mg_context *);
 
 
 // Get the value of particular configuration parameter.

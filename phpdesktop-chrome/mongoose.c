@@ -4556,7 +4556,9 @@ static void close_all_listening_sockets(struct mg_context *ctx) {
 }
 
 static int is_valid_port(unsigned int port) {
-  return port > 0 && port < 0xffff;
+  // PHP Desktop Fix:
+  //    Allow value of 0, so that OS assigns a random free port.
+  return port >= 0 && port < 0xffff;
 }
 
 // Valid listening port specification is: [ip_address:]port[s]
@@ -4610,6 +4612,7 @@ static int set_ports_option(struct mg_context *ctx) {
 #endif
   struct vec vec;
   struct socket so, *ptr;
+  socklen_t len = sizeof(struct sockaddr);
 
   while (success && (list = next_option(list, &vec, NULL)) != NULL) {
     if (!parse_port_string(&vec, &so)) {
@@ -4643,6 +4646,10 @@ static int set_ports_option(struct mg_context *ctx) {
       closesocket(so.sock);
       success = 0;
     } else {
+      // PHP Desktop Fix: 
+      //   If port was set to 0, OS assigned a random free port,
+      //   now we need to fetch that port using getsockname().
+      (void) getsockname(so.sock, &so.lsa.sa, &len);
       set_close_on_exec(so.sock);
       ctx->listening_sockets = ptr;
       ctx->listening_sockets[ctx->num_listening_sockets] = so;
@@ -5389,7 +5396,20 @@ void mg_stop_immediately(struct mg_context *ctx) {
     // if application quits then it does not need to do so, see
     // this post by Sergey Lyubka:
     // https://groups.google.com/d/msg/mongoose-users/qLNrY6asGms/zGC-rIHMO5oJ
-    // Do nothing in this function.
+#if defined(_WIN32) && !defined(__SYMBIAN32__)
+    // Clean up Winsock.
+    (void) WSACleanup();
+#endif // _WIN32
+}
+
+int mg_get_listening_port(struct mg_context *ctx) {
+    int i;
+    int port = 0;
+    for (i = 0; i < ctx->num_listening_sockets; i++) {
+        port = ntohs(ctx->listening_sockets[i].lsa.sin.sin_port);
+        break;
+    }
+    return port;
 }
 
 struct mg_context *mg_start(const struct mg_callbacks *callbacks,

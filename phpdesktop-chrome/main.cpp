@@ -32,7 +32,6 @@ SingleInstanceApplication g_singleInstanceApplication;
 wchar_t* g_singleInstanceApplicationGuid = 0;
 wchar_t g_windowClassName[256] = L"";
 HINSTANCE g_hInstance = 0;
-extern std::string g_webServerUrl;
 extern std::map<HWND, BrowserWindow*> g_browserWindows; // browser_window.cpp
 std::string g_cgiEnvironmentFromArgv = "";
 
@@ -260,6 +259,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
             (*appSettings)["chrome"]["remote_debugging_port"]);
     if (remote_debugging_port == 0) {
         remote_debugging_port = random(49152, 65535+1);
+        int i = 100;
+        while (((i--) > 0) && remote_debugging_port == GetWebServerPort()) {
+            remote_debugging_port = random(49152, 65535+1);
+        }
     }
     if (remote_debugging_port > 0) {
         LOG_INFO << "remote_debugging_port = " << remote_debugging_port;
