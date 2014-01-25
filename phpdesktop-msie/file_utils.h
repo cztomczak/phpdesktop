@@ -9,3 +9,5 @@
 
 std::string GetFileContents(std::string file);
 std::string GetRealPath(std::string path);
+std::string GetAbsolutePath(std::string path);
+bool DirectoryExists(std::string directory);

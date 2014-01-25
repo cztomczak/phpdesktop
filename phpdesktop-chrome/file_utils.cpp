@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include "string_utils.h"
+#include "executable.h"
 
 std::string GetFileContents(std::string file) {
     std::ifstream inFile;
@@ -28,4 +29,16 @@ std::string GetRealPath(std::string path) {
     GetFullPathName(Utf8ToWide(path).c_str(), _countof(realPath), realPath,
                     NULL);
     return WideToUtf8(realPath);
+}
+std::string GetAbsolutePath(std::string path) {
+    if (path.length() && path.find(":") == std::string::npos) {
+        path = GetExecutableDirectory() + "\\" + path;
+        path = GetRealPath(path);
+    }
+    return path;
+}
+bool DirectoryExists(std::string directory) {
+    DWORD dwAttrib = GetFileAttributes(Utf8ToWide(directory).c_str());
+    return (dwAttrib != INVALID_FILE_ATTRIBUTES && 
+           (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 }

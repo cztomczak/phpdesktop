@@ -43,13 +43,13 @@ static void end_request(const struct mg_connection* conn, int reply_status_code)
 }
 bool StartWebServer() {
     LOG_INFO << "Starting Mongoose " << mg_version() << " web server";
-    json_value* settings = GetApplicationSettings();
+    json_value* appSettings = GetApplicationSettings();
 
     // Ip address and port. If port was set to 0, then real port
     // will be known only after the webserver was started.
-    std::string ipAddress = (*settings)["web_server"]["listen_on"][0];
-    std::string port = (*settings)["web_server"]["listen_on"][1];
-    long portInt = (*settings)["web_server"]["listen_on"][1];
+    std::string ipAddress = (*appSettings)["web_server"]["listen_on"][0];
+    std::string port = (*appSettings)["web_server"]["listen_on"][1];
+    long portInt = (*appSettings)["web_server"]["listen_on"][1];
     if (portInt)
         port = IntToString(portInt);
     if (ipAddress.empty()) {
@@ -60,19 +60,15 @@ bool StartWebServer() {
     }
 
     // WWW directory from settings.
-    std::string wwwDirectory = (*settings)["web_server"]["www_directory"];
+    std::string wwwDirectory = (*appSettings)["web_server"]["www_directory"];
     if (wwwDirectory.empty()) {
         wwwDirectory = "www";
     }
-    if (wwwDirectory.length() && wwwDirectory.find(":") == std::string::npos) {
-        wwwDirectory = GetExecutableDirectory() + "\\" + wwwDirectory;
-        // Mongoose won't accept "..\\" in a path, need a real path.
-        wwwDirectory = GetRealPath(wwwDirectory);
-    }
+    wwwDirectory = GetAbsolutePath(wwwDirectory);
     LOG_INFO << "WWW directory: " << wwwDirectory;
 
     // Index files from settings.
-    const json_value indexFilesArray = (*settings)["web_server"]["index_files"];
+    const json_value indexFilesArray = (*appSettings)["web_server"]["index_files"];
     std::string indexFiles;
     for (int i = 0; i < 32; i++) {
         const char* file = indexFilesArray[i];
@@ -87,19 +83,16 @@ bool StartWebServer() {
     LOG_INFO << "Index files: " << indexFiles;
 
     // CGI interpreter from settings.
-    std::string cgiInterpreter = (*settings)["web_server"]["cgi_interpreter"];
+    std::string cgiInterpreter = (*appSettings)["web_server"]["cgi_interpreter"];
     if (cgiInterpreter.empty()) {
         cgiInterpreter = "php\\php-cgi.exe";
     }
-    if (cgiInterpreter.length() && cgiInterpreter.find(":") == std::string::npos) {
-        cgiInterpreter = GetExecutableDirectory() + "\\" + cgiInterpreter;
-        cgiInterpreter = GetRealPath(cgiInterpreter);
-    }
+    cgiInterpreter = GetAbsolutePath(cgiInterpreter);
     LOG_INFO << "CGI interpreter: " << cgiInterpreter;
 
     // CGI extensions from settings.
     const json_value cgiExtensions =
-            (*settings)["web_server"]["cgi_extensions"];
+            (*appSettings)["web_server"]["cgi_extensions"];
     std::string cgiPattern;
     for (int i = 0; i < 32; i++) {
         const char* extension = cgiExtensions[i];
@@ -113,13 +106,26 @@ bool StartWebServer() {
         cgiPattern = "**.php$";
     LOG_INFO << "CGI pattern: " << cgiPattern;
 
+    // Temp directory.
+    std::string cgi_temp_dir = (*appSettings)["web_server"]["cgi_temp_dir"];
+    cgi_temp_dir = GetAbsolutePath(cgi_temp_dir);
+    if (!cgi_temp_dir.length() || !DirectoryExists(cgi_temp_dir)) {
+        if (cgi_temp_dir.length()) {
+            LOG_WARNING << "cgi_temp_dir directory does not exist: "
+                        << cgi_temp_dir;
+        }
+        // Windows returns temp path like this:
+        // "C:\Users\USER\AppData\Local\Temp\"
+        wchar_t tempPath[MAX_PATH];
+        GetTempPathW(MAX_PATH, tempPath);
+        cgi_temp_dir.assign(WideToUtf8(tempPath));
+    } 
+
     // CGI environment variables.
     std::string cgiEnvironment = "";
-    char tempPath[MAX_PATH];
-    GetTempPathA(MAX_PATH, tempPath);
-    cgiEnvironment.append("TMP=").append(tempPath).append(",");
-    cgiEnvironment.append("TEMP=").append(tempPath).append(",");
-    cgiEnvironment.append("TMPDIR=").append(tempPath).append(",");
+    cgiEnvironment.append("TMP=").append(cgi_temp_dir).append(",");
+    cgiEnvironment.append("TEMP=").append(cgi_temp_dir).append(",");
+    cgiEnvironment.append("TMPDIR=").append(cgi_temp_dir).append(",");
     // Mongoose sets SERVER_NAME to "mydomain.com"
     cgiEnvironment.append("SERVER_NAME=").append(ipAddress).append(",");
     // Let users identify whether web app runs in a normal browser

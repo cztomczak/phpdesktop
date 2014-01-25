@@ -121,11 +121,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     bool subprocess_show_console = (*appSettings)["debugging"]["subprocess_show_console"];
     std::string log_level = (*appSettings)["debugging"]["log_level"];
     std::string log_file = (*appSettings)["debugging"]["log_file"];
-    if (log_file.length() && log_file.find(":") == std::string::npos) {
-        log_file = GetExecutableDirectory() + "\\" + log_file;
-        log_file = GetRealPath(log_file);
-    }
-
+    log_file = GetAbsolutePath(log_file);
+    
     // Initialize logging.
     if (std::wstring(lpstrCmdLine).find(L"--type=") != std::string::npos) {
         // This is a subprocess.
@@ -221,10 +218,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
     // log_file
     std::string chrome_log_file = (*appSettings)["chrome"]["log_file"];
-    if (chrome_log_file.length() && chrome_log_file.find(":") == std::string::npos) {
-        chrome_log_file = GetExecutableDirectory() + "\\" + chrome_log_file;
-        chrome_log_file = GetRealPath(chrome_log_file);
-    }
+    chrome_log_file = GetAbsolutePath(chrome_log_file);
     CefString(&cef_settings.log_file) = chrome_log_file;
 
     // log_severity
@@ -247,10 +241,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
     // cache_path
     std::string cache_path = (*appSettings)["chrome"]["cache_path"];
-    if (cache_path.length() && cache_path.find(":") == std::string::npos) {
-        cache_path = GetExecutableDirectory() + "\\" + cache_path;
-        cache_path = GetRealPath(cache_path);
-    }
+    cache_path = GetAbsolutePath(cache_path);
     CefString(&cef_settings.cache_path) = cache_path;
 
     // remote_debugging_port
