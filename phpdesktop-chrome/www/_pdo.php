@@ -70,14 +70,20 @@ function PDO_Execute($query, $params=null)
     if (isset($params)) {
         $stmt = $PDO->prepare($query);
         $stmt->execute($params);
+        return $stmt;
     } else {
-        $PDO->query($query);
+        return $PDO->query($query);
     }
 }
 function PDO_LastInsertId()
 {
     global $PDO;
     return $PDO->lastInsertId();
+}
+function PDO_ErrorInfo()
+{
+    global $PDO;
+    return $PDO->errorInfo();
 }
 
 ?>

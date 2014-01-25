@@ -281,6 +281,8 @@
       <FileType>Document</FileType>
     </None>
     <None Include="www\cookies.php" />
+    <None Include="www\download.php" />
+    <None Include="www\env-variables.php" />
     <None Include="www\forms.php" />
     <None Include="www\google.php" />
     <None Include="www\html5-video.php" />
@@ -293,6 +295,7 @@
     <None Include="www\popup.php" />
     <None Include="www\session.php" />
     <None Include="www\sqlite.php" />
+    <None Include="www\temp-dir.php" />
     <None Include="www\upload.php" />
     <None Include="www\_pdo.php" />
   </ItemGroup>
