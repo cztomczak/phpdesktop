@@ -26,6 +26,7 @@
 #include "web_server.h"
 // #include "php_server.h"
 #include "cef/app.h"
+#include "random.h"
 
 SingleInstanceApplication g_singleInstanceApplication;
 wchar_t* g_singleInstanceApplicationGuid = 0;
@@ -252,6 +253,18 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         cache_path = GetRealPath(cache_path);
     }
     CefString(&cef_settings.cache_path) = cache_path;
+
+    // remote_debugging_port
+    // A value of -1 will disable remote debugging.
+    int remote_debugging_port = static_cast<long>(
+            (*appSettings)["chrome"]["remote_debugging_port"]);
+    if (remote_debugging_port == 0) {
+        remote_debugging_port = random(49152, 65535+1);
+    }
+    if (remote_debugging_port > 0) {
+        LOG_INFO << "remote_debugging_port = " << remote_debugging_port;
+        cef_settings.remote_debugging_port = remote_debugging_port;
+    }
 
     CefInitialize(main_args, cef_settings, app.get());
     CreateMainWindow(hInstance, nCmdShow, main_window_title);

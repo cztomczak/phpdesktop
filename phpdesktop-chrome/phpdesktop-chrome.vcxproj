@@ -259,10 +259,13 @@
     <ClInclude Include="main_window.h" />
     <ClInclude Include="mongoose.h" />
     <ClInclude Include="popup_window.h" />
+    <ClInclude Include="random.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="settings.h" />
     <ClInclude Include="single_instance_application.h" />
-    <ClInclude Include="srand2.h" />
+    <ClCompile Include="random.cpp">
+      <FileType>CppHeader</FileType>
+    </ClCompile>
     <ClInclude Include="string_utils.h" />
     <ClInclude Include="version.h" />
     <ClInclude Include="web_server.h" />
