@@ -18,6 +18,9 @@ A few calls to putenv() overwrite the default directory,
 call sys_get_temp_dir() to see it if was set successfully.
 </p>
 
+<p>You can also set the temp directory using the "cgi_temp_dir"
+option in the settings.json file.</p>
+
 <h2>sys_get_temp_dir()</h2>
 
 <pre style="background:#ddd">
