@@ -150,6 +150,7 @@
     <ClCompile Include="registry.cpp" />
     <ClCompile Include="settings.cpp" />
     <ClCompile Include="string_utils.cpp" />
+    <ClCompile Include="version.cpp" />
     <ClCompile Include="web_server.cpp" />
     <ClCompile Include="window_utils.cpp" />
     <ClCompile Include="msie\browser_events2.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="msie\host_dispatch.h" />
     <ClInclude Include="msie\ole_command_target.h" />
     <ClInclude Include="registry.h" />
+    <ClInclude Include="version.h" />
     <ClInclude Include="WebBrowser\CompareIEVersions.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="defines.h" />

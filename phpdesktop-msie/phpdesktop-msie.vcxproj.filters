@@ -93,6 +93,9 @@
     <ClCompile Include="web_server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="version.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="msie\browser_events2.h">
@@ -204,6 +207,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="web_server.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

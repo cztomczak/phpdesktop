@@ -3,7 +3,7 @@
 // Website: http://code.google.com/p/phpdesktop/
 
 #include "defines.h"
-#include <windows.h>
+#include <Windows.h>
 #include <stdio.h>
 #include <wchar.h>
 
@@ -13,6 +13,7 @@
 #include "mongoose.h"
 #include "settings.h"
 #include "string_utils.h"
+#include "version.h"
 
 std::string g_webServerUrl;
 struct mg_context* g_mongooseContext = 0;
@@ -109,7 +110,11 @@ bool StartWebServer() {
     cgiEnvironment.append("TEMP=").append(tempPath).append(",");
     cgiEnvironment.append("TMPDIR=").append(tempPath).append(",");
     // Mongoose sets SERVER_NAME to "mydomain.com"
-    cgiEnvironment.append("SERVER_NAME=").append(ipAddress);
+    cgiEnvironment.append("SERVER_NAME=").append(ipAddress).append(",");
+    // Let users identify whether web app runs in a normal browser
+    // or a phpdesktop browser.
+    cgiEnvironment.append("PHPDESKTOP_VERSION=").append(GetPhpDesktopVersion());
+    // Environment from application args
     if (g_cgiEnvironmentFromArgv.length()) {
         cgiEnvironment.append(",").append(g_cgiEnvironmentFromArgv);
     }
