@@ -2,7 +2,6 @@
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
-#include "../defines.h"
 #include "browser_window.h"
 
 #include <map>
@@ -81,7 +80,10 @@ void RemoveBrowserWindow(HWND hwnd) {
 
 BrowserWindow::BrowserWindow(HWND inWindowHandle, bool isPopup)
         : windowHandle_(inWindowHandle),
-          isPopup_(isPopup){
+            isPopup_(isPopup),
+            cefBrowser_(NULL),
+            fullscreen_(NULL)
+{
     _ASSERT(windowHandle_);
 
     SetTitleFromSettings();
@@ -97,14 +99,35 @@ BrowserWindow::BrowserWindow(HWND inWindowHandle, bool isPopup)
     }
 }
 BrowserWindow::~BrowserWindow() {
-    LOG_DEBUG << "BrowserWindow::~BrowserWindow() destroyed";
 }
 CefRefPtr<CefBrowser> BrowserWindow::GetCefBrowser() {
     return cefBrowser_;
 }
+Fullscreen* BrowserWindow::GetFullscreenObject() {
+    return fullscreen_.get();
+}
 void BrowserWindow::SetCefBrowser(CefRefPtr<CefBrowser> cefBrowser) {
     // Called from ClientHandler::OnAfterCreated().
+    _ASSERT(!cefBrowser_.get());
+    if (cefBrowser_) {
+        LOG_ERROR << "BrowserWindow::SetCefBrowser() called, "
+                  << "but it is already set";
+        return;
+    }
     cefBrowser_ = cefBrowser;
+    fullscreen_.reset(new Fullscreen(cefBrowser));
+    json_value* appSettings = GetApplicationSettings();
+    if (!IsPopup()) {
+        bool start_fullscreen = (*appSettings)["main_window"]["start_fullscreen"];
+        if (start_fullscreen) {
+            fullscreen_->ToggleFullscreen();
+            CefRefPtr<CefProcessMessage> message = \
+                    CefProcessMessage::Create("SetIsFullscreen");
+            message->GetArgumentList()->SetBool(0, fullscreen_->IsFullscreen());
+            cefBrowser->SendProcessMessage(PID_RENDERER, message);
+        }
+    }
+    
     // OnSize was called from WM_SIZE, but cefBrowser_ was not yet
     // set, so the window wasn't yet positioned correctly.
     this->OnSize();
@@ -114,8 +137,6 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     // This is called only for the main window.
     // Popup cef browsers are created internally by CEF,
     // see OnBeforePopup, OnAfterCreated.
-    json_value* settings = GetApplicationSettings();
-
     RECT rect;
     BOOL b = GetWindowRect(windowHandle_, &rect);
     if (!b) {

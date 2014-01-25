@@ -49,6 +49,10 @@ class ClientHandler : public CefClient,
   virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() {
     return this;
   }
+  virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+                                        CefProcessId source_process,
+                                        CefRefPtr<CefProcessMessage> message) 
+                                        OVERRIDE;
 
   // CefDisplayHandler methods:
   virtual void OnTitleChange(CefRefPtr<CefBrowser> browser,

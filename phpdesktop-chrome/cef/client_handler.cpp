@@ -45,6 +45,33 @@ ClientHandler* ClientHandler::GetInstance() {
 }
 
 // ----------------------------------------------------------------------------
+// CefClient methods
+// ----------------------------------------------------------------------------
+
+///
+// Called when a new message is received from a different process. Return true
+// if the message was handled or false otherwise. Do not keep a reference to
+// or attempt to access the message outside of this callback.
+///
+/*--cef()--*/
+bool ClientHandler::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+                                    CefProcessId source_process,
+                                    CefRefPtr<CefProcessMessage> message) {
+    LOG_DEBUG << "browser[" << browser->GetIdentifier() << "] "
+              << "OnProcessMessageReceived: " << message->GetName().ToString();
+    if (message->GetName() == "ToggleFullscreen") {
+        BrowserWindow* browserWindow = GetBrowserWindow(\
+                browser->GetHost()->GetWindowHandle());
+        if (browserWindow && browserWindow->GetFullscreenObject()) {
+            browserWindow->GetFullscreenObject()->ToggleFullscreen();
+        }
+        return true;
+    }
+    LOG_ERROR << "Unhandled message in OnProcessMessageReceived";
+    return false;
+}
+
+// ----------------------------------------------------------------------------
 // CefDisplayHandler methods
 // ----------------------------------------------------------------------------
 

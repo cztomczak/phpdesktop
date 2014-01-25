@@ -23,6 +23,7 @@ private:
     HWND windowHandle_;
     bool isPopup_;
 	CefRefPtr<CefBrowser> cefBrowser_; // may be empty, always check using .get()
+    std::tr1::shared_ptr<Fullscreen> fullscreen_; // may be empty
 public:
     BrowserWindow(HWND inWindowHandle, bool isPopup);
     ~BrowserWindow();
@@ -39,4 +40,5 @@ public:
     void SetTitleFromSettings();
     void SetIconFromSettings();
     bool SetFocus();
+    Fullscreen* GetFullscreenObject();
 };

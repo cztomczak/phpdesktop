@@ -144,6 +144,8 @@
     <ClCompile Include="cef\app.cpp" />
     <ClCompile Include="cef\browser_window.cpp" />
     <ClCompile Include="cef\client_handler.cpp" />
+    <ClCompile Include="cef\fullscreen.cpp" />
+    <ClCompile Include="cef\javascript_api.cpp" />
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="cef\devtools.cpp" />
     <ClCompile Include="dpi_aware.cpp" />
@@ -169,6 +171,8 @@
     <ClInclude Include="cef\browser_window.h" />
     <ClInclude Include="cef\app.h" />
     <ClInclude Include="cef\client_handler.h" />
+    <ClInclude Include="cef\fullscreen.h" />
+    <ClInclude Include="cef\javascript_api.h" />
     <ClInclude Include="cef\include\cef_app.h" />
     <ClInclude Include="cef\include\cef_auth_callback.h" />
     <ClInclude Include="cef\include\cef_base.h" />
