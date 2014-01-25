@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -40,7 +40,7 @@ static void end_request(const struct mg_connection* conn, int reply_status_code)
 bool StartWebServer() {
     LOG_INFO << "Starting Mongoose " << mg_version() << " web server";
     json_value* settings = GetApplicationSettings();
-    
+
     // Web server url from settings.
     std::string ipAddress = (*settings)["web_server"]["listen_on"][0];
     std::string port = (*settings)["web_server"]["listen_on"][1];
@@ -143,7 +143,7 @@ bool StartWebServer() {
 void StopWebServer() {
     if (g_mongooseContext) {
         LOG_INFO << "Stopping Mongoose web server";
-        /* 
+        /*
         Stoppping Mongoose webserver freezes for about 30 seconds
         on Win7 if we call mg_stop(). Introduced new function
         mg_stop_immediately() that does not free mongoose resources.

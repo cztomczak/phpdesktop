@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2014 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -31,7 +31,7 @@ HWND CreatePopupWindow(HWND parentHandle) {
             GetDpiAwareWindowSize(&width, &height);
         }
         GetCorrectWindowSize(&width, &height);
-    }    
+    }
     // Title will be set in BrowserWindow::BrowserWindow().
     // CW_USEDEFAULT cannot be used with WS_POPUP.
     HWND hwnd = CreateWindowEx(0, g_windowClassName,

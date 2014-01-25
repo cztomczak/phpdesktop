@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -37,10 +37,10 @@ extern std::string g_webServerUrl;
 std::string g_cgiEnvironmentFromArgv = "";
 
 HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title);
-void InitLogging(bool show_console, std::string log_level, 
+void InitLogging(bool show_console, std::string log_level,
                  std::string log_file);
 
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, 
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                             LPARAM lParam) {
     BrowserWindow* browser = 0;
     UINT_PTR timer = 0;
@@ -148,9 +148,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 bool ProcessKeyboardMessage(MSG* msg) {
-    if (msg->message == WM_KEYDOWN 
+    if (msg->message == WM_KEYDOWN
             || msg->message == WM_KEYUP
-            || msg->message == WM_SYSKEYDOWN 
+            || msg->message == WM_SYSKEYDOWN
             || msg->message == WM_SYSKEYUP) {
         HWND root = GetAncestor(msg->hwnd, GA_ROOT);
         BrowserWindow* browser = GetBrowserWindow(root);
@@ -167,7 +167,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPTSTR lpstrCmdLine, int nCmdShow) {
     g_hInstance = hInstance;
     json_value* settings = GetApplicationSettings();
-    // Debugging options.    
+    // Debugging options.
     bool show_console = (*settings)["debugging"]["show_console"];
     std::string log_level = (*settings)["debugging"]["log_level"];
     std::string log_file = (*settings)["debugging"]["log_file"];
@@ -178,8 +178,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
     InitLogging(show_console, log_level, log_file);
     LOG_INFO << "--------------------------------------------------------";
-    LOG_INFO << "Started application";    
-    
+    LOG_INFO << "Started application";
+
     if (log_file.length())
         LOG_INFO << "Logging to: " << log_file;
     else
@@ -213,7 +213,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         main_window_title = GetExecutableName();
 
     // Single instance guid option.
-    const char* single_instance_guid = 
+    const char* single_instance_guid =
             (*settings)["application"]["single_instance_guid"];
     if (single_instance_guid && single_instance_guid[0] != 0) {
         int guidSize = strlen(single_instance_guid) + 1;
@@ -221,7 +221,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         Utf8ToWide(single_instance_guid, g_singleInstanceApplicationGuid,
                    guidSize);
     }
-    if (g_singleInstanceApplicationGuid 
+    if (g_singleInstanceApplicationGuid
             && g_singleInstanceApplicationGuid[0] != 0) {
         g_singleInstanceApplication.Initialize(
                 g_singleInstanceApplicationGuid);
@@ -254,7 +254,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
     // From the MSDN "WebBrowser Customization" docs:
     //   Your application should use OleInitialize rather than CoInitialize
-    //   to start COM. OleInitialize enables support for the Clipboard, 
+    //   to start COM. OleInitialize enables support for the Clipboard,
     //   drag-and-drop operations, OLE, and in-place activation.
     // See: http://msdn.microsoft.com/en-us/library/aa770041(v=vs.85).aspx
     HRESULT hr = OleInitialize(NULL);
@@ -262,7 +262,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
     SetInternetFeatures();
     CreateMainWindow(hInstance, nCmdShow, main_window_title);
-    
+
     MSG msg;
     int ret;
     while ((ret = GetMessage(&msg, 0, 0, 0)) != 0) {
@@ -286,10 +286,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     return ret;
 }
 HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title) {
-    json_value* settings = GetApplicationSettings();    
+    json_value* settings = GetApplicationSettings();
     long default_width = (*settings)["main_window"]["default_size"][0];
     long default_height = (*settings)["main_window"]["default_size"][1];
-    bool disable_maximize_button = 
+    bool disable_maximize_button =
             (*settings)["main_window"]["disable_maximize_button"];
     bool center_on_screen = (*settings)["main_window"]["center_on_screen"];
     bool start_maximized = (*settings)["main_window"]["start_maximized"];
@@ -306,13 +306,13 @@ HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title) {
     wc.hInstance = hInstance;
     wc.lpfnWndProc = WindowProc;
     wc.lpszClassName = g_windowClassName;
-    
+
     ATOM atom = RegisterClassEx(&wc);
     _ASSERT(atom);
 
     HWND hwnd = CreateWindowEx(0, g_windowClassName,
-            Utf8ToWide(title).c_str(), WS_OVERLAPPEDWINDOW, 
-            CW_USEDEFAULT, CW_USEDEFAULT, default_width, default_height, 
+            Utf8ToWide(title).c_str(), WS_OVERLAPPEDWINDOW,
+            CW_USEDEFAULT, CW_USEDEFAULT, default_width, default_height,
             HWND_DESKTOP, 0, hInstance, 0);
     _ASSERT(hwnd);
     if (disable_maximize_button) {
@@ -331,7 +331,7 @@ HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title) {
     UpdateWindow(hwnd);
     return hwnd;
 }
-void InitLogging(bool show_console, std::string log_level, 
+void InitLogging(bool show_console, std::string log_level,
                  std::string log_file) {
     if (show_console) {
         AllocConsole();
@@ -348,7 +348,7 @@ void InitLogging(bool show_console, std::string log_level,
             GetExecutableDirectory().append("\\debug-mongoose.log").c_str(),
             "ab", stdout);
 #endif
-    
+
     if (log_level.length())
         FILELog::ReportingLevel() = FILELog::FromString(log_level);
     else

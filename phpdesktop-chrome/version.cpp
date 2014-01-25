@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2014 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -18,7 +18,7 @@ std::string GetPhpDesktopVersion() {
     DWORD versionSize = GetFileVersionInfoSize(versionFile, &versionHandle);
     if (versionSize == NULL)
         return "";
-    LPSTR versionData = new char[versionSize];    
+    LPSTR versionData = new char[versionSize];
     if (GetFileVersionInfo(versionFile, versionHandle, versionSize, versionData)) {
         UINT querySize = 0;
         LPBYTE queryBuffer = NULL;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -14,12 +14,12 @@ private:
     BrowserWindow* browserWindow_;
 public:
     DocHostShowUi(BrowserWindow* inBrowserWindow);
-    HRESULT STDMETHODCALLTYPE QueryInterface( 
+    HRESULT STDMETHODCALLTYPE QueryInterface(
             /* [in] */ REFIID riid,
             /* [iid_is][out] */ void **ppvObject);
     ULONG STDMETHODCALLTYPE AddRef(void);
     ULONG STDMETHODCALLTYPE Release(void);
-    HRESULT STDMETHODCALLTYPE ShowMessage( 
+    HRESULT STDMETHODCALLTYPE ShowMessage(
             /* [in] */ HWND hwnd,
             /* [in] */ LPOLESTR lpstrText,
             /* [in] */ LPOLESTR lpstrCaption,
@@ -27,7 +27,7 @@ public:
             /* [in] */ LPOLESTR lpstrHelpFile,
             /* [in] */ DWORD dwHelpContext,
             /* [out] */ LRESULT *plResult);
-    HRESULT STDMETHODCALLTYPE ShowHelp( 
+    HRESULT STDMETHODCALLTYPE ShowHelp(
             /* [in] */ HWND hwnd,
             /* [in] */ LPOLESTR pszHelpFile,
             /* [in] */ UINT uCommand,

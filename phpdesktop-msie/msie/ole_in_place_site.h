@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -27,7 +27,7 @@ public:
     HRESULT STDMETHODCALLTYPE CanInPlaceActivate(void);
     HRESULT STDMETHODCALLTYPE OnInPlaceActivate(void);
     HRESULT STDMETHODCALLTYPE OnUIActivate(void);
-    HRESULT STDMETHODCALLTYPE GetWindowContext( 
+    HRESULT STDMETHODCALLTYPE GetWindowContext(
             /* [out] */ IOleInPlaceFrame **ppFrame,
             /* [out] */ IOleInPlaceUIWindow **ppDoc,
             /* [out] */ LPRECT lprcPosRect,

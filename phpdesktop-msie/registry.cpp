@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -12,7 +12,7 @@ bool CreateRegistryKey(HKEY hKeyRoot, const wchar_t* path) {
     HKEY hKey;
     DWORD dwDisposition;
     LONG result = RegCreateKeyEx(hKeyRoot, path,
-            0, 0, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE, 
+            0, 0, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE,
             0, &hKey, &dwDisposition);
     bool ret = false;
     if (result == ERROR_SUCCESS) {
@@ -26,18 +26,18 @@ bool CreateRegistryKey(HKEY hKeyRoot, const wchar_t* path) {
         RegCloseKey(hKey);
     return ret;
 }
-bool CreateRegistryString(HKEY hKeyRoot, const wchar_t* path, 
-                                 const wchar_t* stringName, 
+bool CreateRegistryString(HKEY hKeyRoot, const wchar_t* path,
+                                 const wchar_t* stringName,
                                  const wchar_t* stringValue) {
     HKEY hKey;
     DWORD dwDisposition;
     LONG result = RegCreateKeyEx(hKeyRoot, path,
-            0, 0, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE, 
+            0, 0, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE,
             0, &hKey, &dwDisposition);
     bool ret = false;
     if (result == ERROR_SUCCESS) {
         DWORD bufferSize = (wcslen(stringValue) + 1) * sizeof(wchar_t);
-        result = RegSetValueEx(hKey, stringName, 0, REG_SZ, 
+        result = RegSetValueEx(hKey, stringName, 0, REG_SZ,
                 (LPBYTE)stringValue, bufferSize);
         if (result == ERROR_SUCCESS) {
             ret = true;

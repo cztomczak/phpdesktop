@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -75,7 +75,7 @@ void RemoveBrowserWindow(HWND hwnd) {
     }
 }
 
-BrowserWindow::BrowserWindow(HWND inWindowHandle) 
+BrowserWindow::BrowserWindow(HWND inWindowHandle)
         : windowHandle_(inWindowHandle),
           parentHandle_(0),
           oleClientSite_(), // initialized in constructor
@@ -95,14 +95,14 @@ BrowserWindow::BrowserWindow(HWND inWindowHandle)
     oleClientSite_.reset(new OleClientSite(this));
     externalDispatch_.reset(new ExternalDispatch(this));
     clickEvents_.reset(new ClickEvents(this));
-    
+
     _ASSERT(oleClientSite_);
     _ASSERT(externalDispatch_);
     _ASSERT(clickEvents_);
-        
+
     parentHandle_ = GetParentWindow(windowHandle_);
     LOG_DEBUG << "BrowserWindow(): parentHandle = " << (int)parentHandle_;
-    
+
     clickDispatch_.vt = VT_DISPATCH;
     clickDispatch_.pdispVal = static_cast<IDispatch*>(clickEvents_.get());
     wcsncpy_s(allowedUrl_, _countof(allowedUrl_), L"nohttp", _TRUNCATE);
@@ -131,7 +131,7 @@ BrowserWindow::~BrowserWindow() {
 }
 bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     // navigateUrl might be NULL, if so Navigate2() won't be called.
-    HRESULT hr; 
+    HRESULT hr;
     BOOL b;
     json_value* settings = GetApplicationSettings();
 
@@ -177,9 +177,9 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
         _ASSERT(false);
         return false;
     }
-    
+
     hr = oleObject_->DoVerb(OLEIVERB_SHOW, NULL,
-                           static_cast<IOleClientSite*>(oleClientSite_.get()), 
+                           static_cast<IOleClientSite*>(oleClientSite_.get()),
                            0, windowHandle_, &rect);
     if (FAILED(hr)) {
         LOG_ERROR << "BrowserWindow::CreateBrowserControl() failed: "
@@ -188,7 +188,7 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
         return false;
     }
 
-    hr = oleObject_->QueryInterface(IID_IOleInPlaceActiveObject, 
+    hr = oleObject_->QueryInterface(IID_IOleInPlaceActiveObject,
             (void**)&oleInPlaceActiveObject_);
     if (FAILED(hr) || !oleInPlaceActiveObject_) {
         LOG_DEBUG << "BrowserWindow::TranslateAccelerator() failed: "
@@ -230,7 +230,7 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     // AdviseEvent() takes care of logging errors.
     AdviseEvent(webBrowser2_, DIID_DWebBrowserEvents2,
                 &dWebBrowserEvents2Cookie_);
-    
+
     // Initial navigation.
     if (navigateUrl) {
         if (!Navigate(navigateUrl))
@@ -249,7 +249,7 @@ bool BrowserWindow::Navigate(const wchar_t* navigateUrl) {
         return false;
     }
     _bstr_t bstrUrl(navigateUrl);
-    _variant_t variantFlags((long)(navNoHistory | navNoReadFromCache 
+    _variant_t variantFlags((long)(navNoHistory | navNoReadFromCache
             | navNoWriteToCache), VT_I4);
     HRESULT hr = webBrowser2_->Navigate(bstrUrl, &variantFlags, 0, 0, 0);
     if (FAILED(hr)) {
@@ -280,8 +280,8 @@ void BrowserWindow::CloseWebBrowser2() {
     hr = webBrowser2_->Stop();
     _ASSERT(SUCCEEDED(hr));
     hr = webBrowser2_->put_Visible(VARIANT_FALSE);
-    _ASSERT(SUCCEEDED(hr));        
-    
+    _ASSERT(SUCCEEDED(hr));
+
     // WebBrowser object (CLSID_WebBrowser) cannot call Quit(),
     // it is for Internet Explorer object (CLSID_InternetExplorer).
     // hr = webBrowser2_->Quit();
@@ -291,7 +291,7 @@ void BrowserWindow::CloseWebBrowser2() {
     // OLECMDID_CLOSE before posting WM_CLOSE message, otherwise
     // access violation occurs.
     webBrowser2_->ExecWB(OLECMDID_CLOSE, OLECMDEXECOPT_DONTPROMPTUSER, 0, 0);
-    
+
     webBrowser2_.Release();
 }
 void BrowserWindow::CloseBrowserControl() {
@@ -301,7 +301,7 @@ void BrowserWindow::CloseBrowserControl() {
     HRESULT hr;
 
     CloseWebBrowser2();
-    
+
     _ASSERT(oleInPlaceActiveObject_);
     oleInPlaceActiveObject_.Release();
 
@@ -320,7 +320,7 @@ void BrowserWindow::CloseBrowserControl() {
     // It is important to set client site to NULL, otherwise
     // you will get first-chance exceptions when calling Close().
     _ASSERT(oleObject_);
-    hr = oleObject_->DoVerb(OLEIVERB_HIDE, NULL, oleClientSite_.get(), 0, 
+    hr = oleObject_->DoVerb(OLEIVERB_HIDE, NULL, oleClientSite_.get(), 0,
             windowHandle_, NULL);
     _ASSERT(SUCCEEDED(hr));
     hr = oleObject_->Close(OLECLOSE_NOSAVE);
@@ -369,12 +369,12 @@ bool BrowserWindow::TryAttachClickEvents() {
     // it is required for the DOM to be ready, call this
     // function in a timer until it succeeds.After browser
     // navigation these click events need to be re-attached.
-    
+
     if (!webBrowser2_) {
         // Web-browser control might be closing.
         return false;
     }
-    HRESULT hr;        
+    HRESULT hr;
     VARIANT_BOOL isBusy;
     hr = webBrowser2_->get_Busy(&isBusy);
     // This may fail when window is loading/unloading.
@@ -537,7 +537,7 @@ bool BrowserWindow::GetActiveHtmlElement(wchar_t* outTag, int outTagSize,
         return false;
     }
     IHTMLDocument2Ptr htmlDocument2;
-    hr = dispatch->QueryInterface(IID_IHTMLDocument2, 
+    hr = dispatch->QueryInterface(IID_IHTMLDocument2,
                                   (void**)&htmlDocument2);
     if (FAILED(hr) || !htmlDocument2) {
         LOG_WARNING << "BrowserWindow::GetActiveHtmlElement() failed "
@@ -648,20 +648,20 @@ void BrowserWindow::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 void BrowserWindow::OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam) {
     if (!IsPopup()) {
         json_value* settings = GetApplicationSettings();
-        static long minimum_width = 
+        static long minimum_width =
                 (*settings)["main_window"]["minimum_size"][0];
-        static long minimum_height = 
+        static long minimum_height =
                 (*settings)["main_window"]["minimum_size"][1];
-        static long maximum_width = 
+        static long maximum_width =
                 (*settings)["main_window"]["maximum_size"][0];
-        static long maximum_height = 
+        static long maximum_height =
                 (*settings)["main_window"]["maximum_size"][1];
         MINMAXINFO* pMMI = (MINMAXINFO*)lParam;
         if (minimum_width)
             pMMI->ptMinTrackSize.x = minimum_width;
         if (minimum_height)
             pMMI->ptMinTrackSize.y = minimum_height;
-        if (maximum_width)        
+        if (maximum_width)
             pMMI->ptMaxTrackSize.x = maximum_width;
         if (maximum_height)
             pMMI->ptMaxTrackSize.y = maximum_height;
@@ -696,13 +696,13 @@ void BrowserWindow::SetWidth(long newClientWidth) {
     _ASSERT(clientRect.left == 0 && clientRect.top == 0);
     clientRect.right = newClientWidth;
     RECT windowRect = clientRect;
-    b = AdjustWindowRectEx(&windowRect, 
+    b = AdjustWindowRectEx(&windowRect,
             GetWindowLong(windowHandle_, GWL_STYLE),
-            GetMenu(windowHandle_) != NULL, 
+            GetMenu(windowHandle_) != NULL,
             GetWindowLong(windowHandle_, GWL_EXSTYLE));
     _ASSERT(b);
     b = SetWindowPos(windowHandle_, HWND_TOP, 0, 0,
-            windowRect.right - windowRect.left, 
+            windowRect.right - windowRect.left,
             windowRect.bottom - windowRect.top,
             SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE);
     _ASSERT(b);
@@ -719,13 +719,13 @@ void BrowserWindow::SetHeight(long newClientHeight) {
     _ASSERT(clientRect.left == 0 && clientRect.top == 0);
     clientRect.bottom = newClientHeight;
     RECT windowRect = clientRect;
-    b = AdjustWindowRectEx(&windowRect, 
+    b = AdjustWindowRectEx(&windowRect,
             GetWindowLong(windowHandle_, GWL_STYLE),
-            GetMenu(windowHandle_) != NULL, 
+            GetMenu(windowHandle_) != NULL,
             GetWindowLong(windowHandle_, GWL_EXSTYLE));
     _ASSERT(b);
     b = SetWindowPos(windowHandle_, HWND_TOP, 0, 0,
-            windowRect.right - windowRect.left, 
+            windowRect.right - windowRect.left,
             windowRect.bottom - windowRect.top,
             SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE);
     _ASSERT(b);
@@ -763,7 +763,7 @@ void BrowserWindow::SetIconFromSettings() {
     const char* iconPath;
     if (IsPopup())
         iconPath = (*settings)["popup_window"]["icon"];
-    else 
+    else
         iconPath = (*settings)["main_window"]["icon"];
     if (iconPath && iconPath[0] != 0) {
         wchar_t iconPathW[MAX_PATH];
@@ -771,7 +771,7 @@ void BrowserWindow::SetIconFromSettings() {
 
         int bigX = GetSystemMetrics(SM_CXICON);
         int bigY = GetSystemMetrics(SM_CYICON);
-        HANDLE bigIcon = LoadImage(0, iconPathW, IMAGE_ICON, bigX, bigY, 
+        HANDLE bigIcon = LoadImage(0, iconPathW, IMAGE_ICON, bigX, bigY,
                                    LR_LOADFROMFILE);
         if (bigIcon) {
             SendMessage(windowHandle_, WM_SETICON, ICON_BIG, (LPARAM)bigIcon);
@@ -781,7 +781,7 @@ void BrowserWindow::SetIconFromSettings() {
         }
         int smallX = GetSystemMetrics(SM_CXSMICON);
         int smallY = GetSystemMetrics(SM_CYSMICON);
-        HANDLE smallIcon = LoadImage(0, iconPathW, IMAGE_ICON, smallX, 
+        HANDLE smallIcon = LoadImage(0, iconPathW, IMAGE_ICON, smallX,
                                      smallY, LR_LOADFROMFILE);
         if (smallIcon) {
             SendMessage(windowHandle_, WM_SETICON, ICON_SMALL, (LPARAM)smallIcon);
@@ -908,7 +908,7 @@ bool BrowserWindow::DisplayHtmlString(const wchar_t* htmlString) {
         _ASSERT(false);
         return false;
     }
-    // NOTICE: From now on returning false is allowed only at the end 
+    // NOTICE: From now on returning false is allowed only at the end
     // of the function, as we need to cleanup memory.
     VARIANT* variantParam;
     _bstr_t bstrParam = htmlString;
@@ -964,9 +964,9 @@ bool BrowserWindow::DisplayErrorPage(const wchar_t* navigateUrl, int statusCode)
                 "file not found: " << htmlFile;
         return false;
     }
-    ReplaceStringInPlace(htmlString, "{{navigate_url}}", 
+    ReplaceStringInPlace(htmlString, "{{navigate_url}}",
             WideToUtf8(navigateUrl));
-    ReplaceStringInPlace(htmlString, "{{status_code}}", 
+    ReplaceStringInPlace(htmlString, "{{status_code}}",
             IntToString(statusCode));
     if (DisplayHtmlString(Utf8ToWide(htmlString).c_str()))
         return true;

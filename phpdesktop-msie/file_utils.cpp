@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -25,7 +25,7 @@ std::string GetFileContents(std::string file) {
 }
 std::string GetRealPath(std::string path) {
     wchar_t realPath[MAX_PATH];
-    GetFullPathName(Utf8ToWide(path).c_str(), _countof(realPath), realPath, 
+    GetFullPathName(Utf8ToWide(path).c_str(), _countof(realPath), realPath,
                     NULL);
     return WideToUtf8(realPath);
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -6,10 +6,10 @@
 #include "ole_client_site.h"
 #include "browser_window.h"
 
-// Must be included before defining GUID, otherwise you get 
+// Must be included before defining GUID, otherwise you get
 // "unresolved external symbol _IID_IAxWinHostWindow".
-#include "INITGUID.H" 
-DEFINE_GUID(IID_IAxWinHostWindow, 0xb6ea2050, 0x048a, 0x11d1, 
+#include "INITGUID.H"
+DEFINE_GUID(IID_IAxWinHostWindow, 0xb6ea2050, 0x048a, 0x11d1,
             0x82, 0xb9, 0x00, 0xc0, 0x4f, 0xb9, 0x94, 0x2e);
 
 #include "../debug.h"
@@ -53,7 +53,7 @@ HRESULT STDMETHODCALLTYPE OleClientSite::QueryInterface(
             logged = true;
         }
     } else if (riid == IID_IOleInPlaceFrame) {
-        // This interface is retrieved in 
+        // This interface is retrieved in
         // IOleInPlaceSite::GetWindowContext().
         *ppvObject = static_cast<IOleInPlaceFrame*>(&oleInPlaceFrame_);
         static bool logged = false;

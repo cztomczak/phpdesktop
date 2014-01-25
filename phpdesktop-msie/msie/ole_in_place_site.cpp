@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -15,7 +15,7 @@ OleInPlaceSite::OleInPlaceSite(BrowserWindow* inBrowserWindow,
 }
 // IUnknown
 HRESULT STDMETHODCALLTYPE OleInPlaceSite::QueryInterface(
-        REFIID riid, 
+        REFIID riid,
         void** ppvObject) {
     return browserWindow_->GetOleClientSite()->QueryInterface(riid, ppvObject);
 }
@@ -47,7 +47,7 @@ HRESULT STDMETHODCALLTYPE OleInPlaceSite::OnInPlaceActivate(void) {
 HRESULT STDMETHODCALLTYPE OleInPlaceSite::OnUIActivate(void) {
     return S_OK;
 }
-HRESULT STDMETHODCALLTYPE OleInPlaceSite::GetWindowContext( 
+HRESULT STDMETHODCALLTYPE OleInPlaceSite::GetWindowContext(
         /* [out] */ IOleInPlaceFrame **ppFrame,
         /* [out] */ IOleInPlaceUIWindow **ppDoc,
         /* [out] */ LPRECT lprcPosRect,
@@ -90,8 +90,8 @@ HRESULT STDMETHODCALLTYPE OleInPlaceSite::OnPosRectChange(
         return E_INVALIDARG;
     HRESULT hr;
     IOleObjectPtr oleObject;
-    const IWebBrowser2Ptr webBrowser2 = 
-            browserWindow_->GetWebBrowser2();        
+    const IWebBrowser2Ptr webBrowser2 =
+            browserWindow_->GetWebBrowser2();
     hr = webBrowser2->QueryInterface(IID_IOleObject, (void**)&oleObject);
     if (FAILED(hr) || !oleObject) {
         LOG_WARNING << "OleInPlaceSite::OnPosRectChange() failed: "
@@ -99,7 +99,7 @@ HRESULT STDMETHODCALLTYPE OleInPlaceSite::OnPosRectChange(
         return E_UNEXPECTED;
     }
     IOleInPlaceObjectPtr oleInPlaceObject;
-    hr = oleObject->QueryInterface(IID_IOleInPlaceObject, 
+    hr = oleObject->QueryInterface(IID_IOleInPlaceObject,
                                    (void**)&oleInPlaceObject);
     if (FAILED(hr) || !oleInPlaceObject) {
         LOG_WARNING << "OleInPlaceSite::OnPosRectChange() failed: "

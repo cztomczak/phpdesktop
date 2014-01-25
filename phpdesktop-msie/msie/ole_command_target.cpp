@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -13,7 +13,7 @@
 OleCommandTarget::OleCommandTarget(BrowserWindow* browserWindowIn)
         : browserWindow_(browserWindowIn) {
 }
-HRESULT STDMETHODCALLTYPE OleCommandTarget::QueryInterface( 
+HRESULT STDMETHODCALLTYPE OleCommandTarget::QueryInterface(
         /* [in] */ REFIID riid,
         /* [out] */ void **ppvObject) {
     return browserWindow_->GetOleClientSite()->QueryInterface(riid, ppvObject);
@@ -24,7 +24,7 @@ ULONG STDMETHODCALLTYPE OleCommandTarget::AddRef() {
 ULONG STDMETHODCALLTYPE OleCommandTarget::Release() {
     return 1;
 }
-HRESULT STDMETHODCALLTYPE OleCommandTarget::QueryStatus( 
+HRESULT STDMETHODCALLTYPE OleCommandTarget::QueryStatus(
         /* [in] */ const GUID *pguidCmdGroup,
         /* [in] */ ULONG cCmds,
         /* [out][in] */ OLECMD prgCmds[],
@@ -38,7 +38,7 @@ HRESULT STDMETHODCALLTYPE OleCommandTarget::QueryStatus(
     }
     return OLECMDERR_E_UNKNOWNGROUP;
 }
-HRESULT STDMETHODCALLTYPE OleCommandTarget::Exec( 
+HRESULT STDMETHODCALLTYPE OleCommandTarget::Exec(
         /* [in] */ const GUID *pguidCmdGroup,
         /* [in] */ DWORD nCmdID,
         /* [in] */ DWORD nCmdexecopt,

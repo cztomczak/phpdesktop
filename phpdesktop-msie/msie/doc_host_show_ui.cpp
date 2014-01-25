@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -11,10 +11,10 @@
 DocHostShowUi::DocHostShowUi(BrowserWindow* inBrowserWindow)
         : browserWindow_(inBrowserWindow) {
 }
-HRESULT STDMETHODCALLTYPE DocHostShowUi::QueryInterface( 
+HRESULT STDMETHODCALLTYPE DocHostShowUi::QueryInterface(
         /* [in] */ REFIID riid,
         /* [iid_is][out] */ void **ppvObject) {
-    return browserWindow_->GetOleClientSite()->QueryInterface(riid, 
+    return browserWindow_->GetOleClientSite()->QueryInterface(riid,
                                                               ppvObject);
 }
 ULONG STDMETHODCALLTYPE DocHostShowUi::AddRef(void) {
@@ -23,7 +23,7 @@ ULONG STDMETHODCALLTYPE DocHostShowUi::AddRef(void) {
 ULONG STDMETHODCALLTYPE DocHostShowUi::Release(void) {
     return 1;
 }
-HRESULT STDMETHODCALLTYPE DocHostShowUi::ShowMessage( 
+HRESULT STDMETHODCALLTYPE DocHostShowUi::ShowMessage(
         /* [in] */ HWND hwnd,
         /* [in] */ LPOLESTR lpstrText,
         /* [in] */ LPOLESTR lpstrCaption,
@@ -42,8 +42,8 @@ HRESULT STDMETHODCALLTYPE DocHostShowUi::ShowMessage(
         return S_OK;
 
     return S_FALSE;
-}    
-HRESULT STDMETHODCALLTYPE DocHostShowUi::ShowHelp( 
+}
+HRESULT STDMETHODCALLTYPE DocHostShowUi::ShowHelp(
         /* [in] */ HWND hwnd,
         /* [in] */ LPOLESTR pszHelpFile,
         /* [in] */ UINT uCommand,

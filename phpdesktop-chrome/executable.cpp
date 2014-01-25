@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2014 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -28,7 +28,7 @@ std::string GetExecutableDirectory() {
     wchar_t extension[_MAX_EXT];
     errno_t result = _wsplitpath_s(Utf8ToWide(path).c_str(),
             drive, _countof(drive),
-            directory, _countof(directory), 
+            directory, _countof(directory),
             filename, _countof(filename),
             extension, _countof(extension));
     char utf8Drive[_MAX_DRIVE * 2];
@@ -50,9 +50,9 @@ std::string GetExecutableFilename() {
     wchar_t filename[_MAX_FNAME];
     wchar_t extension[_MAX_EXT];
     errno_t result = _wsplitpath_s(Utf8ToWide(path).c_str(),
-            drive, _countof(drive), 
-            directory, _countof(directory), 
-            filename, _countof(filename), 
+            drive, _countof(drive),
+            directory, _countof(directory),
+            filename, _countof(filename),
             extension, _countof(extension));
     if (result != 0)
         return "";
@@ -69,9 +69,9 @@ std::string GetExecutableName() {
     wchar_t filename[_MAX_FNAME];
     wchar_t extension[_MAX_EXT];
     errno_t result = _wsplitpath_s(Utf8ToWide(path).c_str(),
-            drive, _countof(drive), 
-            directory, _countof(directory), 
-            filename, _countof(filename), 
+            drive, _countof(drive),
+            directory, _countof(directory),
+            filename, _countof(filename),
             extension, _countof(extension));
     char utf8Filename[_MAX_FNAME * 2];
     WideToUtf8(filename, utf8Filename, _countof(utf8Filename));

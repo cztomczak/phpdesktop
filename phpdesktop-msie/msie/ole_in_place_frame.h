@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -30,15 +30,15 @@ public:
     HRESULT STDMETHODCALLTYPE SetBorderSpace(
             /* [in] */ LPCBORDERWIDTHS pborderwidths);
     HRESULT STDMETHODCALLTYPE SetActiveObject(
-            /* [in] */ IOleInPlaceActiveObject *pActiveObject, 
+            /* [in] */ IOleInPlaceActiveObject *pActiveObject,
             /* [in] */ LPCOLESTR pszObjName);
     // IOleInPlaceFrame
     HRESULT STDMETHODCALLTYPE InsertMenus(
-            /* [in] */ HMENU hmenuShared, 
+            /* [in] */ HMENU hmenuShared,
             /* [out][in] */ LPOLEMENUGROUPWIDTHS lpMenuWidths);
     HRESULT STDMETHODCALLTYPE SetMenu(
-            /* [in] */ HMENU hmenuShared, 
-            /* [in] */ HOLEMENU holemenu, 
+            /* [in] */ HMENU hmenuShared,
+            /* [in] */ HOLEMENU holemenu,
             /* [in] */ HWND hwndActiveObject);
     HRESULT STDMETHODCALLTYPE RemoveMenus(
             /* [in] */ HMENU hmenuShared);
@@ -47,6 +47,6 @@ public:
     HRESULT STDMETHODCALLTYPE EnableModeless(
             /* [in] */ BOOL fEnable);
     HRESULT STDMETHODCALLTYPE TranslateAccelerator(
-            /* [in] */ LPMSG lpmsg, 
+            /* [in] */ LPMSG lpmsg,
             /* [in] */ WORD wID);
 };

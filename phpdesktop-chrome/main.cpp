@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2014 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -115,7 +115,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPTSTR lpstrCmdLine, int nCmdShow) {
     g_hInstance = hInstance;
     json_value* appSettings = GetApplicationSettings();
-    
+
     // Debugging options.
     bool show_console = (*appSettings)["debugging"]["show_console"];
     bool subprocess_show_console = (*appSettings)["debugging"]["subprocess_show_console"];
@@ -125,7 +125,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         log_file = GetExecutableDirectory() + "\\" + log_file;
         log_file = GetRealPath(log_file);
     }
-    
+
     // Initialize logging.
     if (std::wstring(lpstrCmdLine).find(L"--type=") != std::string::npos) {
         // This is a subprocess.
@@ -154,10 +154,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     } else {
         LOG_WARNING << "CommandLineToArgvW() failed";
     }
-    
+
     // CEF subprocesses.
     CefMainArgs main_args(hInstance);
-    CefRefPtr<App> app(new App);    
+    CefRefPtr<App> app(new App);
     int exit_code = CefExecuteProcess(main_args, app.get());
     if (exit_code >= 0) {
         ShutdownLogging();
@@ -226,7 +226,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         chrome_log_file = GetRealPath(chrome_log_file);
     }
     CefString(&cef_settings.log_file) = chrome_log_file;
-    
+
     // log_severity
     std::string chrome_log_severity = (*appSettings)["chrome"]["log_severity"];
     cef_log_severity_t log_severity = LOGSEVERITY_DEFAULT;
@@ -244,7 +244,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         log_severity = LOGSEVERITY_DISABLE;
     }
     cef_settings.log_severity = log_severity;
-    
+
     // cache_path
     std::string cache_path = (*appSettings)["chrome"]["cache_path"];
     if (cache_path.length() && cache_path.find(":") == std::string::npos) {

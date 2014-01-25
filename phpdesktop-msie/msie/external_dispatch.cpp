@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -9,9 +9,9 @@
 #include "../log.h"
 #include "../debug.h"
 
-#include "INITGUID.H" 
+#include "INITGUID.H"
 // 30510406-98b5-11cf-bb82-00aa00bdce0b
-DEFINE_GUID(IID_IMyUnknown1, 0x30510406, 0x98b5, 0x11cf, 
+DEFINE_GUID(IID_IMyUnknown1, 0x30510406, 0x98b5, 0x11cf,
             0xbb, 0x82, 0x00, 0xaa, 0x00, 0xbd, 0xce, 0x0b);
 // 9bcb0016-bc2a-47b7-8154-8580a15c3ff0
 DEFINE_GUID(IID_IMyUnknown2, 0x9bcb0016, 0xbc2a, 0x47b7,
@@ -26,12 +26,12 @@ DEFINE_GUID(IID_IMyUnknown4, 0xa0aac450, 0xa77b, 0x11cf,
 ExternalDispatch::ExternalDispatch(BrowserWindow* inBrowserWindow)
         : browserWindow_(inBrowserWindow) {
 }
-HRESULT STDMETHODCALLTYPE ExternalDispatch::QueryInterface( 
+HRESULT STDMETHODCALLTYPE ExternalDispatch::QueryInterface(
         /* [in] */ REFIID riid,
         /* [out] */ void **ppvObject) {
     // Asking for:
     // 00000008-0000-0000-c000-000000000046 - IProxyManager
-    // 
+    //
     // a6ef9860-c720-11d0-9337-00a0c90dcaa9 - IDispatchEx
     if (ppvObject == 0)
         return E_POINTER;
@@ -68,24 +68,24 @@ HRESULT STDMETHODCALLTYPE ExternalDispatch::QueryInterface(
         return E_NOINTERFACE;
     }
     return S_OK;
-}    
+}
 ULONG STDMETHODCALLTYPE ExternalDispatch::AddRef(void) {
     return 1;
-}    
+}
 ULONG STDMETHODCALLTYPE ExternalDispatch::Release(void) {
     return 1;
-}    
-HRESULT STDMETHODCALLTYPE ExternalDispatch::GetTypeInfoCount( 
+}
+HRESULT STDMETHODCALLTYPE ExternalDispatch::GetTypeInfoCount(
         /* [out] */ UINT *pctinfo) {
     return E_NOTIMPL;
-}    
-HRESULT STDMETHODCALLTYPE ExternalDispatch::GetTypeInfo( 
+}
+HRESULT STDMETHODCALLTYPE ExternalDispatch::GetTypeInfo(
         /* [in] */ UINT iTInfo,
         /* [in] */ LCID lcid,
         /* [out] */ ITypeInfo **ppTInfo) {
     return E_NOTIMPL;
-}    
-HRESULT STDMETHODCALLTYPE ExternalDispatch::GetIDsOfNames( 
+}
+HRESULT STDMETHODCALLTYPE ExternalDispatch::GetIDsOfNames(
         /* [in] */ REFIID riid,
         /* [in] */ LPOLESTR *rgszNames,
         /* [in] */ UINT cNames,
@@ -105,7 +105,7 @@ HRESULT STDMETHODCALLTYPE ExternalDispatch::GetIDsOfNames(
     }
     return DISP_E_UNKNOWNNAME;
 }
-HRESULT STDMETHODCALLTYPE ExternalDispatch::Invoke( 
+HRESULT STDMETHODCALLTYPE ExternalDispatch::Invoke(
         /* [in] */ DISPID dispId,
         /* [in] */ REFIID riid,
         /* [in] */ LCID lcid,
@@ -121,7 +121,7 @@ HRESULT STDMETHODCALLTYPE ExternalDispatch::Invoke(
         return DISP_E_UNKNOWNINTERFACE;
     pExcepInfo = 0;
     puArgErr = 0;
-    if (wFlags & (DISPATCH_PROPERTYGET | DISPATCH_PROPERTYPUT 
+    if (wFlags & (DISPATCH_PROPERTYGET | DISPATCH_PROPERTYPUT
             | DISPATCH_PROPERTYPUTREF)) {
         return DISP_E_MEMBERNOTFOUND;
     }

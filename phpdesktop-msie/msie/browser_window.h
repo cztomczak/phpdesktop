@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -29,7 +29,7 @@ private:
     std::tr1::shared_ptr<ClickEvents> clickEvents_;
     bool clickEventsAttached_;
     _bstr_t documentUniqueID_;
-    _variant_t clickDispatch_;    
+    _variant_t clickDispatch_;
     wchar_t allowedUrl_[2084];
     IWebBrowser2Ptr webBrowser2_;
     IOleObjectPtr oleObject_;

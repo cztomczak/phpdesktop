@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -22,37 +22,37 @@ public:
     HRESULT STDMETHODCALLTYPE GetSecuritySite(
             /* [out] */ IInternetSecurityMgrSite **ppSite);
     HRESULT STDMETHODCALLTYPE MapUrlToZone(
-            /* [in] */ LPCWSTR pwszUrl, 
-            /* [out] */ DWORD *pdwZone, 
+            /* [in] */ LPCWSTR pwszUrl,
+            /* [out] */ DWORD *pdwZone,
             /* [in] */ DWORD dwFlags);
     HRESULT STDMETHODCALLTYPE GetSecurityId(
-            /* [in] */ LPCWSTR pwszUrl, 
-            /* [out] */ BYTE *pbSecurityId, 
-            /* [out][in] */ DWORD *pcbSecurityId, 
+            /* [in] */ LPCWSTR pwszUrl,
+            /* [out] */ BYTE *pbSecurityId,
+            /* [out][in] */ DWORD *pcbSecurityId,
             /* [in] */ DWORD_PTR dwReserved);
     HRESULT STDMETHODCALLTYPE ProcessUrlAction(
-            /* [in] */ LPCWSTR pwszUrl, 
-            /* [in] */ DWORD dwAction, 
-            /* [out] */ BYTE *pPolicy, 
+            /* [in] */ LPCWSTR pwszUrl,
+            /* [in] */ DWORD dwAction,
+            /* [out] */ BYTE *pPolicy,
             /* [in] */ DWORD cbPolicy,
-            /* [in] */ BYTE *pContext, 
-            /* [in] */ DWORD cbContext, 
-            /* [in] */ DWORD dwFlags, 
+            /* [in] */ BYTE *pContext,
+            /* [in] */ DWORD cbContext,
+            /* [in] */ DWORD dwFlags,
             /* [in] */ DWORD dwReserved);
     HRESULT STDMETHODCALLTYPE QueryCustomPolicy(
-            /* [in] */ LPCWSTR pwszUrl, 
+            /* [in] */ LPCWSTR pwszUrl,
             /* [in] */ REFGUID guidKey,
             /* [out] */ BYTE **ppPolicy,
             /* [out] */ DWORD *pcbPolicy,
-            /* [in] */ BYTE *pContext, 
+            /* [in] */ BYTE *pContext,
             /* [in] */ DWORD cbContext,
             /* [in] */ DWORD dwReserved);
     HRESULT STDMETHODCALLTYPE SetZoneMapping(
-            /* [in] */ DWORD dwZone, 
-            /* [in] */ LPCWSTR lpszPattern, 
+            /* [in] */ DWORD dwZone,
+            /* [in] */ LPCWSTR lpszPattern,
             /* [in] */ DWORD dwFlags);
     HRESULT STDMETHODCALLTYPE GetZoneMappings(
-            /* [in] */ DWORD dwZone, 
-            /* [out] */ IEnumString **ppenumString, 
+            /* [in] */ DWORD dwZone,
+            /* [out] */ IEnumString **ppenumString,
             /* [in] */ DWORD dwFlags);
 };

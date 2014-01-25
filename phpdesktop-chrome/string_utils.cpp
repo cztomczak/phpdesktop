@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2014 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -9,7 +9,7 @@
 #include <algorithm>
 
 void Utf8ToWide(const char* utf8String, wchar_t* wideString, int wideSize) {
-    int copiedCharacters = MultiByteToWideChar(CP_UTF8, 0, utf8String, -1, 
+    int copiedCharacters = MultiByteToWideChar(CP_UTF8, 0, utf8String, -1,
             wideString, wideSize);
 }
 std::wstring Utf8ToWide(const char* utf8String) {
@@ -23,7 +23,7 @@ std::wstring Utf8ToWide(const char* utf8String) {
     return returnedString;
 }
 std::wstring Utf8ToWide(const std::string& utf8String) {
-    int requiredSize = MultiByteToWideChar(CP_UTF8, 0, utf8String.c_str(), -1, 
+    int requiredSize = MultiByteToWideChar(CP_UTF8, 0, utf8String.c_str(), -1,
                                            0, 0);
     wchar_t* wideString = new wchar_t[requiredSize];
     int copiedCharacters = MultiByteToWideChar(CP_UTF8, 0, utf8String.c_str(),
@@ -54,7 +54,7 @@ std::string UpperString(std::string str) {
     std::transform(str.begin(), str.end(), str.begin(), ::toupper);
     return str;
 }
-std::string WideToUtf8(const std::wstring& wideString) {    
+std::string WideToUtf8(const std::wstring& wideString) {
     int requiredSize = WideCharToMultiByte(CP_UTF8, 0, wideString.c_str(), -1,
                                            0, 0, NULL, NULL);
     char* utf8String = new char[requiredSize];

@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -20,15 +20,15 @@ extern HINSTANCE g_hInstance;
 extern wchar_t g_windowClassName[256];
 
 HWND CreatePopupWindow(HWND parentHandle) {
-    json_value* settings = GetApplicationSettings();    
-    bool center_relative_to_parent = 
+    json_value* settings = GetApplicationSettings();
+    bool center_relative_to_parent =
             (*settings)["popup_window"]["center_relative_to_parent"];
 
     // Title will be set in BrowserWindow::BrowserWindow().
     // CW_USEDEFAULT cannot be used with WS_POPUP.
-    HWND hwnd = CreateWindowEx(0, g_windowClassName, 
-            0, WS_OVERLAPPEDWINDOW, 
-            CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 
+    HWND hwnd = CreateWindowEx(0, g_windowClassName,
+            0, WS_OVERLAPPEDWINDOW,
+            CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
             parentHandle, 0, g_hInstance, 0);
     _ASSERT(hwnd);
     if (center_relative_to_parent) {
@@ -38,36 +38,36 @@ HWND CreatePopupWindow(HWND parentHandle) {
         // CenterWindow(hwnd);
     }
     ShowWindow(hwnd, SW_SHOWNORMAL);
-    UpdateWindow(hwnd); 
+    UpdateWindow(hwnd);
     return hwnd;
 }
 
 BrowserEvents2::BrowserEvents2(BrowserWindow* inBrowserWindow)
         : browserWindow_(inBrowserWindow) {
 }
-HRESULT STDMETHODCALLTYPE BrowserEvents2::QueryInterface( 
+HRESULT STDMETHODCALLTYPE BrowserEvents2::QueryInterface(
         /* [in] */ REFIID riid,
         /* [out] */ void **ppvObject) {
     return browserWindow_->GetOleClientSite()->QueryInterface(
             riid, ppvObject);
-}    
+}
 ULONG STDMETHODCALLTYPE BrowserEvents2::AddRef(void) {
     return 1;
-}    
+}
 ULONG STDMETHODCALLTYPE BrowserEvents2::Release(void) {
     return 1;
-}    
-HRESULT STDMETHODCALLTYPE BrowserEvents2::GetTypeInfoCount( 
+}
+HRESULT STDMETHODCALLTYPE BrowserEvents2::GetTypeInfoCount(
         /* [out] */ UINT *pctinfo) {
     return E_NOTIMPL;
-}    
-HRESULT STDMETHODCALLTYPE BrowserEvents2::GetTypeInfo( 
+}
+HRESULT STDMETHODCALLTYPE BrowserEvents2::GetTypeInfo(
         /* [in] */ UINT iTInfo,
         /* [in] */ LCID lcid,
         /* [out] */ ITypeInfo **ppTInfo) {
     return E_NOTIMPL;
-}    
-HRESULT STDMETHODCALLTYPE BrowserEvents2::GetIDsOfNames( 
+}
+HRESULT STDMETHODCALLTYPE BrowserEvents2::GetIDsOfNames(
         /* [in] */ REFIID riid,
         /* [in] */ LPOLESTR *rgszNames,
         /* [in] */ UINT cNames,
@@ -75,7 +75,7 @@ HRESULT STDMETHODCALLTYPE BrowserEvents2::GetIDsOfNames(
         /* [out] */ DISPID *rgDispId) {
     return E_NOTIMPL;
 }
-HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke( 
+HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke(
         /* [in] */ DISPID dispId,
         /* [in] */ REFIID riid,
         /* [in] */ LCID lcid,
@@ -84,7 +84,7 @@ HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke(
         /* [out] */ VARIANT *pVarResult,
         /* [out] */ EXCEPINFO *pExcepInfo,
         /* [out] */ UINT *puArgErr) {
-    
+
     // When returning a result, you must check whether pVarResult
     // is not NULL and initialize it using VariantInit(). If it's
     // NULL then it doesn't expect a result.
@@ -94,15 +94,15 @@ HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke(
     puArgErr = 0;
     HRESULT hr;
     json_value* settings = GetApplicationSettings();
-    
+
     if (dispId == DISPID_NEWWINDOW3) {
         /* When calling window.open() you get an error "Class
-           not registered". Before this error appears 
-           DWebBrowserEvents2::NewWindow3 event is dispatched, 
+           not registered". Before this error appears
+           DWebBrowserEvents2::NewWindow3 event is dispatched,
            you need to create the popup window in this event
            and assign the dispatch interface of the new popup
            browser to the first parameter of NewWindow3. */
-        LOG_DEBUG << "BrowserEvents2::NewWindow3()";            
+        LOG_DEBUG << "BrowserEvents2::NewWindow3()";
         if (pDispParams->cArgs != 5) {
             LOG_WARNING << "BrowserEvents2::NewWindow3() failed: "
                     "Expected 5 arguments";
@@ -112,13 +112,13 @@ HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke(
         // ppDisp
         _ASSERT(pDispParams->rgvarg[4].vt == (VT_DISPATCH | VT_BYREF));
         // Cancel
-        _ASSERT(pDispParams->rgvarg[3].vt == (VT_BOOL | VT_BYREF)); 
+        _ASSERT(pDispParams->rgvarg[3].vt == (VT_BOOL | VT_BYREF));
         // dwFlags
-        _ASSERT(pDispParams->rgvarg[2].vt == VT_I4); 
+        _ASSERT(pDispParams->rgvarg[2].vt == VT_I4);
         // bstrUrlContext
-        _ASSERT(pDispParams->rgvarg[1].vt == VT_BSTR); 
-        // bstrUrl        
-        _ASSERT(pDispParams->rgvarg[0].vt == VT_BSTR); 
+        _ASSERT(pDispParams->rgvarg[1].vt == VT_BSTR);
+        // bstrUrl
+        _ASSERT(pDispParams->rgvarg[0].vt == VT_BSTR);
 
         HWND popupHandle = CreatePopupWindow(
                 browserWindow_->GetWindowHandle());
@@ -139,11 +139,11 @@ HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke(
                            "webBrowser2->get_Application() failed";
             return S_OK;
         }
-        
-        *pDispParams->rgvarg[4].ppdispVal = dispatch.Detach();
-        *pDispParams->rgvarg[3].pboolVal = VARIANT_FALSE;        
 
-        // Following events (DWebBrowserEvents2) will appear  
+        *pDispParams->rgvarg[4].ppdispVal = dispatch.Detach();
+        *pDispParams->rgvarg[3].pboolVal = VARIANT_FALSE;
+
+        // Following events (DWebBrowserEvents2) will appear
         // after popup creation, they inform about "features"
         // passed to "window.open", such as width, height and others:
         // DISPID_ONTOOLBAR
@@ -157,7 +157,7 @@ HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke(
         // DISPID_WINDOWSETHEIGHT
         // DISPID_WINDOWSETTOP
         // DISPID_WINDOWSETLEFT
-        // DISPID_NAVIGATECOMPLETE2            
+        // DISPID_NAVIGATECOMPLETE2
         return S_OK;
     } else if (dispId == DISPID_WINDOWSETWIDTH) {
         _ASSERT(pDispParams->cArgs == 1);
@@ -206,22 +206,22 @@ HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke(
             return DISP_E_BADPARAMCOUNT;
         }
         // pDisp
-        _ASSERT(pDispParams->rgvarg[4].vt == VT_DISPATCH); 
+        _ASSERT(pDispParams->rgvarg[4].vt == VT_DISPATCH);
         // URL
-        _ASSERT(pDispParams->rgvarg[3].vt == (VT_VARIANT | VT_BYREF)); 
+        _ASSERT(pDispParams->rgvarg[3].vt == (VT_VARIANT | VT_BYREF));
         _ASSERT(pDispParams->rgvarg[3].pvarVal->vt == VT_BSTR);
         // TargetFrameName
-        _ASSERT(pDispParams->rgvarg[2].vt == (VT_VARIANT | VT_BYREF)); 
+        _ASSERT(pDispParams->rgvarg[2].vt == (VT_VARIANT | VT_BYREF));
         _ASSERT(pDispParams->rgvarg[2].pvarVal->vt == VT_BSTR);
         // StatusCode
         _ASSERT(pDispParams->rgvarg[1].vt == (VT_VARIANT | VT_BYREF));
         _ASSERT(pDispParams->rgvarg[1].pvarVal->vt == VT_I4);
         // Cancel
-        _ASSERT(pDispParams->rgvarg[0].vt == (VT_BOOL | VT_BYREF)); 
+        _ASSERT(pDispParams->rgvarg[0].vt == (VT_BOOL | VT_BYREF));
 
         const wchar_t* navigateUrl = pDispParams->rgvarg[3].pvarVal->bstrVal;
         int statusCode = pDispParams->rgvarg[1].pvarVal->lVal;
-        
+
         if (browserWindow_->DisplayErrorPage(navigateUrl, statusCode)) {
             *pDispParams->rgvarg[0].pboolVal = VARIANT_TRUE;
             return S_OK;
@@ -230,7 +230,7 @@ HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke(
             return S_OK;
         }
     } else if (dispId == DISPID_WINDOWCLOSING) {
-        // Seems like this event is never being called, it should be 
+        // Seems like this event is never being called, it should be
         // called when executing "window.close()", but it's not.
         // Use WM_PARENTNOTIFY instead to be notified when window is closing.
         LOG_DEBUG << "BrowserEvents2::WindowClosing()";
@@ -242,7 +242,7 @@ HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke(
             _ASSERT(false);
             return DISP_E_BADPARAMCOUNT;
         }
-        // bIsChildWindow 
+        // bIsChildWindow
         _ASSERT(pDispParams->rgvarg[1].vt == VT_BOOL);
         // Cancel
         _ASSERT(pDispParams->rgvarg[0].vt == (VT_BOOL | VT_BYREF));
@@ -253,4 +253,4 @@ HRESULT STDMETHODCALLTYPE BrowserEvents2::Invoke(
         */
     }
     return S_OK;
-}    
+}

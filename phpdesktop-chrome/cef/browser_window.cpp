@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2014 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -30,7 +30,7 @@ BrowserWindow* GetBrowserWindow(HWND hwnd) {
     }
     HWND owner = GetWindow(hwnd, GW_OWNER);
     if (owner) {
-        // hwnd is CEF host handle. 
+        // hwnd is CEF host handle.
         // This condition is for popups.
         it = g_browserWindows.find(owner);
         if (it != g_browserWindows.end()) {
@@ -79,9 +79,9 @@ void RemoveBrowserWindow(HWND hwnd) {
     }
 }
 
-BrowserWindow::BrowserWindow(HWND inWindowHandle, bool isPopup) 
+BrowserWindow::BrowserWindow(HWND inWindowHandle, bool isPopup)
         : windowHandle_(inWindowHandle),
-          isPopup_(isPopup){      
+          isPopup_(isPopup){
     _ASSERT(windowHandle_);
 
     SetTitleFromSettings();
@@ -115,7 +115,7 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     // Popup cef browsers are created internally by CEF,
     // see OnBeforePopup, OnAfterCreated.
     json_value* settings = GetApplicationSettings();
-    
+
     RECT rect;
     BOOL b = GetWindowRect(windowHandle_, &rect);
     if (!b) {
@@ -158,20 +158,20 @@ bool BrowserWindow::IsUsingMetaTitle() {
 void BrowserWindow::OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam) {
     if (!IsPopup()) {
         json_value* settings = GetApplicationSettings();
-        static long minimum_width = 
+        static long minimum_width =
                 (*settings)["main_window"]["minimum_size"][0];
-        static long minimum_height = 
+        static long minimum_height =
                 (*settings)["main_window"]["minimum_size"][1];
-        static long maximum_width = 
+        static long maximum_width =
                 (*settings)["main_window"]["maximum_size"][0];
-        static long maximum_height = 
+        static long maximum_height =
                 (*settings)["main_window"]["maximum_size"][1];
         MINMAXINFO* pMMI = (MINMAXINFO*)lParam;
         if (minimum_width)
             pMMI->ptMinTrackSize.x = minimum_width;
         if (minimum_height)
             pMMI->ptMinTrackSize.y = minimum_height;
-        if (maximum_width)        
+        if (maximum_width)
             pMMI->ptMaxTrackSize.x = maximum_width;
         if (maximum_height)
             pMMI->ptMaxTrackSize.y = maximum_height;
@@ -211,14 +211,14 @@ void BrowserWindow::SetIconFromSettings() {
     const char* iconPath;
     if (IsPopup())
         iconPath = (*settings)["popup_window"]["icon"];
-    else 
+    else
         iconPath = (*settings)["main_window"]["icon"];
     if (iconPath && iconPath[0] != 0) {
         wchar_t iconPathW[MAX_PATH];
-        Utf8ToWide(iconPath, iconPathW, _countof(iconPathW));        
+        Utf8ToWide(iconPath, iconPathW, _countof(iconPathW));
         int bigX = GetSystemMetrics(SM_CXICON);
         int bigY = GetSystemMetrics(SM_CYICON);
-        HANDLE bigIcon = LoadImage(0, iconPathW, IMAGE_ICON, bigX, bigY, 
+        HANDLE bigIcon = LoadImage(0, iconPathW, IMAGE_ICON, bigX, bigY,
                                    LR_LOADFROMFILE);
         if (bigIcon) {
             SendMessage(windowHandle_, WM_SETICON, ICON_BIG, (LPARAM)bigIcon);
@@ -228,7 +228,7 @@ void BrowserWindow::SetIconFromSettings() {
         }
         int smallX = GetSystemMetrics(SM_CXSMICON);
         int smallY = GetSystemMetrics(SM_CYSMICON);
-        HANDLE smallIcon = LoadImage(0, iconPathW, IMAGE_ICON, smallX, 
+        HANDLE smallIcon = LoadImage(0, iconPathW, IMAGE_ICON, smallX,
                                      smallY, LR_LOADFROMFILE);
         if (smallIcon) {
             SendMessage(windowHandle_, WM_SETICON, ICON_SMALL, (LPARAM)smallIcon);

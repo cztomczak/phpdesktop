@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -42,7 +42,7 @@ InternetSecurityManager::InternetSecurityManager(
     }
 // IInternetSecurityManager
 HRESULT STDMETHODCALLTYPE InternetSecurityManager::QueryInterface(
-        REFIID riid, 
+        REFIID riid,
         void **ppvObject) {
     return browserWindow_->GetOleClientSite()->QueryInterface(riid, ppvObject);
 }
@@ -61,17 +61,17 @@ HRESULT STDMETHODCALLTYPE InternetSecurityManager::GetSecuritySite(
     return E_NOTIMPL;
 }
 HRESULT STDMETHODCALLTYPE InternetSecurityManager::MapUrlToZone(
-        /* [in] */ LPCWSTR pwszUrl, 
-        /* [out] */ DWORD *pdwZone, 
+        /* [in] */ LPCWSTR pwszUrl,
+        /* [out] */ DWORD *pdwZone,
         /* [in] */ DWORD dwFlags) {
     if (!pdwZone)
         return E_INVALIDARG;
-            
-    // const char *rgZoneNames[] = 
+
+    // const char *rgZoneNames[] =
     // { "Local", "Intranet", "Trusted", "Internet", "Restricted" };
     // 0 == Local Machine. Gdy ustawimy 1 i w ProcessUrlAction()
     // damy return INET_E_DEFAULT_ACTION dla wszystkich, to od razu
-    // wyskoczy bblad, ze nie moze utworzyc obiektu automatyzacji 
+    // wyskoczy bblad, ze nie moze utworzyc obiektu automatyzacji
     // WScript.Shell, jezeli ustawimy 0, a w ProcessUrlAction damy
     // return INET_E_DEFAULT_ACTION to sie pojawi komunikat o
     // bezpieczenstwie.
@@ -86,16 +86,16 @@ HRESULT STDMETHODCALLTYPE InternetSecurityManager::MapUrlToZone(
     return INET_E_DEFAULT_ACTION;
 }
 HRESULT STDMETHODCALLTYPE InternetSecurityManager::GetSecurityId(
-        /* [in] */ LPCWSTR pwszUrl, 
-        /* [out] */ BYTE *pbSecurityId, 
-        /* [out][in] */ DWORD *pcbSecurityId, 
+        /* [in] */ LPCWSTR pwszUrl,
+        /* [out] */ BYTE *pbSecurityId,
+        /* [out][in] */ DWORD *pcbSecurityId,
         /* [in] */ DWORD_PTR dwReserved) {
     if (!pbSecurityId)
         return E_INVALIDARG;
-    
+
     // Implementing this method allows different zones to interact with.
-    // So for example an Internet webpage can call javascript on our 
-    // Local desktop webpage, or the other way. We don't want any 
+    // So for example an Internet webpage can call javascript on our
+    // Local desktop webpage, or the other way. We don't want any
     // restrictions in webbrowser control.
 
     // http://stackoverflow.com/q/1498211/623622
@@ -104,7 +104,7 @@ HRESULT STDMETHODCALLTYPE InternetSecurityManager::GetSecurityId(
     /*
     #define SECURITY_DOMAIN "file:"
     if (*pcbSecurityId >= MAX_SIZE_SECURITY_ID) {
-        memset(pbSecurityId, 0, *pcbSecurityId);        
+        memset(pbSecurityId, 0, *pcbSecurityId);
         #pragma warning(disable:4996)
         strcpy((char*)pbSecurityId, SECURITY_DOMAIN);
         #pragma warning(default:4996)
@@ -116,30 +116,30 @@ HRESULT STDMETHODCALLTYPE InternetSecurityManager::GetSecurityId(
         return S_OK;
     }
     */
-    
+
     return INET_E_DEFAULT_ACTION;
 }
 HRESULT STDMETHODCALLTYPE InternetSecurityManager::ProcessUrlAction(
-        /* [in] */ LPCWSTR pwszUrl, 
-        /* [in] */ DWORD dwAction, 
-        /* [out] */ BYTE *pPolicy, 
+        /* [in] */ LPCWSTR pwszUrl,
+        /* [in] */ DWORD dwAction,
+        /* [out] */ BYTE *pPolicy,
         /* [in] */ DWORD cbPolicy,
-        /* [in] */ BYTE *pContext, 
-        /* [in] */ DWORD cbContext, 
-        /* [in] */ DWORD dwFlags, 
+        /* [in] */ BYTE *pContext,
+        /* [in] */ DWORD cbContext,
+        /* [in] */ DWORD dwFlags,
         /* [in] */ DWORD dwReserved) {
 
     // You can't set all actions to ALLOW, as it sometimes works
-    // the other way, an ALLOW could set restrictions we don't 
+    // the other way, an ALLOW could set restrictions we don't
     // want to. We have to check and seteach flag separately.
 
-    // URLACTION flags: 
+    // URLACTION flags:
     // http://msdn.microsoft.com/en-us/library/ms537178(VS.85).aspx
-    
-    // Default settings: 
+
+    // Default settings:
     // http://msdn.microsoft.com/en-us/library/ms537186(VS.85).aspx
-    
-    // URLPOLICY flags: 
+
+    // URLPOLICY flags:
     // http://msdn.microsoft.com/en-us/library/ms537179(VS.85).aspx
 
     // Not implemented:
@@ -217,9 +217,9 @@ HRESULT STDMETHODCALLTYPE InternetSecurityManager::ProcessUrlAction(
         case URLACTION_SHELL_RTF_OBJECTS_LOAD: // ie6sp2
         case URLACTION_SHELL_SECURE_DRAGSOURCE: // ie7
         // ie6sp2, value the same as URLACTION_SHELL_EXECUTE_HIGHRISK
-        // case URLACTION_SHELL_SHELLEXECUTE: 
+        // case URLACTION_SHELL_SHELLEXECUTE:
         // ie8, probably registry only
-        case URLACTION_DOTNET_USERCONTROLS: 
+        case URLACTION_DOTNET_USERCONTROLS:
             *pPolicy = URLPOLICY_ALLOW;
             return S_OK;
 
@@ -251,29 +251,29 @@ HRESULT STDMETHODCALLTYPE InternetSecurityManager::ProcessUrlAction(
     return INET_E_DEFAULT_ACTION;
 }
 HRESULT STDMETHODCALLTYPE InternetSecurityManager::QueryCustomPolicy(
-        /* [in] */ LPCWSTR pwszUrl, 
+        /* [in] */ LPCWSTR pwszUrl,
         /* [in] */ REFGUID guidKey,
         /* [out] */ BYTE **ppPolicy,
         /* [out] */ DWORD *pcbPolicy,
-        /* [in] */ BYTE *pContext, 
+        /* [in] */ BYTE *pContext,
         /* [in] */ DWORD cbContext,
         /* [in] */ DWORD dwReserved) {
-    // Gdy zwracamy INET_E_DEFAULT_ACTION w ProcessUrlAction() 
+    // Gdy zwracamy INET_E_DEFAULT_ACTION w ProcessUrlAction()
     // to moze byc uruchomione QueryCustomPolicy(). Gdy dalismy
     // *pPolicy = URLPOLICY_ALLOW dla wszystkich to ta funkcja
-    // nigdy nie jest wywolywana, ale dla pewnosci zwrocmy i 
+    // nigdy nie jest wywolywana, ale dla pewnosci zwrocmy i
     // INET_E_DEFAULT_ACTION a nie "not implemented".
     return INET_E_DEFAULT_ACTION;
 }
 HRESULT STDMETHODCALLTYPE InternetSecurityManager::SetZoneMapping(
-        /* [in] */ DWORD dwZone, 
-        /* [in] */ LPCWSTR lpszPattern, 
+        /* [in] */ DWORD dwZone,
+        /* [in] */ LPCWSTR lpszPattern,
         /* [in] */ DWORD dwFlags) {
     return E_NOTIMPL;
 }
 HRESULT STDMETHODCALLTYPE InternetSecurityManager::GetZoneMappings(
-        /* [in] */ DWORD dwZone, 
-        /* [out] */ IEnumString **ppenumString, 
+        /* [in] */ DWORD dwZone,
+        /* [out] */ IEnumString **ppenumString,
         /* [in] */ DWORD dwFlags) {
     return E_NOTIMPL;
 }

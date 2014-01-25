@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -12,9 +12,9 @@ OleInPlaceFrame::OleInPlaceFrame(BrowserWindow* inBrowserWindow)
 }
 // IUnknown
 HRESULT STDMETHODCALLTYPE OleInPlaceFrame::QueryInterface(
-        REFIID riid, 
+        REFIID riid,
         void** ppvObject) {
-    return browserWindow_->GetOleClientSite()->QueryInterface(riid, 
+    return browserWindow_->GetOleClientSite()->QueryInterface(riid,
                                                              ppvObject);
 }
 ULONG STDMETHODCALLTYPE OleInPlaceFrame::AddRef(void) {
@@ -37,7 +37,7 @@ HRESULT STDMETHODCALLTYPE OleInPlaceFrame::ContextSensitiveHelp(
 // IOleInPlaceUIWindow
 HRESULT STDMETHODCALLTYPE OleInPlaceFrame::GetBorder(
         /* [out] */ LPRECT lprectBorder) {
-    if (lprectBorder == NULL) 
+    if (lprectBorder == NULL)
         return E_INVALIDARG;
     return INPLACE_E_NOTOOLSPACE;
 }
@@ -50,13 +50,13 @@ HRESULT STDMETHODCALLTYPE OleInPlaceFrame::SetBorderSpace(
     return S_OK;
 }
 HRESULT STDMETHODCALLTYPE OleInPlaceFrame::SetActiveObject(
-        /* [in] */ IOleInPlaceActiveObject *pActiveObject, 
+        /* [in] */ IOleInPlaceActiveObject *pActiveObject,
         /* [in] */ LPCOLESTR pszObjName) {
     return S_OK;
 }
 // IOleInPlaceFrame
 HRESULT STDMETHODCALLTYPE OleInPlaceFrame::InsertMenus(
-        /* [in] */ HMENU hmenuShared, 
+        /* [in] */ HMENU hmenuShared,
         /* [out][in] */ LPOLEMENUGROUPWIDTHS lpMenuWidths) {
     lpMenuWidths->width[0] = 0;
     lpMenuWidths->width[2] = 0;
@@ -64,10 +64,10 @@ HRESULT STDMETHODCALLTYPE OleInPlaceFrame::InsertMenus(
     return S_OK;
 }
 HRESULT STDMETHODCALLTYPE OleInPlaceFrame::SetMenu(
-        /* [in] */ HMENU hmenuShared, 
-        /* [in] */ HOLEMENU holemenu, 
+        /* [in] */ HMENU hmenuShared,
+        /* [in] */ HOLEMENU holemenu,
         /* [in] */ HWND hwndActiveObject) {
-    if (hmenuShared == NULL || holemenu == NULL 
+    if (hmenuShared == NULL || holemenu == NULL
             || hwndActiveObject == NULL) {
         return E_INVALIDARG;
     }
@@ -90,7 +90,7 @@ HRESULT STDMETHODCALLTYPE OleInPlaceFrame::EnableModeless(
     return S_OK;
 }
 HRESULT STDMETHODCALLTYPE OleInPlaceFrame::TranslateAccelerator(
-        /* [in] */ LPMSG lpmsg, 
+        /* [in] */ LPMSG lpmsg,
         /* [in] */ WORD wID) {
     // Seems like this method is never called.
     if (lpmsg == NULL)

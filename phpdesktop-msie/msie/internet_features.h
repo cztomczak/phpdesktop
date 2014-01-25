@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -66,7 +66,7 @@
 // FEATURE_WEBSOCKET_FOLLOWHTTPREDIRECT
 // FEATURE_RESTRICTED_ZONE_WHEN_FILE_NOT_FOUND
 
-// INTERNETFEATURELIST for IE 6.0 SP2 that can be set 
+// INTERNETFEATURELIST for IE 6.0 SP2 that can be set
 // per process:
 
 // FEATURE_OBJECT_CACHING
@@ -115,96 +115,96 @@ void SetInternetFeatures() {
     // as CoInternetSetFeatureEnabled() is not available in earlier
     // versions:
     // http://support.microsoft.com/kb/969393
-    
+
     if (!IsAtLeastInternetExplorer60ServicePack2())
         return;
 
     HRESULT hres;
 
-    // Internet Explorer 7. Enable or disable the native 
+    // Internet Explorer 7. Enable or disable the native
     // XMLHttpRequest object.
-    hres = CoInternetSetFeatureEnabled(FEATURE_XMLHTTP, 
+    hres = CoInternetSetFeatureEnabled(FEATURE_XMLHTTP,
             SET_FEATURE_ON_PROCESS, TRUE);
     LOG_DEBUG << "FEATURE_XMLHTTP succeeded: " << SUCCEEDED(hres);
 
-    // Constrain to the viewable desktop area and force to 
+    // Constrain to the viewable desktop area and force to
     // have a status bar. Also, restrict the size and position
-    // of pop-up windows without chrome so that they cannot 
-    // overlay important information on their parent windows 
+    // of pop-up windows without chrome so that they cannot
+    // overlay important information on their parent windows
     // and cannot overlay system dialog box information.
-    hres = CoInternetSetFeatureEnabled(FEATURE_WINDOW_RESTRICTIONS, 
+    hres = CoInternetSetFeatureEnabled(FEATURE_WINDOW_RESTRICTIONS,
                                        SET_FEATURE_ON_PROCESS, FALSE);
     LOG_DEBUG << "FEATURE_WINDOW_RESTRICTIONS succeeded: "
               << SUCCEEDED(hres);
 
     // Enable applications hosting the WebBrowser Control to
-    // receive the default Internet Explorer pop-up management 
+    // receive the default Internet Explorer pop-up management
     // behavior.
-    hres = CoInternetSetFeatureEnabled(FEATURE_WEBOC_POPUPMANAGEMENT, 
+    hres = CoInternetSetFeatureEnabled(FEATURE_WEBOC_POPUPMANAGEMENT,
                                        SET_FEATURE_ON_PROCESS, FALSE);
     LOG_DEBUG << "FEATURE_WEBOC_POPUPMANAGEMENT succeeded: "
-              << SUCCEEDED(hres);    
+              << SUCCEEDED(hres);
 
-    // Block ActiveX controls on pages that instantiate or 
+    // Block ActiveX controls on pages that instantiate or
     // prompt for ActiveX controls to be installed or when
-    // the control is an update to a control that is not 
+    // the control is an update to a control that is not
     // installed.
-    hres = CoInternetSetFeatureEnabled(FEATURE_RESTRICT_ACTIVEXINSTALL, 
+    hres = CoInternetSetFeatureEnabled(FEATURE_RESTRICT_ACTIVEXINSTALL,
                                        SET_FEATURE_ON_PROCESS, FALSE);
     LOG_DEBUG << "FEATURE_RESTRICT_ACTIVEXINSTALL succeeded: "
               << SUCCEEDED(hres);
 
-    // Block file downloads that navigate to a resource, 
-    // that display a file download dialog box, or that 
+    // Block file downloads that navigate to a resource,
+    // that display a file download dialog box, or that
     // are not initiated explicitly by a user action (for
     // example, a mouse click or key press).
-    hres = CoInternetSetFeatureEnabled(FEATURE_RESTRICT_FILEDOWNLOAD, 
+    hres = CoInternetSetFeatureEnabled(FEATURE_RESTRICT_FILEDOWNLOAD,
                                        SET_FEATURE_ON_PROCESS, FALSE);
     LOG_DEBUG << "FEATURE_RESTRICT_FILEDOWNLOAD succeeded: "
               << SUCCEEDED(hres);
 
-    // Internet Explorer 7. Disable the sounds that are 
+    // Internet Explorer 7. Disable the sounds that are
     // played when the user opens a link.
     hres = CoInternetSetFeatureEnabled(FEATURE_DISABLE_NAVIGATION_SOUNDS,
                                        SET_FEATURE_ON_PROCESS, TRUE);
     LOG_DEBUG << "FEATURE_DISABLE_NAVIGATION_SOUNDS succeeded: "
               << SUCCEEDED(hres);
 
-    // Internet Explorer 7. Require new windows to include 
+    // Internet Explorer 7. Require new windows to include
     // both address and status bar.
-    hres = CoInternetSetFeatureEnabled(FEATURE_FORCE_ADDR_AND_STATUS, 
+    hres = CoInternetSetFeatureEnabled(FEATURE_FORCE_ADDR_AND_STATUS,
                                        SET_FEATURE_ON_PROCESS, FALSE);
     LOG_DEBUG << "FEATURE_FORCE_ADDR_AND_STATUS succeeded: "
               << SUCCEEDED(hres);
 
     // Allow Binary Behaviors to run securely.
     // TRUE to disable, FALSE to enable.
-    hres = CoInternetSetFeatureEnabled(FEATURE_BEHAVIORS, 
+    hres = CoInternetSetFeatureEnabled(FEATURE_BEHAVIORS,
                                        SET_FEATURE_ON_PROCESS, FALSE);
     LOG_DEBUG << "FEATURE_BEHAVIORS succeeded: "
               << SUCCEEDED(hres);
 
     // Evaluate the "saved from url" information for files
-    // on a UNC share. This feature increases security on 
+    // on a UNC share. This feature increases security on
     // UNC paths but at a performance cost.
-    hres = CoInternetSetFeatureEnabled(FEATURE_UNC_SAVEDFILECHECK, 
+    hres = CoInternetSetFeatureEnabled(FEATURE_UNC_SAVEDFILECHECK,
                                        SET_FEATURE_ON_PROCESS, FALSE);
     LOG_DEBUG << "FEATURE_UNC_SAVEDFILECHECK succeeded: "
               << SUCCEEDED(hres);
 
-    // Internet Explorer 7. Enable or disable the pop-up 
+    // Internet Explorer 7. Enable or disable the pop-up
     // blocker to show input prompt dialog boxes. Used pop-up
     // blocker to mitigate the risk of spoofing.
-    hres = CoInternetSetFeatureEnabled(FEATURE_BLOCK_INPUT_PROMPTS, 
+    hres = CoInternetSetFeatureEnabled(FEATURE_BLOCK_INPUT_PROMPTS,
                                        SET_FEATURE_ON_PROCESS, FALSE);
-    LOG_DEBUG << "FEATURE_BLOCK_INPUT_PROMPTS succeeded: " 
+    LOG_DEBUG << "FEATURE_BLOCK_INPUT_PROMPTS succeeded: "
               << SUCCEEDED(hres);
 
     // Internet Explorer 7. Enable tabbed browsing shortcuts
     // and notifications.
-    hres = CoInternetSetFeatureEnabled(FEATURE_TABBED_BROWSING, 
+    hres = CoInternetSetFeatureEnabled(FEATURE_TABBED_BROWSING,
                                        SET_FEATURE_ON_PROCESS, FALSE);
-    LOG_DEBUG << "FEATURE_TABBED_BROWSING succeeded: " 
+    LOG_DEBUG << "FEATURE_TABBED_BROWSING succeeded: "
               << SUCCEEDED(hres);
 
     // The FEATURE_ADDON_MANAGEMENT feature enables applications hosting
@@ -212,41 +212,41 @@ void SetInternetFeatures() {
     // using the Add-on Manager feature of Internet Explorer. Add-ons
     // disabled by the user or by administrative group policy will also
     // be disabled in applications that enable this feature.
-    hres = CoInternetSetFeatureEnabled(FEATURE_ADDON_MANAGEMENT, 
+    hres = CoInternetSetFeatureEnabled(FEATURE_ADDON_MANAGEMENT,
                                        SET_FEATURE_ON_PROCESS, FALSE);
-    LOG_DEBUG << "FEATURE_ADDON_MANAGEMENT succeeded: " 
+    LOG_DEBUG << "FEATURE_ADDON_MANAGEMENT succeeded: "
               << SUCCEEDED(hres);
-    
+
     /*
     Setting these features fails:
-    
+
     FEATURE_DOMSTORAGE
     FEATURE_XDOMAINREQUEST
     FEATURE_DATAURI
 
-    // Internet Explorer 8. When enabled, the FEATURE_DOMSTORAGE 
-    // feature allows Internet Explorer and applications hosting 
+    // Internet Explorer 8. When enabled, the FEATURE_DOMSTORAGE
+    // feature allows Internet Explorer and applications hosting
     // the WebBrowser Control to use the Web Storage API.
     hres = CoInternetSetFeatureEnabled(
-            (INTERNETFEATURELIST)FEATURE_DOMSTORAGE, 
+            (INTERNETFEATURELIST)FEATURE_DOMSTORAGE,
             SET_FEATURE_ON_PROCESS, TRUE);
-    LOG_DEBUG << "FEATURE_DOMSTORAGE succeeded: " 
+    LOG_DEBUG << "FEATURE_DOMSTORAGE succeeded: "
               << SUCCEEDED(hres);
 
-    // When enabled, the FEATURE_XDOMAINREQUEST feature enables 
+    // When enabled, the FEATURE_XDOMAINREQUEST feature enables
     // the XDomainRequest object, which represents a cross-domain
     // Asynchronous JavaScript and XML (AJAX) request.
     hres = CoInternetSetFeatureEnabled(
-            (INTERNETFEATURELIST)FEATURE_XDOMAINREQUEST, 
+            (INTERNETFEATURELIST)FEATURE_XDOMAINREQUEST,
             SET_FEATURE_ON_PROCESS, TRUE);
-    LOG_DEBUG << "FEATURE_XDOMAINREQUEST succeeded: " 
+    LOG_DEBUG << "FEATURE_XDOMAINREQUEST succeeded: "
               << SUCCEEDED(hres);
 
     // Internet Explorer 9.
     hres = CoInternetSetFeatureEnabled(
-            (INTERNETFEATURELIST)FEATURE_DATAURI, 
+            (INTERNETFEATURELIST)FEATURE_DATAURI,
             SET_FEATURE_ON_PROCESS, TRUE);
-    LOG_DEBUG << "FEATURE_DATAURI succeeded: " 
+    LOG_DEBUG << "FEATURE_DATAURI succeeded: "
               << SUCCEEDED(hres);
     */
 }

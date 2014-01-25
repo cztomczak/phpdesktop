@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -13,7 +13,7 @@ ServiceProvider::ServiceProvider(BrowserWindow* inBrowserWindow)
 }
 // IUnknown
 HRESULT STDMETHODCALLTYPE ServiceProvider::QueryInterface(
-        REFIID riid, 
+        REFIID riid,
         void **ppvObject) {
     return browserWindow_->GetOleClientSite()->QueryInterface(riid, ppvObject);
 }
@@ -25,8 +25,8 @@ ULONG STDMETHODCALLTYPE ServiceProvider::Release(void) {
 }
 // IServiceProvider
 HRESULT STDMETHODCALLTYPE ServiceProvider::QueryService(
-        REFGUID siid, 
-        REFIID riid, 
+        REFGUID siid,
+        REFIID riid,
         void **ppvObject) {
     if (siid == IID_IInternetSecurityManager &&
             riid == IID_IInternetSecurityManager) {

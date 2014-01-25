@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -21,7 +21,7 @@ DocHostUiHandler::DocHostUiHandler(BrowserWindow* inBrowserWindow,
         : browserWindow_(inBrowserWindow),
         externalDispatch_(inExternalDispatch) {
 }
-HRESULT STDMETHODCALLTYPE DocHostUiHandler::QueryInterface( 
+HRESULT STDMETHODCALLTYPE DocHostUiHandler::QueryInterface(
         /* [in] */ REFIID riid,
         /* [out] */ void **ppvObject) {
     return browserWindow_->GetOleClientSite()->QueryInterface(riid, ppvObject);
@@ -32,7 +32,7 @@ ULONG STDMETHODCALLTYPE DocHostUiHandler::AddRef(void) {
 ULONG STDMETHODCALLTYPE DocHostUiHandler::Release(void) {
     return 1;
 }
-HRESULT STDMETHODCALLTYPE DocHostUiHandler::ShowContextMenu( 
+HRESULT STDMETHODCALLTYPE DocHostUiHandler::ShowContextMenu(
         /* [in] */ DWORD dwID,
         /* [in] */ POINT *ppt,
         /* [in] */ IUnknown *pcmdtReserved,
@@ -52,16 +52,16 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::ShowContextMenu(
         // right mouse button in the window.
         POINT pt;
 	    GetCursorPos(&pt);
-        PostMessage(browserWindow_->GetWindowHandle(), WM_CONTEXTMENU, 
+        PostMessage(browserWindow_->GetWindowHandle(), WM_CONTEXTMENU,
                     pt.x, pt.y);
         return S_OK;
     }
-}    
-HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetHostInfo( 
+}
+HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetHostInfo(
         /* [out][in] */ DOCHOSTUIINFO *pInfo) {
     json_value* settings = GetApplicationSettings();
     bool use_themes = (*settings)["msie"]["use_themes"];
-    bool windowed_select_control = 
+    bool windowed_select_control =
             (*settings)["msie"]["windowed_select_control"];
     bool disable_scrollbars = (*settings)["msie"]["disable_scrollbars"];
     bool flat_scrollbars = (*settings)["msie"]["flat_scrollbars"];
@@ -86,7 +86,7 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetHostInfo(
 
     if (disable_scrollbars)
         pInfo->dwFlags |= DOCHOSTUIFLAG_SCROLL_NO;
-    
+
     if (flat_scrollbars)
         pInfo->dwFlags |= DOCHOSTUIFLAG_FLAT_SCROLLBAR;
 
@@ -97,13 +97,13 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetHostInfo(
 
     if (autocomplete_forms)
         pInfo->dwFlags |= DOCHOSTUIFLAG_ENABLE_FORMS_AUTOCOMPLETE;
-    
+
     if (dpi_aware)
         pInfo->dwFlags |= DOCHOSTUIFLAG_DPI_AWARE;
 
     pInfo->dwDoubleClick = DOCHOSTUIDBLCLK_DEFAULT;
     return S_OK;
-}    
+}
 HRESULT STDMETHODCALLTYPE DocHostUiHandler::ShowUI(
         /* [in] */ DWORD dwID,
         /* [in] */ IOleInPlaceActiveObject *pActiveObject,
@@ -116,39 +116,39 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::ShowUI(
 HRESULT STDMETHODCALLTYPE DocHostUiHandler::HideUI(void) {
     // Enables the host to remove its menus and toolbars.
     return S_OK;
-}    
+}
 HRESULT STDMETHODCALLTYPE DocHostUiHandler::UpdateUI(void) {
     // Notifies the host that the command state has changed.
     return S_OK;
-}    
-HRESULT STDMETHODCALLTYPE DocHostUiHandler::EnableModeless( 
+}
+HRESULT STDMETHODCALLTYPE DocHostUiHandler::EnableModeless(
         /* [in] */ BOOL fEnable) {
-    // Called by the MSHTML implementation of 
-    // IOleInPlaceActiveObject::EnableModeless. 
+    // Called by the MSHTML implementation of
+    // IOleInPlaceActiveObject::EnableModeless.
     // Also called when MSHTML displays a modal UI.
     return S_OK;
-}    
-HRESULT STDMETHODCALLTYPE DocHostUiHandler::OnDocWindowActivate( 
+}
+HRESULT STDMETHODCALLTYPE DocHostUiHandler::OnDocWindowActivate(
         /* [in] */ BOOL fActivate) {
     // Notifies the active in-place object when the container's
     // document window is activated or deactivated.
     return S_OK;
 }
-HRESULT STDMETHODCALLTYPE DocHostUiHandler::OnFrameWindowActivate( 
+HRESULT STDMETHODCALLTYPE DocHostUiHandler::OnFrameWindowActivate(
         /* [in] */ BOOL fActivate) {
     // Notifies the object when the container's top-level
     // frame window is activated or deactivated.
     return S_OK;
 }
-HRESULT STDMETHODCALLTYPE DocHostUiHandler::ResizeBorder( 
+HRESULT STDMETHODCALLTYPE DocHostUiHandler::ResizeBorder(
         /* [in] */ LPCRECT prcBorder,
         /* [in] */ IOleInPlaceUIWindow *pUIWindow,
         /* [in] */ BOOL fRameWindow) {
-    // Alerts the object that it needs to resize its border 
+    // Alerts the object that it needs to resize its border
     // space.
     return S_OK;
 }
-HRESULT STDMETHODCALLTYPE DocHostUiHandler::TranslateAccelerator( 
+HRESULT STDMETHODCALLTYPE DocHostUiHandler::TranslateAccelerator(
         /* [in] */ LPMSG lpMsg,
         /* [in] */ const GUID *pguidCmdGroup,
         /* [in] */ DWORD nCmdID) {
@@ -169,7 +169,7 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::TranslateAccelerator(
                                         typeAttr, _countof(typeAttr))) {
             _wcsupr_s(tag, _countof(tag));
             _wcsupr_s(typeAttr, _countof(typeAttr));
-            if (wcscmp(tag, L"INPUT") == 0 && 
+            if (wcscmp(tag, L"INPUT") == 0 &&
                     (  wcscmp(typeAttr, L"TEXT") == 0
                     || wcscmp(typeAttr, L"PASSWORD") == 0
                     || wcscmp(typeAttr, L"SEARCH") == 0
@@ -197,20 +197,20 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::TranslateAccelerator(
             hr = S_OK;
     }
 
-    if (lpMsg->message == WM_KEYDOWN && 
-            (  lpMsg->wParam == VK_BROWSER_BACK 
-            || lpMsg->wParam == VK_BROWSER_FAVORITES 
-            || lpMsg->wParam == VK_BROWSER_FORWARD 
+    if (lpMsg->message == WM_KEYDOWN &&
+            (  lpMsg->wParam == VK_BROWSER_BACK
+            || lpMsg->wParam == VK_BROWSER_FAVORITES
+            || lpMsg->wParam == VK_BROWSER_FORWARD
             || lpMsg->wParam == VK_BROWSER_HOME
-            || lpMsg->wParam == VK_BROWSER_REFRESH 
-            || lpMsg->wParam == VK_BROWSER_SEARCH 
-            || lpMsg->wParam == VK_BROWSER_STOP 
+            || lpMsg->wParam == VK_BROWSER_REFRESH
+            || lpMsg->wParam == VK_BROWSER_SEARCH
+            || lpMsg->wParam == VK_BROWSER_STOP
             || lpMsg->wParam == VK_F1
-            || lpMsg->wParam == VK_HELP 
-            || lpMsg->wParam == VK_MENU 
+            || lpMsg->wParam == VK_HELP
+            || lpMsg->wParam == VK_MENU
             || lpMsg->wParam == VK_PRINT
             || lpMsg->wParam == VK_RMENU
-            || lpMsg->wParam == VK_LMENU 
+            || lpMsg->wParam == VK_LMENU
             || lpMsg->wParam == VK_ZOOM)) {
         hr = S_OK;
     }
@@ -224,8 +224,8 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::TranslateAccelerator(
     }
 
     if (lpMsg->message == WM_KEYDOWN &&
-            (lpMsg->wParam == VK_P || lpMsg->wParam == VK_O 
-            || lpMsg->wParam == VK_L || lpMsg->wParam == VK_N) 
+            (lpMsg->wParam == VK_P || lpMsg->wParam == VK_O
+            || lpMsg->wParam == VK_L || lpMsg->wParam == VK_N)
             && (GetKeyState(VK_CONTROL) < 0)) {
         // ctrl+p = print, NO
         // ctrl+o = open, NO
@@ -244,22 +244,22 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::TranslateAccelerator(
 
     return hr;
 }
-HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetOptionKeyPath( 
+HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetOptionKeyPath(
         /* [out] */ LPOLESTR *pchKey,
         /* [in] */ DWORD dw) {
     if (!pchKey)
 	    return E_INVALIDARG;
     json_value* settings = GetApplicationSettings();
     bool smooth_scroll = (*settings)["msie"]["smooth_scroll"];
-    bool disable_script_debugger = 
+    bool disable_script_debugger =
             (*settings)["msie"]["disable_script_debugger"];
 
     // Gets a registry subkey path that overrides the
     // default Windows Internet Explorer registry settings.
-    
-    // We are overriding it to prevent the browser from 
+
+    // We are overriding it to prevent the browser from
     // using its default settings in the registry.
-    
+
     // While googling I've encountered users saying that
     // Internet Explorer 9 is not calling this method anymore.
     // The solution seems to be to hook to registry api calls,
@@ -276,11 +276,11 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetOptionKeyPath(
     // SmoothScroll - by default Yes.
     // Disable Script Debugger
     // DisableScriptDebuggerIE
-    
+
     // Play_Background_Sounds - mouse clicks? In HostDispatch::Invoke()
     //     we're already setting flags for DISPID_AMBIENT_DLCONTROL,
     //     DLCTL_BGSOUNDS is not set so sounds should be disabled.
-    
+
     std::wstring mainPath = std::wstring(registryPath).append(L"\\Main");
     CreateRegistryKey(HKEY_CURRENT_USER, mainPath.c_str());
 
@@ -302,12 +302,12 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetOptionKeyPath(
         CreateRegistryString(HKEY_CURRENT_USER, mainPath.c_str(),
                 L"DisableScriptDebuggerIE", L"no");
     }
-    
+
     CreateRegistryKey(HKEY_CURRENT_USER, std::wstring(registryPath).append(
             L"\\Main\\FeatureControl").c_str());
     CreateRegistryKey(HKEY_CURRENT_USER, std::wstring(registryPath).append(
             L"\\Settings").c_str());
-    
+
     // Return registry path.
     int registrySize = wcslen(registryPath) + 1;
     int memorySize = registrySize * sizeof(registryPath[0]);
@@ -319,26 +319,26 @@ HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetOptionKeyPath(
         return E_OUTOFMEMORY;
     }
 }
-HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetDropTarget( 
+HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetDropTarget(
         /* [in] */ IDropTarget *pDropTarget,
         /* [out] */ IDropTarget **ppDropTarget) {
     if (!pDropTarget)
         return E_INVALIDARG;
     return E_NOTIMPL;
 }
-HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetExternal( 
+HRESULT STDMETHODCALLTYPE DocHostUiHandler::GetExternal(
         /* [out] */ IDispatch **ppDispatch) {
     *ppDispatch = externalDispatch_;
     return S_OK;
 }
-HRESULT STDMETHODCALLTYPE DocHostUiHandler::TranslateUrl( 
+HRESULT STDMETHODCALLTYPE DocHostUiHandler::TranslateUrl(
         /* [in] */ DWORD dwTranslate,
         /* [in] */ OLECHAR *pchURLIn,
         /* [out] */ OLECHAR **ppchURLOut) {
     *ppchURLOut = 0;
     return S_FALSE;
 }
-HRESULT STDMETHODCALLTYPE DocHostUiHandler::FilterDataObject( 
+HRESULT STDMETHODCALLTYPE DocHostUiHandler::FilterDataObject(
         /* [in] */ IDataObject *pDO,
         /* [out] */ IDataObject **ppDORet) {
     *ppDORet = 0;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2014 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -197,14 +197,14 @@ bool ClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser,
     if (dpi_aware) {
         GetDpiAwareWindowSize(&windowInfo.width, &windowInfo.height);
     }
-    GetCorrectWindowSize(&windowInfo.width, &windowInfo.height);    
+    GetCorrectWindowSize(&windowInfo.width, &windowInfo.height);
     if (target_url.ToString().find(g_webServerUrl) == 0) {
         // Allow to create.
-        return false; 
+        return false;
     } else {
         if (external_navigation) {
             // Allow to create.
-            return false; 
+            return false;
         } else {
             // Open in system default browser.
             ShellExecute(0, L"open", target_url.ToWString().c_str(), 0, 0, SW_SHOWNORMAL);
@@ -281,7 +281,7 @@ void ClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
 
     model->Remove(MENU_ID_VIEW_SOURCE);
     if (!params->IsEditable() && params->GetSelectionText().empty()
-            && (params->GetPageUrl().length() 
+            && (params->GetPageUrl().length()
                     || params->GetFrameUrl().length())) {
         if (reload_page_F5) {
             model->AddItem(MY_MENU_ID_RELOAD_PAGE, "Reload page");
@@ -315,7 +315,7 @@ bool ClientHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
         ShowDevTools(browser);
         return true;
     }
-    return false; 
+    return false;
 }
 
 ///
@@ -403,17 +403,17 @@ bool ClientHandler::OnKeyEvent(CefRefPtr<CefBrowser> cefBrowser,
                         const CefKeyEvent& event,
                         CefEventHandle os_event) {
     REQUIRE_UI_THREAD();
-    
+
     json_value* appSettings = GetApplicationSettings();
     bool reload_page_F5 = (*appSettings)["chrome"]["reload_page_F5"];
     bool devtools_F12 = (*appSettings)["chrome"]["devtools_F12"];
-    
-    if (reload_page_F5 && event.windows_key_code == VK_F5 
+
+    if (reload_page_F5 && event.windows_key_code == VK_F5
             && event.type == KEYEVENT_RAWKEYDOWN) {
         LOG_DEBUG << "F5 pressed, reloading page";
         cefBrowser->ReloadIgnoreCache();
         return false;
-    } else if (devtools_F12 && event.windows_key_code == VK_F12 
+    } else if (devtools_F12 && event.windows_key_code == VK_F12
             && event.type == KEYEVENT_RAWKEYDOWN) {
         LOG_DEBUG << "F12 pressed, opening developer tools";
         if (!ShowDevTools(cefBrowser)) {

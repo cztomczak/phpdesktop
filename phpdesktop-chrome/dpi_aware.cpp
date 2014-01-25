@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2014 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -84,7 +84,7 @@ void GetDpiAwareWindowSize(int* width, int* height) {
     if (newZoomLevel > 0.0) {
         *width = *width + (int)ceil(newZoomLevel * 0.25 * (*width));
         *height = *height + (int)ceil(newZoomLevel * 0.25 * (*height));
-        LOG_INFO << "DPI, window enlarged by " 
+        LOG_INFO << "DPI, window enlarged by "
                   << ceil(newZoomLevel * 0.25 * 100) << "%"
                   << " new width/height = " << *width << "/" << *height;
     }

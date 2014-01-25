@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2014 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -17,15 +17,15 @@ void CenterWindow(HWND wnd) {
 
 bool CenterWindowRelativeToParent(HWND window, HWND parent) {
     RECT rect, parentRect;
-    int width, height;      
+    int width, height;
     int screenWidth, screenHeight;
-    int x, y;  
+    int x, y;
     GetWindowRect(window, &rect);
-    GetWindowRect(parent, &parentRect);     
+    GetWindowRect(parent, &parentRect);
     width  = rect.right  - rect.left;
-    height = rect.bottom - rect.top;     
+    height = rect.bottom - rect.top;
     x = ((parentRect.right - parentRect.left) - width) / 2 + parentRect.left;
-    y = ((parentRect.bottom - parentRect.top) - height) / 2 + parentRect.top;    
+    y = ((parentRect.bottom - parentRect.top) - height) / 2 + parentRect.top;
     screenWidth  = GetSystemMetrics(SM_CXSCREEN);
     screenHeight = GetSystemMetrics(SM_CYSCREEN);
     if (x < 0) { x = 0; }

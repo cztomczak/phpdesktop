@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2014 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -25,7 +25,7 @@ HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title) {
         if (dpi_aware) {
             GetDpiAwareWindowSize(&default_width, &default_height);
         }
-        GetCorrectWindowSize(&default_width, &default_height);        
+        GetCorrectWindowSize(&default_width, &default_height);
     } else {
         default_width = CW_USEDEFAULT;
         default_height = CW_USEDEFAULT;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2014 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -26,7 +26,7 @@ json_value* GetApplicationSettings() {
     json_settings settings;
     memset(&settings, 0, sizeof(json_settings));
     char error[256];
-    json_value* json_parsed = json_parse_ex(&settings, contents.c_str(), 
+    json_value* json_parsed = json_parse_ex(&settings, contents.c_str(),
                                             &error[0]);
     if (json_parsed == 0) {
         LOG_WARNING << "Error while parsing settings.json file: " << error;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2013 PHP Desktop Authors. All rights reserved.
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
@@ -40,17 +40,17 @@ ULONG STDMETHODCALLTYPE ClickEvents::Release(void) {
     return 1;
 }
 // IDispatch
-HRESULT STDMETHODCALLTYPE ClickEvents::GetTypeInfoCount( 
+HRESULT STDMETHODCALLTYPE ClickEvents::GetTypeInfoCount(
         /* [out] */ UINT *pctinfo) {
     return E_NOTIMPL;
-}    
-HRESULT STDMETHODCALLTYPE ClickEvents::GetTypeInfo( 
+}
+HRESULT STDMETHODCALLTYPE ClickEvents::GetTypeInfo(
         /* [in] */ UINT iTInfo,
         /* [in] */ LCID lcid,
         /* [out] */ ITypeInfo **ppTInfo) {
     return E_NOTIMPL;
-}    
-HRESULT STDMETHODCALLTYPE ClickEvents::GetIDsOfNames( 
+}
+HRESULT STDMETHODCALLTYPE ClickEvents::GetIDsOfNames(
         /* [in] */ REFIID riid,
         /* [in] */ LPOLESTR *rgszNames,
         /* [in] */ UINT cNames,
@@ -58,7 +58,7 @@ HRESULT STDMETHODCALLTYPE ClickEvents::GetIDsOfNames(
         /* [out] */ DISPID *rgDispId) {
     return E_NOTIMPL;
 }
-HRESULT STDMETHODCALLTYPE ClickEvents::Invoke( 
+HRESULT STDMETHODCALLTYPE ClickEvents::Invoke(
         /* [in] */ DISPID dispId,
         /* [in] */ REFIID riid,
         /* [in] */ LCID lcid,
@@ -85,7 +85,7 @@ HRESULT STDMETHODCALLTYPE ClickEvents::Invoke(
         return S_OK;
     }
     IHTMLDocument2Ptr htmlDocument2;
-    hr = documentDispatch->QueryInterface(IID_IHTMLDocument2, 
+    hr = documentDispatch->QueryInterface(IID_IHTMLDocument2,
                                           (void**)&htmlDocument2);
     if (FAILED(hr) || !htmlDocument2) {
         LOG_WARNING << "ClickEvents::Invoke() failed: "
