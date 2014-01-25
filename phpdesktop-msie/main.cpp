@@ -292,6 +292,8 @@ HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title) {
     bool disable_maximize_button = 
             (*settings)["main_window"]["disable_maximize_button"];
     bool center_on_screen = (*settings)["main_window"]["center_on_screen"];
+    bool start_maximized = (*settings)["main_window"]["start_maximized"];
+
     if (!default_width || !default_height) {
         default_width = CW_USEDEFAULT;
         default_height = CW_USEDEFAULT;
@@ -321,7 +323,11 @@ HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title) {
     }
     if (center_on_screen)
         CenterWindow(hwnd);
-    ShowWindow(hwnd, nCmdShow);
+    if (start_maximized) {
+        ShowWindow(hwnd, SW_MAXIMIZE);
+    } else {
+        ShowWindow(hwnd, nCmdShow);
+    }
     UpdateWindow(hwnd);
     return hwnd;
 }
