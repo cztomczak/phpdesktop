@@ -215,7 +215,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     }
 
     if (!StartWebServer()) {
-        FatalError(NULL, "Error while starting an internal server.\n"
+        FatalError(NULL, "Error while starting an internal local server.\n"
                    "Application will terminate immediately.");
     }
 

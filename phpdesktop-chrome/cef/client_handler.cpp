@@ -19,10 +19,18 @@
 #include "../dpi_aware.h"
 #include "../window_utils.h"
 #include "../web_server.h"
+#include "../fatal_error.h"
 
 extern HINSTANCE g_hInstance;
 extern wchar_t g_windowClassName[256];
 extern std::map<HWND, BrowserWindow*> g_browserWindows; // browser_window.cpp
+// This will be set to false when application completes loading
+// of the initial webpage in main browser window. If the OnLoadError
+// callback gets called it means that firewall has blocked the
+// internal web server. This variable is only for use with OnLoadError,
+// it may return true even when initial page displayed fine, in a case
+// when only some of the resources on a webpage failed loading.
+bool g_isApplicationStartPageLoading = true;
 
 namespace {
 
@@ -245,6 +253,25 @@ bool ClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser,
 // ----------------------------------------------------------------------------
 
 ///
+// Called when the loading state has changed. This callback will be executed
+// twice -- once when loading is initiated either programmatically or by user
+// action, and once when loading is terminated due to completion, cancellation
+// of failure.
+///
+/*--cef()--*/
+void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> cefBrowser,
+                                bool isLoading,
+                                bool canGoBack,
+                                bool canGoForward) {
+    LOG_DEBUG << "OnLoadingStateChange: loading = " << isLoading;
+    static int calls = 0;
+    calls++;
+    if (calls > 1) {
+        g_isApplicationStartPageLoading = false;
+    }
+}
+
+///
 // Called when the resource load for a navigation fails or is canceled.
 // |errorCode| is the error code number, |errorText| is the error text and
 // |failedUrl| is the URL that failed to load. See net\base\net_error_list.h
@@ -256,31 +283,32 @@ void ClientHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
                                 const CefString& errorText,
                                 const CefString& failedUrl) {
     REQUIRE_UI_THREAD();
+    LOG_DEBUG << "OnLoadError";
 
     // Don't display an error for downloaded files.
     if (errorCode == ERR_ABORTED)
         return;
 
+    LOG_ERROR << "Failed to load URL: " << failedUrl.ToString();
+    if (g_isApplicationStartPageLoading) {
+        BrowserWindow* browserWindow = GetBrowserWindow(
+                browser->GetHost()->GetWindowHandle());
+        HWND hwnd = NULL;
+        if (browserWindow) {
+            hwnd = browserWindow->GetWindowHandle();
+        }
+        FatalError(hwnd, "Error while loading the start page. "
+                "An internal local server was blocked by your firewall, "
+                "please check your firewall settings. "
+                "Application will terminate immediately.");
+    }
+
     // Display a load error message.
-    std::stringstream ss;
+    std::stringstream ss;    
     ss << "<html><body bgcolor=\"white\">"
-            "<h2>Failed to load URL " << std::string(failedUrl) <<
-            " with error " << std::string(errorText) << " (" << errorCode <<
+            "<h2>Loading error " << " (" << errorCode <<
             ").</h2></body></html>";
     frame->LoadString(ss.str(), failedUrl);
-}
-
-///
-// Called when the loading state has changed. This callback will be executed
-// twice -- once when loading is initiated either programmatically or by user
-// action, and once when loading is terminated due to completion, cancellation
-// of failure.
-///
-/*--cef()--*/
-void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> cefBrowser,
-                                bool isLoading,
-                                bool canGoBack,
-                                bool canGoForward) {
 }
 
 // ----------------------------------------------------------------------------
