@@ -290,8 +290,10 @@
     <None Include="www\forms.php" />
     <None Include="www\google.php" />
     <None Include="www\html5-video.php" />
+    <None Include="www\iframe.php" />
     <None Include="www\index.php" />
     <None Include="license.txt" />
+    <None Include="www\javascript-api.php" />
     <None Include="www\no-cache.php" />
     <None Include="www\phpinfo.php" />
     <None Include="resource.aps" />

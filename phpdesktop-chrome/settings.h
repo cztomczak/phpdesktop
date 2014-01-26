@@ -6,5 +6,7 @@
 
 #include "defines.h"
 #include "json.h"
+#include <string>
 
 json_value* GetApplicationSettings();
+std::string GetApplicationSettingsError();

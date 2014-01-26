@@ -287,8 +287,10 @@ void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> cefBrowser,
 // CefContextMenuHandler methods
 // ----------------------------------------------------------------------------
 
-#define MY_MENU_ID_DEVTOOLS MENU_ID_USER_FIRST + 1
-#define MY_MENU_ID_RELOAD_PAGE MENU_ID_USER_FIRST + 2
+#define _MENU_ID_DEVTOOLS                         MENU_ID_USER_FIRST + 1
+#define _MENU_ID_RELOAD_PAGE                      MENU_ID_USER_FIRST + 2
+#define _MENU_ID_OPEN_PAGE_IN_EXTERNAL_BROWSER    MENU_ID_USER_FIRST + 3
+#define _MENU_ID_OPEN_FRAME_IN_EXTERNAL_BROWSER   MENU_ID_USER_FIRST + 4
 
 ///
 // Called before a context menu is displayed. |params| provides information
@@ -303,19 +305,54 @@ void ClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
                                 CefRefPtr<CefContextMenuParams> params,
                                 CefRefPtr<CefMenuModel> model) {
     json_value* appSettings = GetApplicationSettings();
-    bool reload_page_F5 = (*appSettings)["chrome"]["reload_page_F5"];
-    bool devtools_F12 = (*appSettings)["chrome"]["devtools_F12"];
+    bool enable_menu = (*appSettings)["chrome"]["context_menu"]["enable_menu"];
+    // MENU_ID_BACK, MENU_ID_FORWARD
+    bool navigation = (*appSettings)["chrome"]["context_menu"]["navigation"];
+    // MENU_ID_PRINT
+    bool print = (*appSettings)["chrome"]["context_menu"]["print"];
+    // MENU_ID_VIEW_SOURCE
+    bool view_source = (*appSettings)["chrome"]["context_menu"]["view_source"];
+    bool reload_page = (*appSettings)["chrome"]["context_menu"]["reload_page"];
+    bool open_in_external_browser = (*appSettings)["chrome"]["context_menu"]\
+            ["open_in_external_browser"];
+    bool devtools = (*appSettings)["chrome"]["context_menu"]["devtools"];
 
-    model->Remove(MENU_ID_VIEW_SOURCE);
+    if (!enable_menu) {
+        model->Clear();
+        return;
+    }
+    
+    if (!navigation) {
+        model->Remove(MENU_ID_BACK);
+        model->Remove(MENU_ID_FORWARD);
+        // Remote separator.
+        model->RemoveAt(0);
+    }
+    if (!print) {
+        model->Remove(MENU_ID_PRINT);
+    }
+    if (!view_source) {
+        model->Remove(MENU_ID_VIEW_SOURCE);
+    }
+    
     if (!params->IsEditable() && params->GetSelectionText().empty()
             && (params->GetPageUrl().length()
                     || params->GetFrameUrl().length())) {
-        if (reload_page_F5) {
-            model->AddItem(MY_MENU_ID_RELOAD_PAGE, "Reload page");
+        if (open_in_external_browser) {
+            model->AddItem(_MENU_ID_OPEN_PAGE_IN_EXTERNAL_BROWSER, \
+                    "Open page in external browser");
+            if (params->GetFrameUrl().length()
+                    && params->GetPageUrl() != params->GetFrameUrl()) {
+                model->AddItem(_MENU_ID_OPEN_FRAME_IN_EXTERNAL_BROWSER, \
+                        "Open frame in external browser");
+            }
         }
-        if (devtools_F12) {
+        if (navigation) {
+            model->InsertItemAt(2, _MENU_ID_RELOAD_PAGE, "Reload");
+        }
+        if (devtools) {
             model->AddSeparator();
-            model->AddItem(MY_MENU_ID_DEVTOOLS, "Show Developer Tools");
+            model->AddItem(_MENU_ID_DEVTOOLS, "Show Developer Tools");
         }
     }
 }
@@ -335,10 +372,20 @@ bool ClientHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
                                 CefRefPtr<CefContextMenuParams> params,
                                 int command_id,
                                 EventFlags event_flags) {
-    if (command_id == MY_MENU_ID_RELOAD_PAGE) {
+    if (command_id == _MENU_ID_OPEN_PAGE_IN_EXTERNAL_BROWSER) {
+        ShellExecute(0, L"open",
+                params->GetPageUrl().ToWString().c_str(),
+                0, 0, SW_SHOWNORMAL);
+        return true;
+    } else if (command_id == _MENU_ID_OPEN_FRAME_IN_EXTERNAL_BROWSER) {
+        ShellExecute(0, L"open",
+                params->GetFrameUrl().ToWString().c_str(),
+                0, 0, SW_SHOWNORMAL);
+        return true;
+    } else if (command_id == _MENU_ID_RELOAD_PAGE) {
         browser->ReloadIgnoreCache();
         return true;
-    } else if (command_id == MY_MENU_ID_DEVTOOLS) {
+    } else if (command_id == _MENU_ID_DEVTOOLS) {
         ShowDevTools(browser);
         return true;
     }

@@ -115,6 +115,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPTSTR lpstrCmdLine, int nCmdShow) {
     g_hInstance = hInstance;
     json_value* appSettings = GetApplicationSettings();
+    if (GetApplicationSettingsError().length()) {
+        std::string error = GetApplicationSettingsError();
+        error.append("\nApplication will terminate immediately. ");
+        FatalError(NULL, error);
+    }
 
     // Debugging options.
     bool show_console = (*appSettings)["debugging"]["show_console"];
@@ -210,8 +215,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     }
 
     if (!StartWebServer()) {
-        FatalError(NULL, "Could not start internal web server.\n"
-                   "Exiting application.");
+        FatalError(NULL, "Error while starting an internal server.\n"
+                   "Application will terminate immediately.");
     }
 
     CefSettings cef_settings;
