@@ -12,5 +12,7 @@
 
 <p>
     A custom scheme loading error will be handled by Chrome:
-    <a href="asd://non-existent.html">asd://non-existent.html</a>
+    <a href="asd://non-existent.html">asd://non-existent.html</a><br>
+    In a popup window:
+    <a target="_blank" href="asd://non-existent.html">asd://non-existent.html</a>
 </p>

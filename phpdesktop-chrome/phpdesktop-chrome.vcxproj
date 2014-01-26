@@ -294,6 +294,7 @@
     <None Include="www\index.php" />
     <None Include="license.txt" />
     <None Include="www\javascript-api.php" />
+    <None Include="www\loading-error.php" />
     <None Include="www\no-cache.php" />
     <None Include="www\phpinfo.php" />
     <None Include="resource.aps" />
