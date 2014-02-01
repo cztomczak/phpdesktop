@@ -44,7 +44,7 @@ bool CenterWindowRelativeToParent(HWND window, HWND parent) {
     if (y >= parentRect.top && y < parentRect.top + 32) {
         y = parentRect.top + 32;
     }
-    MoveWindow(window, x, y, width, height, FALSE);
+    MoveWindow(window, x, y, width, height, TRUE);
     return true;
 }
 
