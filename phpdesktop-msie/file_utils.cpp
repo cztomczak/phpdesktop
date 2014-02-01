@@ -10,6 +10,7 @@
 
 #include "string_utils.h"
 #include "executable.h"
+#include "random.h"
 
 std::string GetFileContents(std::string file) {
     std::ifstream inFile;
@@ -41,4 +42,32 @@ bool DirectoryExists(std::string directory) {
     DWORD dwAttrib = GetFileAttributes(Utf8ToWide(directory).c_str());
     return (dwAttrib != INVALID_FILE_ATTRIBUTES && 
            (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+}
+bool AnsiDirectoryExists(std::string directory) {
+    // To check whether directory doesn't contain unicode characters.
+    DWORD dwAttrib = GetFileAttributesA(directory.c_str());
+    return (dwAttrib != INVALID_FILE_ATTRIBUTES && 
+           (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+}
+std::string GetDirectoryPath(const std::string& path)
+{
+    size_t pos = path.find_last_of("\\/");
+    return (std::string::npos == pos) ? "" : path.substr(0, pos);
+}
+bool IsDirectoryWritable(std::string directory) {
+    int rand = random(0, 1000000);
+    std::string tempFile = directory.append("\\phpdesktop")\
+            .append(IntToString(rand)).append(".tmp");
+    HANDLE handle = CreateFile(Utf8ToWide(tempFile).c_str(), 
+            GENERIC_WRITE,
+            (FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE),
+            NULL, OPEN_ALWAYS, 
+            (FILE_ATTRIBUTE_NORMAL | FILE_FLAG_DELETE_ON_CLOSE),
+            NULL);
+    if (handle == INVALID_HANDLE_VALUE) {
+        return false;
+    } else {
+        CloseHandle(handle);
+        return true;
+    }    
 }

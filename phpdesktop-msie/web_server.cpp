@@ -15,10 +15,13 @@
 #include "settings.h"
 #include "string_utils.h"
 #include "version.h"
+#include "temp_dir.h"
 
 int g_webServerPort = 0;
 std::string g_webServerIpAddress = "";
 std::string g_webServerUrl = "";
+std::string g_wwwDirectory = "";
+std::string g_cgiInterpreter = "";
 
 struct mg_context* g_mongooseContext = 0;
 extern std::string g_cgiEnvironmentFromArgv;
@@ -114,11 +117,7 @@ bool StartWebServer() {
             LOG_WARNING << "cgi_temp_dir directory does not exist: "
                         << cgi_temp_dir;
         }
-        // Windows returns temp path like this:
-        // "C:\Users\USER\AppData\Local\Temp\"
-        wchar_t tempPath[MAX_PATH];
-        GetTempPathW(MAX_PATH, tempPath);
-        cgi_temp_dir.assign(WideToUtf8(tempPath));
+        cgi_temp_dir.assign(GetAnsiTempDirectory());
     } 
 
     // CGI environment variables.
@@ -148,6 +147,11 @@ bool StartWebServer() {
         "cgi_environment", cgiEnvironment.c_str(),
         NULL
     };
+
+    // Globals.
+    g_wwwDirectory = wwwDirectory;
+    g_cgiInterpreter = cgiInterpreter;
+
     mg_callbacks callbacks = {0};
     callbacks.log_message = &log_message;
     callbacks.end_request = &end_request;
@@ -186,12 +190,15 @@ void StopWebServer() {
 int GetWebServerPort() {
     return g_webServerPort;
 }
-
 std::string GetWebServerIpAddress() {
     return g_webServerIpAddress;
 }
-
 std::string GetWebServerUrl() {
     return g_webServerUrl;
 }
-
+std::string GetWwwDirectory() {
+    return g_wwwDirectory;
+}
+std::string GetCgiInterpreter() {
+    return g_cgiInterpreter;
+}

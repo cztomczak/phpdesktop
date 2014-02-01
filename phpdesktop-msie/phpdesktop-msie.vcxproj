@@ -147,9 +147,11 @@
     <ClCompile Include="mongoose.c" />
     <ClCompile Include="msie\host_dispatch.cpp" />
     <ClCompile Include="msie\ole_command_target.cpp" />
+    <ClCompile Include="random.cpp" />
     <ClCompile Include="registry.cpp" />
     <ClCompile Include="settings.cpp" />
     <ClCompile Include="string_utils.cpp" />
+    <ClCompile Include="temp_dir.cpp" />
     <ClCompile Include="version.cpp" />
     <ClCompile Include="web_server.cpp" />
     <ClCompile Include="window_utils.cpp" />
@@ -172,7 +174,9 @@
     <ClInclude Include="msie\com_utils.h" />
     <ClInclude Include="msie\host_dispatch.h" />
     <ClInclude Include="msie\ole_command_target.h" />
+    <ClInclude Include="random.h" />
     <ClInclude Include="registry.h" />
+    <ClInclude Include="temp_dir.h" />
     <ClInclude Include="version.h" />
     <ClInclude Include="WebBrowser\CompareIEVersions.h" />
     <ClInclude Include="debug.h" />
@@ -197,7 +201,6 @@
     <ClInclude Include="msie\service_provider.h" />
     <ClInclude Include="settings.h" />
     <ClInclude Include="single_instance_application.h" />
-    <ClInclude Include="srand2.h" />
     <ClInclude Include="string_utils.h" />
     <ClInclude Include="msie\submit_events.h" />
     <ClInclude Include="msie\version.h" />
