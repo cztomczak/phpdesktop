@@ -163,6 +163,7 @@
     <ClCompile Include="popup_window.cpp" />
     <ClCompile Include="settings.cpp" />
     <ClCompile Include="string_utils.cpp" />
+    <ClCompile Include="temp_dir.cpp" />
     <ClCompile Include="version.cpp" />
     <ClCompile Include="web_server.cpp" />
     <ClCompile Include="window_utils.cpp" />
@@ -271,6 +272,7 @@
       <FileType>CppHeader</FileType>
     </ClCompile>
     <ClInclude Include="string_utils.h" />
+    <ClInclude Include="temp_dir.h" />
     <ClInclude Include="version.h" />
     <ClInclude Include="web_server.h" />
     <ClInclude Include="window_utils.h" />

@@ -11,4 +11,6 @@ std::string GetFileContents(std::string file);
 std::string GetRealPath(std::string path);
 std::string GetAbsolutePath(std::string path);
 bool DirectoryExists(std::string directory);
+bool AnsiDirectoryExists(std::string directory);
 std::string GetDirectoryPath(const std::string& path);
+bool IsDirectoryWritable(std::string directory);

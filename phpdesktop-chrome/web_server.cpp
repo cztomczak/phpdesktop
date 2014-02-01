@@ -15,6 +15,7 @@
 #include "settings.h"
 #include "string_utils.h"
 #include "version.h"
+#include "temp_dir.h"
 
 int g_webServerPort = 0;
 std::string g_webServerIpAddress = "";
@@ -116,11 +117,7 @@ bool StartWebServer() {
             LOG_WARNING << "cgi_temp_dir directory does not exist: "
                         << cgi_temp_dir;
         }
-        // Windows returns temp path like this:
-        // "C:\Users\USER\AppData\Local\Temp\"
-        wchar_t tempPath[MAX_PATH];
-        GetTempPathW(MAX_PATH, tempPath);
-        cgi_temp_dir.assign(WideToUtf8(tempPath));
+        cgi_temp_dir.assign(GetAnsiTempDirectory());
     } 
 
     // CGI environment variables.
