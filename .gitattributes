@@ -1,0 +1,5 @@
+*       text=auto
+*.txt   text
+*.cpp   text
+*.h     text
+*.php   text
