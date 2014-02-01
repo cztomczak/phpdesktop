@@ -1,5 +1,6 @@
 *       text=auto
-*.txt   text
-*.cpp   text
-*.h     text
-*.php   text
+
+*.txt   text eol=crlf
+*.cpp   text eol=crlf
+*.h     text eol=crlf
+*.php   text eol=crlf
