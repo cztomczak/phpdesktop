@@ -30,6 +30,7 @@ std::string GetPhpDesktopVersion() {
                     int major = HIWORD(versionInfo->dwFileVersionMS);
                     int minor = LOWORD(versionInfo->dwFileVersionMS);
                     int build = versionInfo->dwFileVersionLS;
+                    delete[] versionData;
                     return IntToString(major).append(".").append(IntToString(minor));
                 }
             }
