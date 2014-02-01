@@ -7,6 +7,9 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <functional> 
+#include <cctype>
+#include <locale>
 
 void Utf8ToWide(const char* utf8String, wchar_t* wideString, int wideSize) {
     int copiedCharacters = MultiByteToWideChar(CP_UTF8, 0, utf8String, -1,
@@ -92,4 +95,15 @@ void ReplaceStringInPlace(std::string& subject, const std::string& search,
          subject.replace(pos, search.length(), replace);
          pos += replace.length();
     }
+}
+static inline std::string &lTrimString(std::string &s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+    return s;
+}
+static inline std::string &rTrimString(std::string &s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+    return s;
+}
+std::string TrimString(std::string s) {
+    return lTrimString(rTrimString(s));
 }

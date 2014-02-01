@@ -127,4 +127,14 @@ class ClientHandler : public CefClient,
   IMPLEMENT_REFCOUNTING(SimpleHandler);
 };
 
+class ApplicationStartupContentVisitor : public CefStringVisitor {
+public:
+    ApplicationStartupContentVisitor(CefRefPtr<CefBrowser> cefBrowser)
+        : cefBrowser_(cefBrowser) {
+    }
+    virtual void Visit(const CefString& string) OVERRIDE;
+private:
+    CefRefPtr<CefBrowser> cefBrowser_;
+    IMPLEMENT_REFCOUNTING(ApplicationStartupContentVisitor)
+};
 

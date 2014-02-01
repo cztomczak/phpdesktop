@@ -12,3 +12,5 @@ void StopWebServer();
 int GetWebServerPort();
 std::string GetWebServerIpAddress();
 std::string GetWebServerUrl();
+std::string GetWwwDirectory();
+std::string GetCgiInterpreter();

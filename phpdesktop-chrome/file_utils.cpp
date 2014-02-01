@@ -42,3 +42,9 @@ bool DirectoryExists(std::string directory) {
     return (dwAttrib != INVALID_FILE_ATTRIBUTES && 
            (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 }
+std::string GetDirectoryPath(const std::string& path)
+{
+     size_t pos = path.find_last_of("\\/");
+     return (std::string::npos == pos) ? "" : path.substr(0, pos);
+}
+

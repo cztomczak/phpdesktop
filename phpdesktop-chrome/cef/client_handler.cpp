@@ -20,6 +20,7 @@
 #include "../window_utils.h"
 #include "../web_server.h"
 #include "../fatal_error.h"
+#include "../file_utils.h"
 
 extern HINSTANCE g_hInstance;
 extern wchar_t g_windowClassName[256];
@@ -252,6 +253,52 @@ bool ClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser,
 // CefLoadHandler methods
 // ----------------------------------------------------------------------------
 
+void ApplicationStartupContentVisitor::Visit(const CefString& cefString) {
+    BrowserWindow* browserWindow = GetBrowserWindow(
+            cefBrowser_->GetHost()->GetWindowHandle());
+    HWND hwnd = NULL;
+    if (browserWindow) {
+        hwnd = browserWindow->GetWindowHandle();
+    }
+    std::string string = TrimString(cefString.ToString());
+    if (string == "No input file specified."
+            || string == "No input file specified") {
+        if (hwnd) {
+            // Hide the main browser window that displays the
+            // "No input file specified" message.
+            ShowWindow(hwnd, SW_HIDE);
+        }
+        std::ostringstream message;
+        std::string unicodePaths = "";
+        std::string wwwDirectory = GetWwwDirectory();
+        std::string cgiDirectory = GetDirectoryPath(GetCgiInterpreter());
+        if (GetDirectoryPath(wwwDirectory) == GetDirectoryPath(cgiDirectory)) {
+            // When both www and cgi directories have common parent directory.
+            unicodePaths = GetDirectoryPath(wwwDirectory);
+        } else {
+            // One of the directories (www, cgi) contains unicode characters.
+            // Cut the last directory from path, do not include the "www"
+            // or "php" in the path.
+            unicodePaths = GetDirectoryPath(GetDirectoryPath(wwwDirectory));
+            unicodePaths.append(", ");
+            unicodePaths.append(GetDirectoryPath(cgiDirectory));
+        }
+        message << "Application has detected that its files has been placed "
+                "in a location on your hard drive that contains unicode "
+                "special characters (" << unicodePaths << "). "
+                "Due to some limitations this is not allowed. "
+                "Application will terminate immediately.\n\n"
+                "This kind of problem occurs when your Windows account "
+                "name contains non-standard characters. The solution is "
+                "to put application directory in a location that contains "
+                "only standard set of characters. You may put it to the root "
+                "C:\\ directory for example. Application must have permission "
+                "to write files in that location, otherwise it is required "
+                "to run it as Administrator";
+        FatalError(hwnd, message.str().c_str());
+    }
+}
+
 ///
 // Called when the loading state has changed. This callback will be executed
 // twice -- once when loading is initiated either programmatically or by user
@@ -267,6 +314,12 @@ void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> cefBrowser,
     static int calls = 0;
     calls++;
     if (calls > 1) {
+        if (g_isApplicationStartPageLoading) {
+            // Must use GetText and not GetSource, because Chromium adds
+            // <html> and <body> tags if the content is a plain text.
+            cefBrowser->GetMainFrame()->GetText(
+                    new ApplicationStartupContentVisitor(cefBrowser));
+        }
         g_isApplicationStartPageLoading = false;
     }
 }
