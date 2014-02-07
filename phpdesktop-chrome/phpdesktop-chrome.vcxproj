@@ -278,6 +278,7 @@
     <ClInclude Include="window_utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="AUTHORS.txt" />
     <None Include="before-release.txt" />
     <None Include="cef\README.txt" />
     <None Include="icon.ico" />
@@ -303,6 +304,7 @@
     <None Include="www\chrome-version.php" />
     <None Include="www\popup.php" />
     <None Include="www\session.php" />
+    <None Include="www\speech-recognition.php" />
     <None Include="www\sqlite.php" />
     <None Include="www\temp-dir.php" />
     <None Include="www\upload.php" />
@@ -314,6 +316,7 @@
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="DeclareDPIAware.manifest" />
+    <Manifest Include="RequireAdministrator.manifest" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
