@@ -10,3 +10,4 @@ cef3-*
 php-*
 *.ini-development
 *.ini-production
+*.sublime-*
