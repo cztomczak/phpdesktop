@@ -11,3 +11,8 @@ ipch/
 *.exe
 debug.log
 *.lib
+php/*.bat
+php/*.phar
+php/*.gif
+php/*.txt
+!php/!README.txt
