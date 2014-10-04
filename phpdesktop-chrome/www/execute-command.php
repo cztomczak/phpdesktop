@@ -11,7 +11,7 @@
 // this "echo | command...". See Issue 124:
 // https://code.google.com/p/phpdesktop/issues/detail?id=124
 
-$output = shell_exec("echo | C:\Windows\System32\wbem\wmic.exe path win32_computersystemproduct get uuid");
+$output = shell_exec("echo | {$_ENV['SYSTEMROOT']}\System32\wbem\wmic.exe path win32_computersystemproduct get uuid");
 
 if ($output) {
     echo "Command executed successfully.&lt;br&gt;";
@@ -28,7 +28,7 @@ if ($output) {
 // this "echo | command...". See Issue 124:
 // https://code.google.com/p/phpdesktop/issues/detail?id=124
 
-$output = shell_exec("echo | C:\Windows\System32\wbem\wmic.exe path win32_computersystemproduct get uuid");
+$output = shell_exec("echo | {$_ENV['SYSTEMROOT']}\System32\wbem\wmic.exe path win32_computersystemproduct get uuid");
 
 if ($output) {
     echo "Command executed successfully.<br>";
