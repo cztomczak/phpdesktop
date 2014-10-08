@@ -250,10 +250,10 @@ typedef int SOCKET;
 
 #include "mongoose.h"
 
-#define MONGOOSE_VERSION "3.9b"
+#define MONGOOSE_VERSION "3.9c"
 #define PASSWORDS_FILE_NAME ".htpasswd"
-#define CGI_ENVIRONMENT_SIZE 4096
-#define MAX_CGI_ENVIR_VARS 64
+#define CGI_ENVIRONMENT_SIZE 65536
+#define MAX_CGI_ENVIR_VARS 512
 #define MG_BUF_LEN 8192
 #define MAX_REQUEST_SIZE 16384
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof(array[0]))
