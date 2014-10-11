@@ -4,7 +4,7 @@ php-desktop-msie_v10/
 cef_binary_*
 cefsimple
 phpdesktop-chrome-*
-mongoose-*
+mongoose-*/
 phpdesktop-msie-*
 cef3-*
 php-*/
