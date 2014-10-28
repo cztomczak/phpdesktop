@@ -356,6 +356,19 @@ void ClientHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
                 "Application will terminate immediately.");
     }
 
+    // CACHE_MISS -400 loading error when navigating Back
+    // and Forward in history after a POST request was made.
+    // See Issue 138:
+    // https://code.google.com/p/phpdesktop/issues/detail?id=138
+    if (errorCode == -400) {
+        // Navigating Back() would get us too far back in history.
+        // Reload() is called and correctly resents POST request,
+        // but the entry in history before the POST request is lost.
+        // Issue 138 explains it in details.
+        browser->Reload();
+        return;
+    }
+
     // Display a load error message.
     std::stringstream ss;    
     ss << "<html><body bgcolor=\"white\">"

@@ -27,6 +27,30 @@
     <li><a href="/company/5?xyz=1">/company/5?xyz=1</a>
     </ul>
 </p>
+
+<p>
+    Test POST request to "/company.html" url:
+    <form action="/company.html" method=POST>
+    <input type=text name=foo value="abc">
+    <input type=submit>
+    </form>
+</p>
+
+<p>
+    Test POST request to "/pretty-urls.php/company.html" url:
+    <form action="/pretty-urls.php/company.html" method=POST>
+    <input type=text name=foo value="abc">
+    <input type=submit>
+    </form>
+</p>
+
+<?php if ($_SERVER["REQUEST_METHOD"] == "POST"): ?>
+<h2>POST data</h2>
+<pre style="background:#ddd;">
+<?php print_r($_POST); ?>
+</pre>
+<?php endif; ?>
+
 <p>
     Urls like "index.php/company/5" will work correctly only after applying
     a fix to mongoose $_SERVER/$_ENV variables. See the
@@ -58,7 +82,8 @@ function print_url_variables()
         }
         if (strpos($v, "pretty-urls.php") !== false
                 || strpos($v, "company") !== false
-                || strpos($v, "xyz") !== false) {
+                || strpos($v, "xyz") !== false
+                || $k == "REQUEST_METHOD") {
             $url_vars[$k] = $v;
         }
     }
