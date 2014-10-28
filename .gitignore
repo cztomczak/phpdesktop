@@ -5,6 +5,7 @@ cef_binary_*
 cefsimple
 phpdesktop-chrome-*
 mongoose-*/
+!mongoose-rev-04fc209/
 phpdesktop-msie-*
 cef3-*
 php-*/
