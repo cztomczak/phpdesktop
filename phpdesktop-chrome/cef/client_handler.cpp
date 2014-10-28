@@ -336,13 +336,12 @@ void ClientHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
                                 const CefString& errorText,
                                 const CefString& failedUrl) {
     REQUIRE_UI_THREAD();
-    LOG_DEBUG << "OnLoadError";
+    LOG_DEBUG << "OnLoadError, errorCode=" << errorCode;
 
     // Don't display an error for downloaded files.
     if (errorCode == ERR_ABORTED)
         return;
 
-    LOG_ERROR << "Failed to load URL: " << failedUrl.ToString();
     if (g_isApplicationStartPageLoading) {
         BrowserWindow* browserWindow = GetBrowserWindow(
                 browser->GetHost()->GetWindowHandle());
@@ -365,9 +364,12 @@ void ClientHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
         // Reload() is called and correctly resents POST request,
         // but the entry in history before the POST request is lost.
         // Issue 138 explains it in details.
+        LOG_DEBUG << "OnLoadError, calling Reload(), Issue 138";
         browser->Reload();
         return;
     }
+
+    LOG_ERROR << "Failed to load URL: " << failedUrl.ToString();
 
     // Display a load error message.
     std::stringstream ss;    
