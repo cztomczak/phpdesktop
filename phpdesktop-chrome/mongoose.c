@@ -1914,7 +1914,7 @@ static void convert_uri_to_file_name(struct mg_connection *conn, char *buf,
         )
         && (filep->membuf == NULL && filep->modification_time == (time_t) 0)
         && (root != NULL)
-        && (strlen(_404_handler) > 0)
+        && (_404_handler != NULL && strlen(_404_handler) > 0)
       ) {
     mg_snprintf(conn, buf, buf_len - 1, 
         "%s%s%s", 
@@ -3333,8 +3333,8 @@ static void prepare_cgi_environment(struct mg_connection *conn,
   struct vec var_vec;
   char *p, src_addr[IP_ADDR_STR_LEN];
   int  i;
-  char prog2[PATH_MAX] = "";
-  char script_name[PATH_MAX] = "";
+  char prog2[PATH_MAX] = {0};
+  char script_name[PATH_MAX] = {0};
   int root_len = strlen(conn->ctx->config[DOCUMENT_ROOT]);
 
   blk->len = blk->nvars = 0;
