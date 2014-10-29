@@ -310,7 +310,8 @@ void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> cefBrowser,
                                 bool isLoading,
                                 bool canGoBack,
                                 bool canGoForward) {
-    LOG_DEBUG << "OnLoadingStateChange: loading = " << isLoading;
+    LOG_DEBUG << "OnLoadingStateChange: loading=" << isLoading << ", url=" 
+            << cefBrowser->GetMainFrame()->GetURL().ToString().c_str();
     static int calls = 0;
     calls++;
     if (calls > 1) {
@@ -336,7 +337,8 @@ void ClientHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
                                 const CefString& errorText,
                                 const CefString& failedUrl) {
     REQUIRE_UI_THREAD();
-    LOG_DEBUG << "OnLoadError, errorCode=" << errorCode;
+    LOG_DEBUG << "OnLoadError, errorCode=" << errorCode
+            << ", failedUrl=" << failedUrl.ToString().c_str();
 
     // Don't display an error for downloaded files.
     if (errorCode == ERR_ABORTED)
