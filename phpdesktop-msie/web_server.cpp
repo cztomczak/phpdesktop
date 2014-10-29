@@ -49,38 +49,13 @@ static void end_request(const struct mg_connection* conn, int reply_status_code)
     LOG_INFO << message;
 }
 
-// Called when mongoose is about to send HTTP error to the client.
-// Implementing this callback allows to create custom error pages.
-// Parameters:
-//   status: HTTP error status code.
-static int http_error(struct mg_connection* conn, int status) {
-    mg_request_info* request = mg_get_request_info(
-            const_cast<mg_connection*>(conn));
-    std::string request_uri;
-    request_uri.append(request->uri);
-    if (request->query_string != NULL) {
-        request_uri.append("?").append(request->query_string);
-    }
-    LOG_INFO << "http_error(), status=" << status 
-             << ", uri=" << request_uri.c_str();
-    json_value* appSettings = GetApplicationSettings();
-    std::string _404_handler = (*appSettings)["web_server"]["404_handler"];
-    if (status == 404 && !_404_handler.empty()) {
-        mg_printf(conn, 
-                "HTTP/1.1 302 Found\r\n"
-                "Location: %s%s\r\n\r\n",
-                _404_handler.c_str(),
-                request_uri.c_str()
-        );
-        return 0;
-    }
-    return 1;
-}
-
 bool StartWebServer() {
     LOG_INFO << "Starting Mongoose " << mg_version() << " web server";
     json_value* appSettings = GetApplicationSettings();
 
+    // 404_handler
+    std::string _404_handler = (*appSettings)["web_server"]["404_handler"];
+    
     // Ip address and port. If port was set to 0, then real port
     // will be known only after the webserver was started.
     std::string ipAddress = (*appSettings)["web_server"]["listen_on"][0];
@@ -178,6 +153,7 @@ bool StartWebServer() {
         "cgi_interpreter", cgiInterpreter.c_str(),
         "cgi_pattern", cgiPattern.c_str(),
         "cgi_environment", cgiEnvironment.c_str(),
+        "404_handler", _404_handler.c_str(),
         NULL
     };
 
@@ -188,7 +164,6 @@ bool StartWebServer() {
     mg_callbacks callbacks = {0};
     callbacks.log_message = &log_message;
     callbacks.end_request = &end_request;
-    callbacks.http_error = &http_error;
     g_mongooseContext = mg_start(&callbacks, NULL, options);
     if (g_mongooseContext == NULL)
         return false;

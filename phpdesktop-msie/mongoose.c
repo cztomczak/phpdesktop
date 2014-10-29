@@ -455,7 +455,7 @@ enum {
   ACCESS_LOG_FILE, ENABLE_DIRECTORY_LISTING, ERROR_LOG_FILE,
   GLOBAL_PASSWORDS_FILE, INDEX_FILES, ENABLE_KEEP_ALIVE, ACCESS_CONTROL_LIST,
   EXTRA_MIME_TYPES, LISTENING_PORTS, DOCUMENT_ROOT, SSL_CERTIFICATE,
-  NUM_THREADS, RUN_AS_USER, REWRITE, HIDE_FILES, REQUEST_TIMEOUT,
+  NUM_THREADS, RUN_AS_USER, REWRITE, HIDE_FILES, REQUEST_TIMEOUT, _404_HANDLER,
   NUM_OPTIONS
 };
 
@@ -485,6 +485,7 @@ static const char *config_options[] = {
   "url_rewrite_patterns", NULL,
   "hide_files_patterns", NULL,
   "request_timeout_ms", "30000",
+  "404_handler", NULL,
   NULL
 };
 
@@ -1827,50 +1828,10 @@ int mg_get_cookie(const char *cookie_header, const char *var_name,
   return len;
 }
 
-static void convert_uri_to_file_name(struct mg_connection *conn, char *buf,
-                                     size_t buf_len, struct file *filep) {
-  struct vec a, b;
-  const char *rewrite, *uri = conn->request_info.uri,
-        *root = conn->ctx->config[DOCUMENT_ROOT];
+static void support_path_info_for_cgi_scripts(
+                struct mg_connection *conn, char *buf,
+                size_t buf_len, struct file *filep) {
   char *p;
-  int match_len;
-  char gz_path[PATH_MAX];
-  char const* accept_encoding;
-
-  // Using buf_len - 1 because memmove() for PATH_INFO may shift part
-  // of the path one byte on the right.
-  // If document_root is NULL, leave the file empty.
-  mg_snprintf(conn, buf, buf_len - 1, "%s%s",
-              root == NULL ? "" : root,
-              root == NULL ? "" : uri);
-
-  rewrite = conn->ctx->config[REWRITE];
-  while ((rewrite = next_option(rewrite, &a, &b)) != NULL) {
-    if ((match_len = match_prefix(a.ptr, a.len, uri)) > 0) {
-      mg_snprintf(conn, buf, buf_len - 1, "%.*s%s", (int) b.len, b.ptr,
-                  uri + match_len);
-      break;
-    }
-  }
-
-  if (mg_stat(conn, buf, filep)) return;
-
-  // if we can't find the actual file, look for the file
-  // with the same name but a .gz extension. If we find it,
-  // use that and set the gzipped flag in the file struct
-  // to indicate that the response need to have the content-
-  // encoding: gzip header
-  // we can only do this if the browser declares support
-  if ((accept_encoding = mg_get_header(conn, "Accept-Encoding")) != NULL) {
-    if (strstr(accept_encoding,"gzip") != NULL) {
-      snprintf(gz_path, sizeof(gz_path), "%s.gz", buf);
-      if (mg_stat(conn, gz_path, filep)) {
-        filep->gzipped = 1;
-        return;
-      }
-    }
-  }
-
   // Support PATH_INFO for CGI scripts.
   for (p = buf + strlen(buf); p > buf + 1; p--) {
     if (*p == '/') {
@@ -1892,6 +1853,79 @@ static void convert_uri_to_file_name(struct mg_connection *conn, char *buf,
       }
     }
   }
+}
+
+static void convert_uri_to_file_name(struct mg_connection *conn, char *buf,
+                                     size_t buf_len, struct file *filep) {
+  struct vec a, b;
+  const char *rewrite, *uri = conn->request_info.uri,
+        *root = conn->ctx->config[DOCUMENT_ROOT],
+        *_404_handler = conn->ctx->config[_404_HANDLER];
+  int match_len;
+  char gz_path[PATH_MAX];
+  char const* accept_encoding;
+
+  // Using buf_len - 1 because memmove() for PATH_INFO may shift part
+  // of the path one byte on the right.
+  // If document_root is NULL, leave the file empty.
+  mg_snprintf(conn, buf, buf_len - 1, "%s%s",
+              root == NULL ? "" : root,
+              root == NULL ? "" : uri);
+
+  rewrite = conn->ctx->config[REWRITE];
+  while ((rewrite = next_option(rewrite, &a, &b)) != NULL) {
+    if ((match_len = match_prefix(a.ptr, a.len, uri)) > 0) {
+      mg_snprintf(conn, buf, buf_len - 1, "%.*s%s", (int) b.len, b.ptr,
+                  uri + match_len);
+      break;
+    }
+  }
+  
+  if (mg_stat(conn, buf, filep)) return;
+
+  // if we can't find the actual file, look for the file
+  // with the same name but a .gz extension. If we find it,
+  // use that and set the gzipped flag in the file struct
+  // to indicate that the response need to have the content-
+  // encoding: gzip header
+  // we can only do this if the browser declares support
+  if ((accept_encoding = mg_get_header(conn, "Accept-Encoding")) != NULL) {
+    if (strstr(accept_encoding,"gzip") != NULL) {
+      snprintf(gz_path, sizeof(gz_path), "%s.gz", buf);
+      if (mg_stat(conn, gz_path, filep)) {
+        filep->gzipped = 1;
+        return;
+      }
+    }
+  }
+
+  support_path_info_for_cgi_scripts(conn, buf, buf_len, filep);
+  
+  // --------------------------------------------------------------------------
+  // PHP Desktop 404_handler.
+  // Condition that checks if file exists (filep->membuf == NULL),
+  // must run after support_path_info_for_cgi_scripts(). Otherwise
+  // it will evaluate to false when checking uri "/foo.php/bar/5".
+  if (  
+        (
+          !strcmp(conn->request_info.request_method, "GET")
+          || !strcmp(conn->request_info.request_method, "HEAD")
+          || !strcmp(conn->request_info.request_method, "POST")
+        )
+        && (filep->membuf == NULL && filep->modification_time == (time_t) 0)
+        && (root != NULL)
+        && (strlen(_404_handler) > 0)
+      ) {
+    mg_snprintf(conn, buf, buf_len - 1, 
+        "%s%s%s", 
+        root, _404_handler, uri
+    );
+    support_path_info_for_cgi_scripts(conn, buf, buf_len, filep);
+    // cry(conn, "%s%s", "!!! 404_handler=TRUE, buf=", buf);
+  } else {
+    // cry(conn, "%s%s", "!!! 404_handler=FALSE, buf=", buf);
+  }
+  // --------------------------------------------------------------------------
 }
 
 // Check whether full request is buffered. Return:
@@ -3295,10 +3329,13 @@ static char *addenv(struct cgi_env_block *block, const char *fmt, ...) {
 static void prepare_cgi_environment(struct mg_connection *conn,
                                     const char *prog,
                                     struct cgi_env_block *blk) {
-  const char *s, *slash;
+  const char *s;
   struct vec var_vec;
   char *p, src_addr[IP_ADDR_STR_LEN];
   int  i;
+  char prog2[PATH_MAX] = "";
+  char script_name[PATH_MAX] = "";
+  int root_len = strlen(conn->ctx->config[DOCUMENT_ROOT]);
 
   blk->len = blk->nvars = 0;
   blk->conn = conn;
@@ -3320,18 +3357,36 @@ static void prepare_cgi_environment(struct mg_connection *conn,
   addenv(blk, "REQUEST_METHOD=%s", conn->request_info.request_method);
   addenv(blk, "REMOTE_ADDR=%s", src_addr);
   addenv(blk, "REMOTE_PORT=%d", conn->request_info.remote_port);
-  addenv(blk, "REQUEST_URI=%s", conn->request_info.uri);
+  if (conn->request_info.query_string == NULL) {
+    addenv(blk, "REQUEST_URI=%s", conn->request_info.uri);
+  } else {
+    addenv(blk, "REQUEST_URI=%s?%s", conn->request_info.uri,
+           conn->request_info.query_string);
+  }
 
-  // SCRIPT_NAME
+  // SCRIPT_NAME - original code was buggy and was removed.
   assert(conn->request_info.uri[0] == '/');
-  slash = strrchr(conn->request_info.uri, '/');
-  if ((s = strrchr(prog, '/')) == NULL)
-    s = prog;
-  addenv(blk, "SCRIPT_NAME=%.*s%s", (int) (slash - conn->request_info.uri),
-         conn->request_info.uri, s);
+  // Detect SCRIPT_NAME using "prog" and document root.
+  if ((int)strlen(prog) > root_len) {
+    for (i = root_len; i < (int)strlen(prog); i++) {
+      assert(i-root_len >= 0);
+      script_name[i-root_len] = prog[i];
+    }
+  }
+  addenv(blk, "SCRIPT_NAME=%s", script_name);
 
-  addenv(blk, "SCRIPT_FILENAME=%s", prog);
-  addenv(blk, "PATH_TRANSLATED=%s", prog);
+  // Fix "prog", replace forward slashes with backslashes on Windows.
+  strcpy(prog2, prog);
+#if defined(_WIN32)
+  for (i = 0; i < (int)strlen(prog2); i++) {
+    if (prog2[i] == '/') {
+      prog2[i] = '\\';
+    }
+#endif
+  }
+
+  addenv(blk, "SCRIPT_FILENAME=%s", prog2);
+  addenv(blk, "PATH_TRANSLATED=%s", prog2);
   addenv(blk, "HTTPS=%s", conn->ssl == NULL ? "off" : "on");
 
   if ((s = mg_get_header(conn, "Content-Type")) != NULL)
@@ -4455,7 +4510,7 @@ static void handle_request(struct mg_connection *conn) {
   convert_uri_to_file_name(conn, path, sizeof(path), &file);
   conn->throttle = set_throttle(conn->ctx->config[THROTTLE],
                                 get_remote_ip(conn), ri->uri);
-
+  
   DEBUG_TRACE(("%s", ri->uri));
   // Perform redirect and auth checks before calling begin_request() handler.
   // Otherwise, begin_request() would need to perform auth checks and redirects.
