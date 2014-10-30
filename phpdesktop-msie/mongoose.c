@@ -465,7 +465,7 @@ static const char *config_options[] = {
   "put_delete_auth_file", NULL,
   "cgi_interpreter", NULL,
   "protect_uri", NULL,
-  "authentication_domain", "mydomain.com",
+  "authentication_domain", "127.0.0.1",
   "ssi_pattern", "**.shtml$|**.shtm$",
   "throttle", NULL,
   "access_log_file", NULL,
@@ -3406,14 +3406,17 @@ static void prepare_cgi_environment(struct mg_connection *conn,
   }
 
 #if defined(_WIN32)
-  if ((s = getenv("COMSPEC")) != NULL) {
-    addenv(blk, "COMSPEC=%s", s);
+  if ((s = getenv("APPDATA")) != NULL) {
+    addenv(blk, "APPDATA=%s", s);
   }
-  if ((s = getenv("SYSTEMROOT")) != NULL) {
-    addenv(blk, "SYSTEMROOT=%s", s);
+  if ((s = getenv("LOCALAPPDATA")) != NULL) {
+    addenv(blk, "LOCALAPPDATA=%s", s);
   }
-  if ((s = getenv("SystemDrive")) != NULL) {
-    addenv(blk, "SystemDrive=%s", s);
+  if ((s = getenv("ComSpec")) != NULL) {
+    addenv(blk, "ComSpec=%s", s);
+  }
+  if ((s = getenv("OS")) != NULL) {
+    addenv(blk, "OS=%s", s);
   }
   if ((s = getenv("ProgramFiles")) != NULL) {
     addenv(blk, "ProgramFiles=%s", s);
@@ -3421,6 +3424,66 @@ static void prepare_cgi_environment(struct mg_connection *conn,
   if ((s = getenv("ProgramFiles(x86)")) != NULL) {
     addenv(blk, "ProgramFiles(x86)=%s", s);
   }
+  if ((s = getenv("ProgramW6432")) != NULL) {
+    addenv(blk, "ProgramW6432=%s", s);
+  }
+  if ((s = getenv("CommonProgramFiles")) != NULL) {
+    addenv(blk, "CommonProgramFiles=%s", s);
+  }
+  if ((s = getenv("CommonProgramFiles(x86)")) != NULL) {
+    addenv(blk, "CommonProgramFiles(x86)=%s", s);
+  }
+  if ((s = getenv("CommonProgramW6432")) != NULL) {
+    addenv(blk, "CommonProgramW6432=%s", s);
+  }
+  if ((s = getenv("SystemDrive")) != NULL) {
+    addenv(blk, "SystemDrive=%s", s);
+  }
+  if ((s = getenv("SystemRoot")) != NULL) {
+    addenv(blk, "SystemRoot=%s", s);
+  }
+  if ((s = getenv("windir")) != NULL) {
+    addenv(blk, "windir=%s", s);
+  }
+  if ((s = getenv("ALLUSERSPROFILE")) != NULL) {
+    addenv(blk, "ALLUSERSPROFILE=%s", s);
+  }
+  if ((s = getenv("ProgramData")) != NULL) {
+    addenv(blk, "ProgramData=%s", s);
+  }
+  if ((s = getenv("PUBLIC")) != NULL) {
+    addenv(blk, "PUBLIC=%s", s);
+  }
+  if ((s = getenv("USERDOMAIN")) != NULL) {
+    addenv(blk, "USERDOMAIN=%s", s);
+  }
+  if ((s = getenv("USERPROFILE")) != NULL) {
+    addenv(blk, "USERPROFILE=%s", s);
+  }
+  if ((s = getenv("HOMEPATH")) != NULL) {
+    addenv(blk, "HOMEPATH=%s", s);
+  }
+  if ((s = getenv("HOMEDRIVE")) != NULL) {
+    addenv(blk, "HOMEDRIVE=%s", s);
+  }
+  if ((s = getenv("COMPUTERNAME")) != NULL) {
+    addenv(blk, "COMPUTERNAME=%s", s);
+  }
+  if ((s = getenv("LOGONSERVER")) != NULL) {
+    addenv(blk, "LOGONSERVER=%s", s);
+  }
+  if ((s = getenv("PATHEXT")) != NULL) {
+    addenv(blk, "PATHEXT=%s", s);
+  }
+  if ((s = getenv("PSModulePath")) != NULL) {
+    addenv(blk, "PSModulePath=%s", s);
+  }
+  if ((s = getenv("USERNAME")) != NULL) {
+    addenv(blk, "USERNAME=%s", s);
+  }
+  // TMP, TEMP, TMPDIR - these are exposed in PHP Desktop
+  // through config[CGI_ENVIRONMENT] option. PHP Desktop
+  // detects the best non-unicode directory by itself.
 #else
   if ((s = getenv("LD_LIBRARY_PATH")) != NULL)
     addenv(blk, "LD_LIBRARY_PATH=%s", s);
