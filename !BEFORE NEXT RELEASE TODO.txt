@@ -1,2 +1,0 @@
-1. php.ini was modified (max post/upload size settings)
-2. set "external_drag" to true in settings.json (Issue 97)
