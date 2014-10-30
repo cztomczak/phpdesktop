@@ -11,8 +11,8 @@
     <li>Set 404_handler to "/pretty-urls.php"
     <li>Load url like "/company/5"
     <li>Mongoose web server does not find such file "/company/5",
-        and makes a redirect to "/pretty-urls.php/company/5".
-    <li>To know what the pretty url that was accessed check
+        and instead makes a request to "/pretty-urls.php/company/5".
+    <li>To know the pretty url that was accessed check
         the PATH_INFO or REQUEST_URI environment variables.
     </ul>
 </p>
@@ -21,6 +21,8 @@
     <ul>
     <li><a href="/company/5">/company/5</a>
     <li><a href="/company/5?xyz=1">/company/5?xyz=1</a>
+    <li><a href="/company-5.html">/company-5.html</a>
+    <li><a href="/company_5.html">/company_5.html</a>
     </ul>
 </p>
 
@@ -78,7 +80,8 @@ function print_url_variables()
                 || strpos($v, "xyz") !== false
                 || strpos($v, "foo") !== false
                 || strpos($v, "bar") !== false
-                || $k == "REQUEST_METHOD") {
+                || $k == "REQUEST_METHOD"
+                || $k == "REQUEST_URI") {
             $url_vars[$k] = $v;
         }
     }

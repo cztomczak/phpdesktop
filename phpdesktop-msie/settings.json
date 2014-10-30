@@ -10,7 +10,7 @@
     "main_window": {
         "title": "PHP Desktop MSIE",
         "icon": "",
-        "default_size": [1024, 768],
+        "default_size": [1024, 700],
         "minimum_size": [800, 600],
         "maximum_size": [0, 0],
         "disable_maximize_button": false,
