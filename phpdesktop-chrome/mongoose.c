@@ -3414,12 +3414,14 @@ static void prepare_cgi_environment(struct mg_connection *conn,
   }
   if ((s = getenv("ComSpec")) != NULL) {
     addenv(blk, "ComSpec=%s", s);
+    addenv(blk, "COMSPEC=%s", s);
   }
   if ((s = getenv("OS")) != NULL) {
     addenv(blk, "OS=%s", s);
   }
   if ((s = getenv("ProgramFiles")) != NULL) {
     addenv(blk, "ProgramFiles=%s", s);
+    addenv(blk, "PROGRAMFILES=%s", s);
   }
   if ((s = getenv("ProgramFiles(x86)")) != NULL) {
     addenv(blk, "ProgramFiles(x86)=%s", s);
@@ -3438,18 +3440,22 @@ static void prepare_cgi_environment(struct mg_connection *conn,
   }
   if ((s = getenv("SystemDrive")) != NULL) {
     addenv(blk, "SystemDrive=%s", s);
+    addenv(blk, "SYSTEMDRIVE=%s", s);
   }
   if ((s = getenv("SystemRoot")) != NULL) {
     addenv(blk, "SystemRoot=%s", s);
+    addenv(blk, "SYSTEMROOT=%s", s);
   }
   if ((s = getenv("windir")) != NULL) {
     addenv(blk, "windir=%s", s);
+    addenv(blk, "WINDIR=%s", s);
   }
   if ((s = getenv("ALLUSERSPROFILE")) != NULL) {
     addenv(blk, "ALLUSERSPROFILE=%s", s);
   }
   if ((s = getenv("ProgramData")) != NULL) {
     addenv(blk, "ProgramData=%s", s);
+    addenv(blk, "PROGRAMDATA=%s", s);
   }
   if ((s = getenv("PUBLIC")) != NULL) {
     addenv(blk, "PUBLIC=%s", s);
