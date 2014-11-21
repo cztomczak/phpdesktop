@@ -6,7 +6,7 @@
 
 <h2>External links</h2>
 
-External links should open in system's default browser:<br>
+External links should open in OS default browser:<br>
 <a href="http://www.google.com/">http://www.google.com/</a>
 
 <h2>target=_blank</h2>
