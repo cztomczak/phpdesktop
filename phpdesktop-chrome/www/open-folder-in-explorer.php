@@ -2,7 +2,10 @@
 
 $explorer = $_ENV["SYSTEMROOT"] . '\\explorer.exe';
 $folder_to_open = "C:\\Windows";
-system("$explorer /n,/e,$folder_to_open");
+// Using "system" function would cause a false/positive
+// by Bkav antivirus on virustotal.com. Using shell_exec
+// instead solves the issue.
+shell_exec("$explorer /n,/e,$folder_to_open");
 
 ?>
 <a href="index.php">Go back to index</a>
@@ -14,5 +17,8 @@ system("$explorer /n,/e,$folder_to_open");
 <pre>
 $explorer = $_ENV["SYSTEMROOT"] . '\\explorer.exe';
 $folder_to_open = "C:\\Windows";
-system("$explorer /n,/e,$folder_to_open");
+// Using "system" function would cause a false/positive
+// by Bkav antivirus on virustotal.com. Using shell_exec
+// instead solves the issue.
+shell_exec("$explorer /n,/e,$folder_to_open");
 </pre>
