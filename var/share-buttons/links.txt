@@ -1,8 +1,8 @@
 
 <g:plusone size="medium"></g:plusone>
-<a title="Tweet" href="https://twitter.com/intent/tweet?text=PHP+desktop+GUI+framework+with+HTML5+Chrome/IE+engine&url=https://code.google.com/p/phpdesktop/"><img src="http://cdn2.business2community.com/wp-content/uploads/2012/04/tweet-button.jpg" height="24" /></a> 
-<a title="Delicious" href="https://delicious.com/save?v=5&provider=phpdesktop&noui&jump=close&url=https://code.google.com/p/phpdesktop/&title=PHP+desktop+GUI+framework+with+HTML5+Chrome/IE+engine"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Delicious_Textlogo.svg/200px-Delicious_Textlogo.svg.png" height="24" /></a>
-<a title="Reddit this!" href="http://www.reddit.com/submit?url=https://code.google.com/p/phpdesktop/"><img src="http://www.redditstatic.com/spreddit10.gif" height="24" /></a>
+<a title="Tweet" href="https://twitter.com/intent/tweet?text=PHP+desktop+GUI+framework+with+HTML5+Chrome/IE+engine&url=https://code.google.com/p/phpdesktop/"><img src="https://phpdesktop.googlecode.com/git/var/share-buttons/tweet.jpg" width="71" height="24" /></a> 
+<a title="Delicious" href="https://delicious.com/save?v=5&provider=phpdesktop&noui&jump=close&url=https://code.google.com/p/phpdesktop/&title=PHP+desktop+GUI+framework+with+HTML5+Chrome/IE+engine"><img src="https://phpdesktop.googlecode.com/git/var/share-buttons/delicious.png" width="102" height="24" /></a>
+<a title="Reddit this!" href="http://www.reddit.com/submit?url=https://code.google.com/p/phpdesktop/"><img src="https://phpdesktop.googlecode.com/git/var/share-buttons/reddit.gif" width="94" height="24" /></a>
 
 -------------------------------
 
