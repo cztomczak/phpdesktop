@@ -7,7 +7,7 @@ $source_code = file_get_contents("blenc_myscript.php");
 // end of file. Also checking that there are no other php tag
 // openings/closings.
 $source_code = preg_replace('#^<'.'\?php\s+#', '', $source_code);
-$source_code = preg_replace('#\s+\?>\s*$#', '', $source_code);
+$source_code = preg_replace('#\s+\?'.'>\s*$#', '', $source_code);
 if (preg_match('#<'.'\?#', $source_code) 
         || preg_match('#\?'.'>#', $source_code)) {
     print("Script to be encoded can only contain PHP code.");
