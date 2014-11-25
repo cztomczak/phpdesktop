@@ -170,8 +170,11 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> cefBrowser) {
 ///
 void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     REQUIRE_UI_THREAD();
+    LOG_DEBUG << "OnBeforeClose() hwnd=" 
+              << (int)browser->GetHost()->GetWindowHandle();
     RemoveBrowserWindow(browser->GetHost()->GetWindowHandle());
     if (g_browserWindows.empty()) {
+        LOG_DEBUG << "Calling CefQuitMessageLoop()";
         CefQuitMessageLoop();
     }
 }

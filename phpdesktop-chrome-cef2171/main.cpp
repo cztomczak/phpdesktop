@@ -71,7 +71,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                 printf("----------------------------------------");
                 printf("----------------------------------------\n");
 #endif
-                PostQuitMessage(0);
+                // Cannot call PostQuitMessage as cookies won't be flushed to disk
+                // if application is closed immediately. See comment #2:
+                // https://code.google.com/p/phpdesktop/issues/detail?id=146
+                // I suppose that this PostQuitMessage was added here so that
+                // application is forced to exit cleanly in case Mongoose
+                // web server hanged while stopping it, as I recall such case.
+                // -------------------
+                // PostQuitMessage(0);
+                // -------------------
             }
             break;
         case WM_GETMINMAXINFO:
