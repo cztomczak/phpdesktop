@@ -36,24 +36,24 @@
 #define CEF_INCLUDE_CEF_VERSION_H_
 
 #define CEF_VERSION_MAJOR 3
-#define CEF_REVISION 1562
+#define CEF_REVISION 1902
 #define COPYRIGHT_YEAR 2014
 
-#define CHROME_VERSION_MAJOR 31
+#define CHROME_VERSION_MAJOR 39
 #define CHROME_VERSION_MINOR 0
-#define CHROME_VERSION_BUILD 1650
-#define CHROME_VERSION_PATCH 57
+#define CHROME_VERSION_BUILD 2171
+#define CHROME_VERSION_PATCH 36
 
 #define DO_MAKE_STRING(p) #p
 #define MAKE_STRING(p) DO_MAKE_STRING(p)
 
 #ifndef APSTUDIO_HIDDEN_SYMBOLS
 
+#include "include/internal/cef_export.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "internal/cef_export.h"
 
 // The API hash is created by analyzing CEF header files for C API type
 // definitions. The hash value will change when header files are modified
@@ -61,13 +61,13 @@ extern "C" {
 // universal hash value will change if any platform is affected whereas the
 // platform hash values will change only if that particular platform is
 // affected.
-#define CEF_API_HASH_UNIVERSAL "faf55f76379d3a937b969a223459339506038700"
+#define CEF_API_HASH_UNIVERSAL "8efd129f4afc344bd04b2feb7f73a149b6c4e27f"
 #if defined(OS_WIN)
-#define CEF_API_HASH_PLATFORM "a2b8f80d59bea941f9bd88acdfec034672990eae"
+#define CEF_API_HASH_PLATFORM "5c7f3e50ff5265985d11dc1a466513e25748bedd"
 #elif defined(OS_MACOSX)
-#define CEF_API_HASH_PLATFORM "01dc27f30bcef380880487c771e86567e3466fbe"
+#define CEF_API_HASH_PLATFORM "6813214accbf2ebfb6bdcf8d00654650b251bf3d"
 #elif defined(OS_LINUX)
-#define CEF_API_HASH_PLATFORM "446b1e8a04863b86cff1a0d10c6bd3836a15eabb"
+#define CEF_API_HASH_PLATFORM "2bc564c3871965ef3a2531b528bda3e17fa17a6d"
 #endif
 
 ///
