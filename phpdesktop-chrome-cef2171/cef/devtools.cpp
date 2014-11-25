@@ -9,6 +9,20 @@
 #include "../string_utils.h"
 #include "../popup_window.h"
 
+bool ShowDevTools(CefRefPtr<CefBrowser> browser) {
+    CefWindowInfo windowInfo;
+    CefBrowserSettings settings;
+
+    #if defined(OS_WIN)
+    windowInfo.SetAsPopup(browser->GetHost()->GetWindowHandle(), "DevTools");
+    #endif
+
+    browser->GetHost()->ShowDevTools(windowInfo, browser->GetHost()->GetClient(),
+                                     settings, CefPoint());
+    return true;
+}
+
+/*
 bool ShowDevTools(CefRefPtr<CefBrowser> cefBrowser) {
     std::string devtools_url = cefBrowser->GetHost()->GetDevToolsURL(true);
     // Example url returned:
@@ -47,3 +61,4 @@ bool ShowDevTools(CefRefPtr<CefBrowser> cefBrowser) {
     }
     return true;
 }
+*/

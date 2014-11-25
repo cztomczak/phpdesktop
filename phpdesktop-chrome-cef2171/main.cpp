@@ -160,7 +160,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     // CEF subprocesses.
     CefMainArgs main_args(hInstance);
     CefRefPtr<App> app(new App);
-    int exit_code = CefExecuteProcess(main_args, app.get());
+    int exit_code = CefExecuteProcess(main_args, app.get(), NULL);
     if (exit_code >= 0) {
         ShutdownLogging();
         return exit_code;
@@ -237,8 +237,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         log_severity = LOGSEVERITY_WARNING;
     } else if (chrome_log_severity == "error") {
         log_severity = LOGSEVERITY_ERROR;
-    } else if (chrome_log_severity == "error-report") {
-        log_severity = LOGSEVERITY_ERROR_REPORT;
     } else if (chrome_log_severity == "disable") {
         log_severity = LOGSEVERITY_DISABLE;
     }
@@ -265,7 +263,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         cef_settings.remote_debugging_port = remote_debugging_port;
     }
 
-    CefInitialize(main_args, cef_settings, app.get());
+    // Sandbox support
+    cef_settings.no_sandbox = true;
+
+    CefInitialize(main_args, cef_settings, app.get(), NULL);
     CreateMainWindow(hInstance, nCmdShow, main_window_title);
     CefRunMessageLoop();
     CefShutdown();

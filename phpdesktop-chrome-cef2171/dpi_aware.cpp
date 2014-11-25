@@ -8,6 +8,14 @@
 #include "include/cef_runnable.h"
 
 void SetBrowserDpiSettings(CefRefPtr<CefBrowser> cefBrowser) {
+    // Chrome 39 handles High DPI just fine. Looks like it uses
+    // zooming and not native OS display scaling that would make
+    // fonts look fuzzy. Commenting out the old code from Chrome 31.
+    // We still need to handle window size when dpi_aware=true
+    // in settings.json. So GetDpiAwareWindowSize() is still required.
+    return;
+
+    /*
     // Setting zoom level immediately after browser was created
     // won't work. We need to wait a moment before we can set it.
     REQUIRE_UI_THREAD();
@@ -66,6 +74,7 @@ void SetBrowserDpiSettings(CefRefPtr<CefBrowser> cefBrowser) {
             TID_UI,
             NewCefRunnableFunction(&SetBrowserDpiSettings, cefBrowser),
             50);
+    */
 }
 
 void GetDpiAwareWindowSize(int* width, int* height) {

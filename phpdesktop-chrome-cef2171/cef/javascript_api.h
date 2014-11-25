@@ -33,5 +33,5 @@ protected:
 
 private:
     // Provide the reference counting implementation for this class.
-    IMPLEMENT_REFCOUNTING(MyV8Handler);
+    IMPLEMENT_REFCOUNTING(JavascriptApi);
 };
