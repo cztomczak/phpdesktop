@@ -18,7 +18,7 @@ error_reporting(-1);
 </form>
 
 <h2>$_FILES</h2>
-<pre style="background=#ddd">
+<pre style="background:#ddd">
 <?php print_r($_FILES); ?>
 </pre>
 
@@ -27,7 +27,7 @@ error_reporting(-1);
 <?php $myfile = $_FILES["myfile"]["tmp_name"]; ?>
 
 <h2>Check the uploaded file</h2>
-<pre style="background=#ddd">
+<pre style="background:#ddd">
 is_file() = <?php echo is_file($myfile); ?>
 
 is_readable() = <?php echo is_readable($myfile); ?>
