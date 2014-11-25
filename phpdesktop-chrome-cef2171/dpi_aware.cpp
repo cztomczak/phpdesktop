@@ -7,6 +7,10 @@
 #include "log.h"
 #include "include/cef_runnable.h"
 
+// Note that VC project file includes DeclareDPIAware.manifest,
+// so application is always set to be DPI aware even if "dpi_aware"
+// is set to false in settings.json.
+
 void SetBrowserDpiSettings(CefRefPtr<CefBrowser> cefBrowser) {
     // Chrome 39 handles High DPI just fine. Looks like it uses
     // zooming and not native OS display scaling that would make
