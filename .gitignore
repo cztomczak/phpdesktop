@@ -4,6 +4,7 @@
 cefsimple
 phpdesktop-chrome-*
 !phpdesktop-chrome-cef2171/
+!phpdesktop-chrome-cef1750/
 /mongoose-*/
 !mongoose-rev-04fc209/
 phpdesktop-msie-*
