@@ -124,7 +124,7 @@ class ClientHandler : public CefClient,
 
  private:
   // Include the default reference counting implementation.
-  IMPLEMENT_REFCOUNTING(SimpleHandler);
+  IMPLEMENT_REFCOUNTING(ClientHandler);
 };
 
 class ApplicationStartupContentVisitor : public CefStringVisitor {

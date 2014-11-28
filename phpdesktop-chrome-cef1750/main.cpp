@@ -71,9 +71,17 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                 printf("----------------------------------------");
                 printf("----------------------------------------\n");
 #endif
-                PostQuitMessage(0);
+                // Cannot call PostQuitMessage as cookies won't be flushed to disk
+                // if application is closed immediately. See comment #2:
+                // https://code.google.com/p/phpdesktop/issues/detail?id=146
+                // I suppose that this PostQuitMessage was added here so that
+                // application is forced to exit cleanly in case Mongoose
+                // web server hanged while stopping it, as I recall such case.
+                // -------------------
+                // PostQuitMessage(0);
+                // -------------------
             }
-            break;
+            return 0;
         case WM_GETMINMAXINFO:
             browser = GetBrowserWindow(hwnd);
             if (browser) {
@@ -160,7 +168,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     // CEF subprocesses.
     CefMainArgs main_args(hInstance);
     CefRefPtr<App> app(new App);
-    int exit_code = CefExecuteProcess(main_args, app.get());
+    int exit_code = CefExecuteProcess(main_args, app.get(), NULL);
     if (exit_code >= 0) {
         ShutdownLogging();
         return exit_code;
@@ -265,7 +273,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         cef_settings.remote_debugging_port = remote_debugging_port;
     }
 
-    CefInitialize(main_args, cef_settings, app.get());
+    // Sandbox support
+    cef_settings.no_sandbox = true;
+
+    CefInitialize(main_args, cef_settings, app.get(), NULL);
     CreateMainWindow(hInstance, nCmdShow, main_window_title);
     CefRunMessageLoop();
     CefShutdown();

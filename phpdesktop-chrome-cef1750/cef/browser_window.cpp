@@ -27,6 +27,14 @@ BrowserWindow* GetBrowserWindow(HWND hwnd) {
     if (it != g_browserWindows.end()) {
         return it->second;
     }
+    /*
+    // Chrome 39 update - disabling code. Not sure why it
+    // was needed earlier.
+    // This would return parent browser for popup browsers,
+    // which would not be an expected behavior. Commenting
+    // out as it causes app hang when closing popup and then
+    // main window. See RemoveBrowserWindow in OnBeforeClose 
+    // and WM_DESTROY.
     HWND owner = GetWindow(hwnd, GW_OWNER);
     if (owner) {
         // hwnd is CEF host handle.
@@ -36,6 +44,7 @@ BrowserWindow* GetBrowserWindow(HWND hwnd) {
             return it->second;
         }
     }
+    */
     HWND parent = GetParent(hwnd);
     if (parent) {
         // This condition is for main window.

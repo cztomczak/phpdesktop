@@ -170,8 +170,11 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> cefBrowser) {
 ///
 void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     REQUIRE_UI_THREAD();
+    LOG_DEBUG << "OnBeforeClose() hwnd="
+              << (int)browser->GetHost()->GetWindowHandle();
     RemoveBrowserWindow(browser->GetHost()->GetWindowHandle());
     if (g_browserWindows.empty()) {
+        LOG_DEBUG << "Calling CefQuitMessageLoop()";
         CefQuitMessageLoop();
     }
 }
@@ -312,6 +315,7 @@ void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> cefBrowser,
                                 bool canGoForward) {
     LOG_DEBUG << "OnLoadingStateChange: loading=" << isLoading << ", url=" 
             << cefBrowser->GetMainFrame()->GetURL().ToString().c_str();
+    // Check if there were any errors during application startup.
     static int calls = 0;
     calls++;
     if (calls > 1) {
