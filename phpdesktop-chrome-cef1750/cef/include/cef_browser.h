@@ -281,11 +281,17 @@ class CefBrowserHost : public virtual CefBase {
   virtual void CloseBrowser(bool force_close) =0;
 
   ///
-  // Set focus for the browser window. If |enable| is true focus will be set to
-  // the window. Otherwise, focus will be removed.
+  // Set whether the browser is focused.
   ///
   /*--cef()--*/
-  virtual void SetFocus(bool enable) =0;
+  virtual void SetFocus(bool focus) =0;
+
+  ///
+  // Set whether the window containing the browser is visible
+  // (minimized/unminimized, app hidden/unhidden, etc). Only used on Mac OS X.
+  ///
+  /*--cef()--*/
+  virtual void SetWindowVisibility(bool visible) =0;
 
   ///
   // Retrieve the window handle for this browser.
@@ -312,17 +318,6 @@ class CefBrowserHost : public virtual CefBase {
   ///
   /*--cef()--*/
   virtual CefRefPtr<CefRequestContext> GetRequestContext() =0;
-
-  ///
-  // Returns the DevTools URL for this browser. If |http_scheme| is true the
-  // returned URL will use the http scheme instead of the chrome-devtools
-  // scheme. Remote debugging can be enabled by specifying the
-  // "remote-debugging-port" command-line flag or by setting the
-  // CefSettings.remote_debugging_port value. If remote debugging is not enabled
-  // this method will return an empty string.
-  ///
-  /*--cef()--*/
-  virtual CefString GetDevToolsURL(bool http_scheme) =0;
 
   ///
   // Get the current zoom level. The default zoom level is 0.0. This method can
@@ -388,6 +383,21 @@ class CefBrowserHost : public virtual CefBase {
   ///
   /*--cef()--*/
   virtual void StopFinding(bool clearSelection) =0;
+
+  ///
+  // Open developer tools in its own window.
+  ///
+  /*--cef()--*/
+  virtual void ShowDevTools(const CefWindowInfo& windowInfo,
+                            CefRefPtr<CefClient> client,
+                            const CefBrowserSettings& settings) =0;
+
+  ///
+  // Explicitly close the developer tools window if one exists for this browser
+  // instance.
+  ///
+  /*--cef()--*/
+  virtual void CloseDevTools() =0;
 
   ///
   // Set whether mouse cursor change is disabled.

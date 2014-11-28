@@ -344,6 +344,7 @@ struct CefSettingsTraits {
   static inline void set(const struct_type* src, struct_type* target,
       bool copy) {
     target->single_process = src->single_process;
+    target->no_sandbox = src->no_sandbox;
     cef_string_set(src->browser_subprocess_path.str,
         src->browser_subprocess_path.length,
         &target->browser_subprocess_path, copy);
@@ -401,7 +402,6 @@ struct CefBrowserSettingsTraits {
     cef_string_clear(&s->cursive_font_family);
     cef_string_clear(&s->fantasy_font_family);
     cef_string_clear(&s->default_encoding);
-    cef_string_clear(&s->user_style_sheet_location);
   }
 
   static inline void set(const struct_type* src, struct_type* target,
@@ -428,10 +428,6 @@ struct CefBrowserSettingsTraits {
     cef_string_set(src->default_encoding.str, src->default_encoding.length,
         &target->default_encoding, copy);
 
-    cef_string_set(src->user_style_sheet_location.str,
-        src->user_style_sheet_location.length,
-        &target->user_style_sheet_location, copy);
-
     target->remote_fonts = src->remote_fonts;
     target->javascript = src->javascript;
     target->javascript_open_windows = src->javascript_open_windows;
@@ -450,12 +446,13 @@ struct CefBrowserSettingsTraits {
         src->image_shrink_standalone_to_fit;
     target->text_area_resize = src->text_area_resize;
     target->tab_to_links = src->tab_to_links;
-    target->author_and_user_styles = src->author_and_user_styles;
     target->local_storage = src->local_storage;
     target->databases= src->databases;
     target->application_cache = src->application_cache;
     target->webgl = src->webgl;
     target->accelerated_compositing = src->accelerated_compositing;
+
+    target->background_color = src->background_color;
   }
 };
 
@@ -477,6 +474,7 @@ struct CefURLPartsTraits {
     cef_string_clear(&s->password);
     cef_string_clear(&s->host);
     cef_string_clear(&s->port);
+    cef_string_clear(&s->origin);
     cef_string_clear(&s->path);
     cef_string_clear(&s->query);
   }
@@ -491,6 +489,7 @@ struct CefURLPartsTraits {
         copy);
     cef_string_set(src->host.str, src->host.length, &target->host, copy);
     cef_string_set(src->port.str, src->port.length, &target->port, copy);
+    cef_string_set(src->origin.str, src->origin.length, &target->origin, copy);
     cef_string_set(src->path.str, src->path.length, &target->path, copy);
     cef_string_set(src->query.str, src->query.length, &target->query, copy);
   }
