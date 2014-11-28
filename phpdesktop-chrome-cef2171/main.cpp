@@ -81,7 +81,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                 // PostQuitMessage(0);
                 // -------------------
             }
-            break;
+            return 0;
         case WM_GETMINMAXINFO:
             browser = GetBrowserWindow(hwnd);
             if (browser) {
