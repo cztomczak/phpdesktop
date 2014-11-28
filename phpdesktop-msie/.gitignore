@@ -11,3 +11,10 @@ ipch/
 *.dll
 *.exe
 debug.log
+
+php/*.bat
+php/*.phar
+php/*.gif
+php/*.txt
+php/*.manifest
+!php/!README.txt

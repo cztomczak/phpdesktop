@@ -11,14 +11,13 @@ error_reporting(-1);
 <p>Temp directory: <?php echo sys_get_temp_dir(); ?></p>
 
 <form enctype="multipart/form-data" action="upload.php" method="POST">
-    Max file size: 1 MB<br>
-    <input type="hidden" name="MAX_FILE_SIZE" value="1000000" />
+    Max file size is set in php.ini<br>    
     Send this file: <input name="myfile" type="file" />
     <input type="submit" value="Send File" />
 </form>
 
 <h2>$_FILES</h2>
-<pre style="background=#ddd">
+<pre style="background:#ddd">
 <?php print_r($_FILES); ?>
 </pre>
 
@@ -27,7 +26,7 @@ error_reporting(-1);
 <?php $myfile = $_FILES["myfile"]["tmp_name"]; ?>
 
 <h2>Check the uploaded file</h2>
-<pre style="background=#ddd">
+<pre style="background:#ddd">
 is_file() = <?php echo is_file($myfile); ?>
 
 is_readable() = <?php echo is_readable($myfile); ?>
@@ -38,14 +37,21 @@ is_writable() = <?php echo is_writable($myfile); ?>
 <h2>Move the uploaded file</h2>
 
 <?php
-move_uploaded_file($myfile, __DIR__."/".basename($_FILES["myfile"]["name"]));
+$success = move_uploaded_file($myfile, 
+                              __DIR__."/".basename($_FILES["myfile"]["name"]));
 ?>
 
+<?php if ($success): ?>
 <p>
     The uploaded file (<?php echo $_FILES["myfile"]["name"]; ?>) was moved to
     the www/ directory using the <b>move_uploaded_file()</b> function.
     See the listing of files by going to <a href="index.php">index.php</a>
 </p>
+<?php else: ?>
+<p style="color: red;">
+    move_uploaded_file() failed.
+</p>
+<?php endif; // $success ?>
 
-<?php endif; ?>
+<?php endif; // count($_FILES) ?>
 
