@@ -14,7 +14,7 @@ shell_exec("$explorer /n,/e,$folder_to_open");
 <title>Open folder in Explorer</title>
 <h1>Open folder in Explorer</h1>
 
-<pre>
+<pre style="background:#ddd;">
 $explorer = $_ENV["SYSTEMROOT"] . '\\explorer.exe';
 $folder_to_open = "C:\\Windows";
 // Using "system" function would cause a false/positive
