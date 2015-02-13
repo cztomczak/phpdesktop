@@ -55,7 +55,7 @@ bool StartWebServer() {
 
     // 404_handler
     std::string _404_handler = (*appSettings)["web_server"]["404_handler"];
-    
+
     // Ip address and port. If port was set to 0, then real port
     // will be known only after the webserver was started.
     std::string ipAddress = (*appSettings)["web_server"]["listen_on"][0];
@@ -117,6 +117,19 @@ bool StartWebServer() {
         cgiPattern = "**.php$";
     LOG_INFO << "CGI pattern: " << cgiPattern;
 
+    // Hide files patterns.
+    const json_value hide_files = (*appSettings)["web_server"]["hide_files"];
+    std::string hide_files_patterns = "";
+    for (int i = 0; i < 100; i++) {
+        const char* pattern = hide_files[i];
+        if (strlen(pattern)) {
+            if (hide_files_patterns.length())
+                hide_files_patterns.append("|");
+            hide_files_patterns.append("**/").append(pattern).append("$");
+        }
+    }
+    LOG_INFO << "Hide files patterns: " << hide_files_patterns;
+
     // Temp directory.
     std::string cgi_temp_dir = (*appSettings)["web_server"]["cgi_temp_dir"];
     cgi_temp_dir = GetAbsolutePath(cgi_temp_dir);
@@ -126,7 +139,7 @@ bool StartWebServer() {
                         << cgi_temp_dir;
         }
         cgi_temp_dir.assign(GetAnsiTempDirectory());
-    } 
+    }
 
     // CGI environment variables.
     std::string cgiEnvironment = "";
@@ -154,6 +167,7 @@ bool StartWebServer() {
         "cgi_pattern", cgiPattern.c_str(),
         "cgi_environment", cgiEnvironment.c_str(),
         "404_handler", _404_handler.c_str(),
+        "hide_files_patterns", hide_files_patterns.c_str(),
         NULL
     };
 
@@ -167,7 +181,7 @@ bool StartWebServer() {
     g_mongooseContext = mg_start(&callbacks, NULL, options);
     if (g_mongooseContext == NULL)
         return false;
-    
+
     // When port was set to 0 then a random free port was assigned.
     g_webServerPort = mg_get_listening_port(g_mongooseContext);
     g_webServerIpAddress = ipAddress;
