@@ -20,6 +20,7 @@ HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title) {
     bool center_on_screen = (*appSettings)["main_window"]["center_on_screen"];
     bool dpi_aware = (*appSettings)["application"]["dpi_aware"];
     bool start_maximized = (*appSettings)["main_window"]["start_maximized"];
+    bool always_on_top = (*appSettings)["main_window"]["always_on_top"];
 
     if (default_width && default_height) {
         if (dpi_aware) {
@@ -53,9 +54,12 @@ HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title) {
         int ret = SetWindowLong(hwnd, GWL_STYLE, style &~WS_MAXIMIZEBOX);
         _ASSERT(ret);
     }
-    if (center_on_screen)
+    if (center_on_screen) {
         CenterWindow(hwnd);
-
+    }
+    if (always_on_top) {
+        SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+    }
     if (start_maximized) {
         ShowWindow(hwnd, SW_MAXIMIZE);
     } else {
