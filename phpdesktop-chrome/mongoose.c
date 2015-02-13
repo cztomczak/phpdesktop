@@ -2773,14 +2773,19 @@ static int scan_directory(struct mg_connection *conn, const char *dir,
     de.conn = conn;
 
     while ((dp = readdir(dirp)) != NULL) {
+      // PHP Desktop fix (Issue 17):
+      //   In handle_request() a full path is passed to must_hide_file. But
+      //   when scanning directory only directory name was passed. This causes
+      //   problems with hide_files_patterns. Fix it by providing full directory
+      //   path to must_hide_file().
+      mg_snprintf(conn, path, sizeof(path), "%s%c%s", dir, '/', dp->d_name);
+
       // Do not show current dir and hidden files
       if (!strcmp(dp->d_name, ".") ||
           !strcmp(dp->d_name, "..") ||
-          must_hide_file(conn, dp->d_name)) {
+          must_hide_file(conn, path)) {
         continue;
       }
-
-      mg_snprintf(conn, path, sizeof(path), "%s%c%s", dir, '/', dp->d_name);
 
       // If we don't memset stat structure to zero, mtime will have
       // garbage and strftime() will segfault later on in
