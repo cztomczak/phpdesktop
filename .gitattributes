@@ -1,5 +1,3 @@
-*       text=auto
-
 *.txt   text eol=crlf
 *.cpp   text eol=crlf
 *.h     text eol=crlf

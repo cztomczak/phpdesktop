@@ -8,3 +8,6 @@
 #define _WIN32_WINNT    0x0501
 #define _WIN32_IE       _WIN32_IE_IE60SP2
 #define _RICHEDIT_VER   0x0200
+
+// Win messages
+#define WM_TRAY_MESSAGE (WM_USER + 1)

@@ -43,6 +43,25 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
     HWND childHandle = 0;
     HWND shellBrowserHandle = 0;
 
+    json_value* appSettings = GetApplicationSettings();
+    std::string main_window_title = (*appSettings)["main_window"]["title"];
+    
+    // Minimize to system tray
+    bool minimize_to_tray = (*appSettings)["main_window"]["minimize_to_tray"];
+    std::string minimize_to_tray_message = (*appSettings)["main_window"]["minimize_to_tray_message"];
+    NOTIFYICONDATA tray = {0};
+    tray.cbSize = sizeof(tray);
+    tray.hWnd = hwnd;
+    tray.uID = 1;
+    tray.uCallbackMessage = WM_TRAY_MESSAGE;
+    tray.hIcon = (HICON) LoadImage(g_hInstance, MAKEINTRESOURCE(IDR_MAINWINDOW), IMAGE_ICON,
+                                   GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON),
+                                   LR_DEFAULTCOLOR);
+    wcscpy_s(tray.szInfo, 256, Utf8ToWide(minimize_to_tray_message).c_str());
+    wcscpy_s(tray.szInfoTitle, 64, Utf8ToWide(main_window_title).c_str());
+    tray.uFlags = NIF_ICON | NIF_INFO | NIF_MESSAGE;
+    tray.dwInfoFlags = NIIF_NONE;
+
     switch (uMsg) {
         case WM_SIZE:
             browser = GetBrowserWindow(hwnd);
@@ -70,7 +89,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                 // Debugging mongoose, see InitializeLogging().
                 printf("----------------------------------------");
                 printf("----------------------------------------\n");
-#endif
+#endif          
+                Shell_NotifyIcon(NIM_DELETE, &tray);
                 PostQuitMessage(0);
             }
             break;
@@ -106,6 +126,26 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                     // (this avoids flashing)
                     return 1;
                 }
+            }
+            break;
+        case WM_SYSCOMMAND:
+            if (wParam == SC_MINIMIZE && minimize_to_tray && !GetBrowserWindow(hwnd)->IsPopup()) {
+                LOG_DEBUG << "Minimize to tray";
+                ShowWindow(hwnd, SW_MINIMIZE);
+                Sleep(200);
+                ShowWindow(hwnd, SW_HIDE);
+                Shell_NotifyIcon(NIM_ADD, &tray);
+                break;
+            }
+            break;
+        case WM_TRAY_MESSAGE:
+            if (lParam == WM_LBUTTONDOWN || lParam == WM_RBUTTONDOWN) {
+                LOG_DEBUG << "Restore from tray";
+                ShowWindow(hwnd, SW_SHOW);
+                ShowWindow(hwnd, SW_RESTORE);
+                SetForegroundWindow(hwnd);
+                Shell_NotifyIcon(NIM_DELETE, &tray);
+                break;
             }
             break;
     }
