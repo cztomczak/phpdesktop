@@ -32,11 +32,11 @@ Lots of other useful information can be found on the KnowledgeBase wiki page and
 
 ## Downloads ##
 
-  * PHP Desktop Chrome - go to the [DownloadChrome](../../wiki/Download-Chrome) wiki page.
-  * PHP Desktop MSIE (Internet Explorer) - go to the [DownloadMSIE](../../wiki/Download-MSIE) wiki page.
+  * PHP Desktop Chrome - go to the [Download Chrome](../../wiki/Download-Chrome) wiki page.
+  * PHP Desktop MSIE (Internet Explorer) - go to the [Download MSIE](../../wiki/Download-MSIE) wiki page.
 
 PHP Desktop is not strongly tied to PHP, it can also act as a packager for any other scripting languages 
-like Perl, Ruby, Python, that provide a CGI interface for script execution. See the [Embedding other scripting languages](Embedding-other-scripting-languages) wiki page to download examples for other languages.
+like Perl, Ruby, Python, that provide a CGI interface for script execution. See the [Embedding other scripting languages](../../wiki/Embedding-other-scripting-languages) wiki page to download examples for other languages.
 
 ## Help ##
 
