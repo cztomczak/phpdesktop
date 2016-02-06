@@ -14,13 +14,13 @@ and a PHP interpreter. All embedded into a single application. The web server em
 Internet Explorer and Google Chrome. The package with Chrome embedded has no external dependencies, everything 
 is included in the phpdesktop binaries and works out of the box on a user's computer.
 
-All popular PHP frameworks are supported, see the [PHP frameworks support](../../wiki/PhpFrameworksSupport) wiki page 
+All popular PHP frameworks are supported, see the [PHP frameworks support](../../wiki/PHP-frameworks-support) wiki page 
 for example configurations for CakePHP, CodeIgniter, Laravel, Symfony, Yii and Zend Framework.  You can create 
 a standalone executable for distribution with the help of the 
-[Inno Setup installer](../../wiki/KnowledgeBase#Application_installer). PHP sources can be protected with the many
-of the available [PHP encoders](../../wiki/KnowledgeBase#How_do_I_protect_PHP_sources_in_"www"_directory?).
+[Inno Setup installer](../../wiki/Knowledge-Base#application-installer). PHP sources can be protected with the many
+of the available [PHP encoders](../../wiki/Knowledge-Base#Knowledge-Base#how-do-i-protect-php-sources-in-the-www-directory).
 PHP Desktop is released under non-restrictive license, thus it is 
-[free for commercial use](../../wiki/KnowledgeBase#Can_I_use_PHP_Desktop_in_a_commercial_closed_sourced_project?).
+[free for commercial use](../../wiki/KnowledgeBase#Knowledge-Base#can-i-use-php-desktop-in-a-commercial-closed-sourced-project).
 
 It is one of the top goals for PHP Desktop to be stable, to work reliably. PHP Desktop does not suffer from memory leaks. 
 PHP by design was never intended for running long hours/days, as desktop applications usually do. This is not a concern 
@@ -28,22 +28,21 @@ when using PHP Desktop, as it is running an internal web server and serving page
 execution PHP-CGI process is killed and all memory is always freed.
 
 Lots of other useful information can be found on the KnowledgeBase wiki page and on the 
-[Forum](http://groups.google.com/group/phpdesktop).
+[PHP Desktop Forum](http://groups.google.com/group/phpdesktop).
 
 ## Downloads ##
 
-  * PHP Desktop Chrome - go to the [DownloadChrome](../../wiki/DownloadChrome) wiki page.
-  * PHP Desktop MSIE (Internet Explorer) - go to the [DownloadMSIE](../../wiki/DownloadMSIE) wiki page.
+  * PHP Desktop Chrome - go to the [DownloadChrome](../../wiki/Download-Chrome) wiki page.
+  * PHP Desktop MSIE (Internet Explorer) - go to the [DownloadMSIE](../../wiki/Download-MSIE) wiki page.
 
 PHP Desktop is not strongly tied to PHP, it can also act as a packager for any other scripting languages 
-like Perl, Ruby, Python, that provide a CGI interface for script execution. See the EmbeddingOtherScriptingLanguages
-wiki page to download examples for other languages.
+like Perl, Ruby, Python, that provide a CGI interface for script execution. See the [Embedding other scripting languages](Embedding-other-scripting-languages) wiki page to download examples for other languages.
 
 ## Help ##
 
-  * See the [Hello World!](../../wiki/KnowledgeBase#Hello_World!) example
-  * Documentation is on the [wiki pages](../../wiki). Start with the [KnowledgeBase](../../wiki/KnowledgeBase), 
-    [Settings](../../wiki/Settings) and [ChromeSettings](../../wiki/ChromeSettings) wiki pages.
+  * See the [Hello World!](../../wiki/Knowledge-Base#hello-world) example
+  * Documentation is on the [wiki pages](../../wiki). Start with the [Knowledge Base](../../wiki/Knowledge-Base), 
+    [Settings](../../wiki/Settings) and [Chrome settings](../../wiki/Chrome-settings) wiki pages.
   * Having problems or questions? Go to the [PHP Desktop Forum](https://groups.google.com/group/phpdesktop).
   * Please do not submit new issues in the tracker ("Issues" tab in the top menu), use the Forum instead.
 
@@ -64,4 +63,4 @@ a higher priority, but apart from that there are no other guarantees.
 ## Built a cool app? ##
 
 Built a cool app using PHP Desktop and would like to like to share info with the community? 
-Talk about it on the [PHP Desktop Forum](https://groups.google.com/group/phpdesktop?hl=en).
+Talk about it on the [PHP Desktop Forum](https://groups.google.com/group/phpdesktop).
