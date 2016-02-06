@@ -18,9 +18,9 @@ All popular PHP frameworks are supported, see the [PHP frameworks support](../..
 for example configurations for CakePHP, CodeIgniter, Laravel, Symfony, Yii and Zend Framework.  You can create 
 a standalone executable for distribution with the help of the 
 [Inno Setup installer](../../wiki/Knowledge-Base#application-installer). PHP sources can be protected with the many
-of the available [PHP encoders](../../wiki/Knowledge-Base#Knowledge-Base#how-do-i-protect-php-sources-in-the-www-directory).
+of the available [PHP encoders](../../wiki/Knowledge-Base#how-do-i-protect-php-sources-in-the-www-directory).
 PHP Desktop is released under non-restrictive license, thus it is 
-[free for commercial use](../../wiki/KnowledgeBase#Knowledge-Base#can-i-use-php-desktop-in-a-commercial-closed-sourced-project).
+[free for commercial use](../../wiki/KnowledgeBase#can-i-use-php-desktop-in-a-commercial-closed-sourced-project).
 
 It is one of the top goals for PHP Desktop to be stable, to work reliably. PHP Desktop does not suffer from memory leaks. 
 PHP by design was never intended for running long hours/days, as desktop applications usually do. This is not a concern 
