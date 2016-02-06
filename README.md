@@ -27,7 +27,7 @@ PHP by design was never intended for running long hours/days, as desktop applica
 when using PHP Desktop, as it is running an internal web server and serving pages through CGI. So when PHP script ends 
 execution PHP-CGI process is killed and all memory is always freed.
 
-Lots of other useful information can be found on the KnowledgeBase wiki page and on the 
+Lots of other useful information can be found on the [Knowledge Base](../../wiki/Knowledge-Base) wiki page and on the 
 [PHP Desktop Forum](http://groups.google.com/group/phpdesktop).
 
 ## Downloads ##
