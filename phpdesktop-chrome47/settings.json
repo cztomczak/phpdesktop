@@ -19,7 +19,9 @@
         "center_on_screen": true,
         "start_maximized": false,
         "start_fullscreen": false,
-        "always_on_top": false
+        "always_on_top": false,
+        "minimize_to_tray": false,
+        "minimize_to_tray_message": "Minimized to tray"
     },
     "popup_window": {
         "icon": "",
