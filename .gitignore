@@ -1,16 +1,1 @@
-*.zip
-*.7z
-/cef_binary_*
-cefsimple
-phpdesktop-chrome-*
-!phpdesktop-chrome-cef2171/
-!phpdesktop-chrome-cef1750/
-/mongoose-*/
-!mongoose-rev-04fc209/
-phpdesktop-msie-*
-/cef3-*
-/php-*/
-*.ini-development
-*.ini-production
-*.sublime-*
-/cef*
+cef_binary*

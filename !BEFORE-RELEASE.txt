@@ -1,8 +1,0 @@
-- php 5.4.33 binaries - php.ini contains 2x "post_max_size" option
-- updated php.ini
-- updated "www" dir
-
-----
-
-1. Change "Version Info" in resources.rc
-2. Scan files with virustotal.com
