@@ -1,0 +1,5 @@
+Core developers:
+    Czarek Tomczak <czarek.tomczak@@gmail.com>
+
+Contributors (in order of first commit):
+    -
