@@ -1,8 +1,8 @@
-Copyright (c) 2012-2014 Czarek Tomczak. Portions Copyright
-(c) 2008-2013 Marshall A.Greenblatt, 2006-2013 Google Inc.
+Copyright (c) 2012 Czarek Tomczak. Portions Copyright
+(c) 2008 Marshall A.Greenblatt, 2006 Google Inc.
 All rights reserved.
 
-Project website: <http://code.google.com/p/phpdesktop/>.
+Project website: https://github.com/cztomczak/phpdesktop
 
 Redistribution and use in source and binary forms, with
 or without modification, are permitted provided that the
@@ -39,7 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 This product includes the following third party libraries:
 * Chromium Embedded Framework licensed under the BSD 3-clause license.
-  See: https://code.google.com/p/chromiumembedded/
+  See: https://bitbucket.org/chromiumembedded/cef
 * PHP Software licensed under the PHP License 3.0.1.
   See: http://www.php.net/software/
 * Mongoose webserver revision 04fc209 licensed under the MIT license.
