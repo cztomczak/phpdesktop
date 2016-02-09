@@ -131,7 +131,7 @@ void App::OnBeforeCommandLineProcessing(
             int length = switches.u.object.length;
             for (int i = 0; i < length; i++) {
                 std::string name = switches.u.object.values[i].name;
-                std::string value = (*switches.u.object.values[i].value);
+                std::string value = static_cast<const char*>(*switches.u.object.values[i].value);
                 if (name.find("-") == 0) {
                     LOG_WARNING << "Invalid command line switch: " << name;
                     continue;

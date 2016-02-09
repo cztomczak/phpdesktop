@@ -2,6 +2,7 @@
 error_reporting(-1);
 ?>
 
+<style type="text/css">@import url("style.css");</style>
 <a href="index.php">Go back to index</a>
 | <a href="<?php echo $_SERVER["REQUEST_URI"];?>">Refresh</a>
 
@@ -11,13 +12,13 @@ error_reporting(-1);
 <p>Temp directory: <?php echo sys_get_temp_dir(); ?></p>
 
 <form enctype="multipart/form-data" action="upload.php" method="POST">
-    Max file size is set in php.ini<br>    
+    Max file size is set in php.ini<br>
     Send this file: <input name="myfile" type="file" />
     <input type="submit" value="Send File" />
 </form>
 
 <h2>$_FILES</h2>
-<pre style="background:#ddd">
+<pre>
 <?php print_r($_FILES); ?>
 </pre>
 
@@ -26,7 +27,7 @@ error_reporting(-1);
 <?php $myfile = $_FILES["myfile"]["tmp_name"]; ?>
 
 <h2>Check the uploaded file</h2>
-<pre style="background:#ddd">
+<pre>
 is_file() = <?php echo is_file($myfile); ?>
 
 is_readable() = <?php echo is_readable($myfile); ?>
@@ -37,7 +38,7 @@ is_writable() = <?php echo is_writable($myfile); ?>
 <h2>Move the uploaded file</h2>
 
 <?php
-$success = move_uploaded_file($myfile, 
+$success = move_uploaded_file($myfile,
                               __DIR__."/".basename($_FILES["myfile"]["name"]));
 ?>
 

@@ -7,6 +7,7 @@ putenv("TMPDIR=$temp");
 
 ?>
 
+<style type="text/css">@import url("style.css");</style>
 <a href="index.php">Go back to index</a>
 | <a href="<?php echo $_SERVER["REQUEST_URI"];?>">Refresh</a>
 
@@ -23,6 +24,6 @@ option in the settings.json file.</p>
 
 <h2>sys_get_temp_dir()</h2>
 
-<pre style="background:#ddd">
+<pre>
 <?php echo sys_get_temp_dir(); ?>
 </pre>

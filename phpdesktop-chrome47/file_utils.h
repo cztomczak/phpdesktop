@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include "defines.h"
 #include <string>
 
 std::string GetFileContents(std::string file);

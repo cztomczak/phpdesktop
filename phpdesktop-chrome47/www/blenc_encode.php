@@ -1,16 +1,17 @@
 <?php
 define("BLENC_ENCRYPTION_KEY", "ChangeThisToSomethingElse");
 error_reporting(-1);
+print('<style type="text/css">@import url("style.css");</style>');
 print("<a href='javascript:history.go(-1)'>Go back</a><br>");
 if (!extension_loaded("blenc")) {
-    $link = "https://code.google.com/p/phpdesktop/wiki/SourceCodeProtection".
-            "#BLENC_encoder";
+    $link = "https://github.com/cztomczak/phpdesktop/wiki/" .
+            "Source-code-protection#blenc-encoder";
     printf("ERROR: blenc extension not loaded.<br><br>
-            BLENC encoder is a PECL extension that permits to protect 
+            BLENC encoder is a PECL extension that permits to protect
             PHP source scripts.
-            This extension is not distributed by default with 
+            This extension is not distributed by default with
             phpdesktop binaries.
-            See instructions on how to use BLENC encoder with 
+            See instructions on how to use BLENC encoder with
             phpdesktop on the SourceCodeProtection wiki page:<br>
             <a href='%s'>%s</a>", $link, $link);
     exit();
@@ -22,7 +23,7 @@ $source_code = file_get_contents("blenc_myscript.php");
 // openings/closings.
 $source_code = preg_replace('#^<'.'\?php\s+#', '', $source_code);
 $source_code = preg_replace('#\s+\?'.'>\s*$#', '', $source_code);
-if (preg_match('#<'.'\?#', $source_code) 
+if (preg_match('#<'.'\?#', $source_code)
         || preg_match('#\?'.'>#', $source_code)) {
     print("Script to be encoded can only contain PHP code.");
     print(" Only a single php opening tag at the beginning of file");

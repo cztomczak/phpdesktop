@@ -2,6 +2,7 @@
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
+#include "file_utils.h"
 #include "defines.h"
 #include <windows.h>
 #include <string>

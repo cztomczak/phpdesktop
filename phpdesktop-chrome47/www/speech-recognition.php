@@ -1,3 +1,4 @@
+<style type="text/css">@import url("style.css");</style>
 <a href="index.php">Go back to index</a>
 | <a href="<?php echo $_SERVER["REQUEST_URI"];?>">Refresh</a>
 
@@ -7,7 +8,7 @@
 You need to set the "enable-speech-input" flag in settings.json
 for the speech recognition to work:
 
-<pre style="background:#ddd">
+<pre>
 "command_line_switches": {
     "enable-speech-input": ""
 },

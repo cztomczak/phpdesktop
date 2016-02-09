@@ -1,3 +1,4 @@
+<style type="text/css">@import url("style.css");</style>
 <a href="index.php">Go back to index</a>
 | <a href="<?php echo $_SERVER["REQUEST_URI"];?>">Refresh</a>
 
@@ -9,7 +10,7 @@
     is set in settings.json file then clicking the link below
     will forward you to "/pretty-urls.php/foo.html". You can then
     access the "/foo.html" url using $_SERVER["PATH_INFO"] or
-    $_SERVER["REQUEST_URI"]. 
+    $_SERVER["REQUEST_URI"].
 </p>
 <p>Try it:
     <ul>

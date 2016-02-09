@@ -168,12 +168,12 @@ typedef struct _json_value
             };
          }
 
-         inline operator std::string () const
+         inline operator const std::string ()
          {
             switch (type)
             {
                case json_string:
-                   return std::string(u.string.ptr);
+                   return u.string.ptr;
 
                default:
                    return "";

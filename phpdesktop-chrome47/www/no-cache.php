@@ -8,6 +8,7 @@ header("Pragma: no-cache");
 
 ?>
 
+<style type="text/css">@import url("style.css");</style>
 <a href="index.php">Go back to index</a>
 | <a href="<?php echo $_SERVER["REQUEST_URI"];?>">Refresh</a>
 
@@ -29,6 +30,6 @@ Some random number:
     when including js/css files, see for example:
 </p>
 
-<pre style="background: #ddd;">
+<pre>
 &lt;link href="css/style.css?r=&lt;?php echo time(); ?&gt;" rel="stylesheet" type="text/css" /&gt;
 </pre>

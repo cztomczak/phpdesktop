@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -18,11 +18,13 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseOfAtl>false</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v120_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfAtl>false</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v120_xp</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -50,10 +52,10 @@
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">phpdesktop-chrome</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">phpdesktop-chrome</TargetName>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;cef;</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;cef;</IncludePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir)lib;$(FrameworkSDKDir)\lib;lib\Debug;</LibraryPath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir)lib;$(FrameworkSDKDir)\lib;lib\Release;</LibraryPath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;$(IncludePath);cef</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;cef;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir)lib;$(FrameworkSDKDir)\lib;$(LibraryPath);lib\Debug</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir)lib;$(FrameworkSDKDir)\lib;lib\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -177,7 +179,38 @@
     <ClInclude Include="cef\app.h" />
     <ClInclude Include="cef\client_handler.h" />
     <ClInclude Include="cef\fullscreen.h" />
-    <ClInclude Include="cef\javascript_api.h" />
+    <ClInclude Include="cef\include\base\cef_atomicops.h" />
+    <ClInclude Include="cef\include\base\cef_atomic_ref_count.h" />
+    <ClInclude Include="cef\include\base\cef_basictypes.h" />
+    <ClInclude Include="cef\include\base\cef_bind.h" />
+    <ClInclude Include="cef\include\base\cef_bind_helpers.h" />
+    <ClInclude Include="cef\include\base\cef_build.h" />
+    <ClInclude Include="cef\include\base\cef_callback.h" />
+    <ClInclude Include="cef\include\base\cef_callback_forward.h" />
+    <ClInclude Include="cef\include\base\cef_callback_helpers.h" />
+    <ClInclude Include="cef\include\base\cef_callback_list.h" />
+    <ClInclude Include="cef\include\base\cef_cancelable_callback.h" />
+    <ClInclude Include="cef\include\base\cef_lock.h" />
+    <ClInclude Include="cef\include\base\cef_logging.h" />
+    <ClInclude Include="cef\include\base\cef_macros.h" />
+    <ClInclude Include="cef\include\base\cef_move.h" />
+    <ClInclude Include="cef\include\base\cef_platform_thread.h" />
+    <ClInclude Include="cef\include\base\cef_ref_counted.h" />
+    <ClInclude Include="cef\include\base\cef_scoped_ptr.h" />
+    <ClInclude Include="cef\include\base\cef_string16.h" />
+    <ClInclude Include="cef\include\base\cef_template_util.h" />
+    <ClInclude Include="cef\include\base\cef_thread_checker.h" />
+    <ClInclude Include="cef\include\base\cef_thread_collision_warner.h" />
+    <ClInclude Include="cef\include\base\cef_trace_event.h" />
+    <ClInclude Include="cef\include\base\cef_tuple.h" />
+    <ClInclude Include="cef\include\base\cef_weak_ptr.h" />
+    <ClInclude Include="cef\include\base\internal\cef_atomicops_x86_msvc.h" />
+    <ClInclude Include="cef\include\base\internal\cef_bind_internal.h" />
+    <ClInclude Include="cef\include\base\internal\cef_bind_internal_win.h" />
+    <ClInclude Include="cef\include\base\internal\cef_callback_internal.h" />
+    <ClInclude Include="cef\include\base\internal\cef_lock_impl.h" />
+    <ClInclude Include="cef\include\base\internal\cef_raw_scoped_refptr_mismatch_checker.h" />
+    <ClInclude Include="cef\include\base\internal\cef_thread_checker_impl.h" />
     <ClInclude Include="cef\include\cef_app.h" />
     <ClInclude Include="cef\include\cef_auth_callback.h" />
     <ClInclude Include="cef\include\cef_base.h" />
@@ -195,6 +228,7 @@
     <ClInclude Include="cef\include\cef_download_item.h" />
     <ClInclude Include="cef\include\cef_drag_data.h" />
     <ClInclude Include="cef\include\cef_drag_handler.h" />
+    <ClInclude Include="cef\include\cef_find_handler.h" />
     <ClInclude Include="cef\include\cef_focus_handler.h" />
     <ClInclude Include="cef\include\cef_frame.h" />
     <ClInclude Include="cef\include\cef_geolocation.h" />
@@ -204,10 +238,14 @@
     <ClInclude Include="cef\include\cef_life_span_handler.h" />
     <ClInclude Include="cef\include\cef_load_handler.h" />
     <ClInclude Include="cef\include\cef_menu_model.h" />
+    <ClInclude Include="cef\include\cef_navigation_entry.h" />
     <ClInclude Include="cef\include\cef_origin_whitelist.h" />
     <ClInclude Include="cef\include\cef_pack_resources.h" />
     <ClInclude Include="cef\include\cef_pack_strings.h" />
+    <ClInclude Include="cef\include\cef_parser.h" />
     <ClInclude Include="cef\include\cef_path_util.h" />
+    <ClInclude Include="cef\include\cef_print_handler.h" />
+    <ClInclude Include="cef\include\cef_print_settings.h" />
     <ClInclude Include="cef\include\cef_process_message.h" />
     <ClInclude Include="cef\include\cef_process_util.h" />
     <ClInclude Include="cef\include\cef_render_handler.h" />
@@ -216,17 +254,19 @@
     <ClInclude Include="cef\include\cef_request_context.h" />
     <ClInclude Include="cef\include\cef_request_context_handler.h" />
     <ClInclude Include="cef\include\cef_request_handler.h" />
+    <ClInclude Include="cef\include\cef_resource_bundle.h" />
     <ClInclude Include="cef\include\cef_resource_bundle_handler.h" />
     <ClInclude Include="cef\include\cef_resource_handler.h" />
     <ClInclude Include="cef\include\cef_response.h" />
+    <ClInclude Include="cef\include\cef_response_filter.h" />
     <ClInclude Include="cef\include\cef_runnable.h" />
+    <ClInclude Include="cef\include\cef_sandbox_win.h" />
     <ClInclude Include="cef\include\cef_scheme.h" />
+    <ClInclude Include="cef\include\cef_ssl_info.h" />
     <ClInclude Include="cef\include\cef_stream.h" />
     <ClInclude Include="cef\include\cef_string_visitor.h" />
     <ClInclude Include="cef\include\cef_task.h" />
     <ClInclude Include="cef\include\cef_trace.h" />
-    <ClInclude Include="cef\include\cef_trace_event.h" />
-    <ClInclude Include="cef\include\cef_url.h" />
     <ClInclude Include="cef\include\cef_urlrequest.h" />
     <ClInclude Include="cef\include\cef_v8.h" />
     <ClInclude Include="cef\include\cef_values.h" />
@@ -234,8 +274,8 @@
     <ClInclude Include="cef\include\cef_web_plugin.h" />
     <ClInclude Include="cef\include\cef_xml_reader.h" />
     <ClInclude Include="cef\include\cef_zip_reader.h" />
-    <ClInclude Include="cef\include\internal\cef_build.h" />
     <ClInclude Include="cef\include\internal\cef_export.h" />
+    <ClInclude Include="cef\include\internal\cef_logging_internal.h" />
     <ClInclude Include="cef\include\internal\cef_ptr.h" />
     <ClInclude Include="cef\include\internal\cef_string.h" />
     <ClInclude Include="cef\include\internal\cef_string_list.h" />
@@ -243,16 +283,26 @@
     <ClInclude Include="cef\include\internal\cef_string_multimap.h" />
     <ClInclude Include="cef\include\internal\cef_string_types.h" />
     <ClInclude Include="cef\include\internal\cef_string_wrappers.h" />
+    <ClInclude Include="cef\include\internal\cef_thread_internal.h" />
     <ClInclude Include="cef\include\internal\cef_time.h" />
-    <ClInclude Include="cef\include\internal\cef_tuple.h" />
+    <ClInclude Include="cef\include\internal\cef_trace_event_internal.h" />
     <ClInclude Include="cef\include\internal\cef_types.h" />
     <ClInclude Include="cef\include\internal\cef_types_win.h" />
     <ClInclude Include="cef\include\internal\cef_types_wrappers.h" />
     <ClInclude Include="cef\include\internal\cef_win.h" />
     <ClInclude Include="cef\include\wrapper\cef_byte_read_handler.h" />
+    <ClInclude Include="cef\include\wrapper\cef_closure_task.h" />
+    <ClInclude Include="cef\include\wrapper\cef_helpers.h" />
+    <ClInclude Include="cef\include\wrapper\cef_message_router.h" />
+    <ClInclude Include="cef\include\wrapper\cef_resource_manager.h" />
     <ClInclude Include="cef\include\wrapper\cef_stream_resource_handler.h" />
     <ClInclude Include="cef\include\wrapper\cef_xml_object.h" />
     <ClInclude Include="cef\include\wrapper\cef_zip_archive.h" />
+    <ClInclude Include="cef\javascript_api.h" />
+    <ClInclude Include="cef\include\cef_trace_event.h" />
+    <ClInclude Include="cef\include\cef_url.h" />
+    <ClInclude Include="cef\include\internal\cef_build.h" />
+    <ClInclude Include="cef\include\internal\cef_tuple.h" />
     <ClInclude Include="cef\util.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="defines.h" />

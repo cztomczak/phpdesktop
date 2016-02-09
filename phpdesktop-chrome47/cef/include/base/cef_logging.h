@@ -40,51 +40,51 @@
 // ------------
 //
 // Make a bunch of macros for logging.  The way to log things is to stream
-// things to LOG(<a particular severity level>).  E.g.,
+// things to CEF_LOG(<a particular severity level>).  E.g.,
 //
-//   LOG(INFO) << "Found " << num_cookies << " cookies";
+//   CEF_LOG(INFO) << "Found " << num_cookies << " cookies";
 //
 // You can also do conditional logging:
 //
-//   LOG_IF(INFO, num_cookies > 10) << "Got lots of cookies";
+//   CEF_LOG_IF(INFO, num_cookies > 10) << "Got lots of cookies";
 //
 // The CHECK(condition) macro is active in both debug and release builds and
-// effectively performs a LOG(FATAL) which terminates the process and
+// effectively performs a CEF_LOG(FATAL) which terminates the process and
 // generates a crashdump unless a debugger is attached.
 //
 // There are also "debug mode" logging macros like the ones above:
 //
-//   DLOG(INFO) << "Found cookies";
+//   DCEF_LOG(INFO) << "Found cookies";
 //
-//   DLOG_IF(INFO, num_cookies > 10) << "Got lots of cookies";
+//   DCEF_LOG_IF(INFO, num_cookies > 10) << "Got lots of cookies";
 //
 // All "debug mode" logging is compiled away to nothing for non-debug mode
-// compiles.  LOG_IF and development flags also work well together
+// compiles.  CEF_LOG_IF and development flags also work well together
 // because the code can be compiled away sometimes.
 //
 // We also have
 //
-//   LOG_ASSERT(assertion);
-//   DLOG_ASSERT(assertion);
+//   CEF_LOG_ASSERT(assertion);
+//   DCEF_LOG_ASSERT(assertion);
 //
-// which is syntactic sugar for {,D}LOG_IF(FATAL, assert fails) << assertion;
+// which is syntactic sugar for {,D}CEF_LOG_IF(FATAL, assert fails) << assertion;
 //
 // There are "verbose level" logging macros.  They look like
 //
-//   VLOG(1) << "I'm printed when you run the program with --v=1 or more";
-//   VLOG(2) << "I'm printed when you run the program with --v=2 or more";
+//   VCEF_LOG(1) << "I'm printed when you run the program with --v=1 or more";
+//   VCEF_LOG(2) << "I'm printed when you run the program with --v=2 or more";
 //
 // These always log at the INFO log level (when they log at all).
 // The verbose logging can also be turned on module-by-module.  For instance,
 //    --vmodule=profile=2,icon_loader=1,browser_*=3,*/chromeos/*=4 --v=0
 // will cause:
-//   a. VLOG(2) and lower messages to be printed from profile.{h,cc}
-//   b. VLOG(1) and lower messages to be printed from icon_loader.{h,cc}
-//   c. VLOG(3) and lower messages to be printed from files prefixed with
+//   a. VCEF_LOG(2) and lower messages to be printed from profile.{h,cc}
+//   b. VCEF_LOG(1) and lower messages to be printed from icon_loader.{h,cc}
+//   c. VCEF_LOG(3) and lower messages to be printed from files prefixed with
 //      "browser"
-//   d. VLOG(4) and lower messages to be printed from files under a
+//   d. VCEF_LOG(4) and lower messages to be printed from files under a
 //     "chromeos" directory.
-//   e. VLOG(0) and lower messages to be printed from elsewhere
+//   e. VCEF_LOG(0) and lower messages to be printed from elsewhere
 //
 // The wildcarding functionality shown by (c) supports both '*' (match
 // 0 or more characters) and '?' (match any single character)
@@ -93,29 +93,29 @@
 // E.g., "*/foo/bar/*=2" would change the logging level for all code
 // in source files under a "foo/bar" directory.
 //
-// There's also VLOG_IS_ON(n) "verbose level" condition macro. To be used as
+// There's also VCEF_LOG_IS_ON(n) "verbose level" condition macro. To be used as
 //
-//   if (VLOG_IS_ON(2)) {
+//   if (VCEF_LOG_IS_ON(2)) {
 //     // do some logging preparation and logging
-//     // that can't be accomplished with just VLOG(2) << ...;
+//     // that can't be accomplished with just VCEF_LOG(2) << ...;
 //   }
 //
-// There is also a VLOG_IF "verbose level" condition macro for sample
+// There is also a VCEF_LOG_IF "verbose level" condition macro for sample
 // cases, when some extra computation and preparation for logs is not
 // needed.
 //
-//   VLOG_IF(1, (size > 1024))
+//   VCEF_LOG_IF(1, (size > 1024))
 //      << "I'm printed when size is more than 1024 and when you run the "
 //         "program with --v=1 or more";
 //
-// We also override the standard 'assert' to use 'DLOG_ASSERT'.
+// We also override the standard 'assert' to use 'DCEF_LOG_ASSERT'.
 //
 // Lastly, there is:
 //
-//   PLOG(ERROR) << "Couldn't do foo";
-//   DPLOG(ERROR) << "Couldn't do foo";
-//   PLOG_IF(ERROR, cond) << "Couldn't do foo";
-//   DPLOG_IF(ERROR, cond) << "Couldn't do foo";
+//   PCEF_LOG(ERROR) << "Couldn't do foo";
+//   DPCEF_LOG(ERROR) << "Couldn't do foo";
+//   PCEF_LOG_IF(ERROR, cond) << "Couldn't do foo";
+//   DPCEF_LOG_IF(ERROR, cond) << "Couldn't do foo";
 //   PCHECK(condition) << "Couldn't do foo";
 //   DPCHECK(condition) << "Couldn't do foo";
 //
@@ -182,77 +182,77 @@ int GetVlogLevel(const char (&file)[N]) {
 }
 
 typedef int LogSeverity;
-const LogSeverity LOG_VERBOSE = -1;  // This is level 1 verbosity
+const LogSeverity CEF_LOG_VERBOSE = -1;  // This is level 1 verbosity
 // Note: the log severities are used to index into the array of names,
 // see log_severity_names.
-const LogSeverity LOG_INFO = 0;
-const LogSeverity LOG_WARNING = 1;
-const LogSeverity LOG_ERROR = 2;
-const LogSeverity LOG_FATAL = 3;
-const LogSeverity LOG_NUM_SEVERITIES = 4;
+const LogSeverity CEF_LOG_INFO = 0;
+const LogSeverity CEF_LOG_WARNING = 1;
+const LogSeverity CEF_LOG_ERROR = 2;
+const LogSeverity CEF_LOG_FATAL = 3;
+const LogSeverity CEF_LOG_NUM_SEVERITIES = 4;
 
-// LOG_DFATAL is LOG_FATAL in debug mode, ERROR in normal mode
+// CEF_LOG_DFATAL is CEF_LOG_FATAL in debug mode, ERROR in normal mode
 #ifdef NDEBUG
-const LogSeverity LOG_DFATAL = LOG_ERROR;
+const LogSeverity CEF_LOG_DFATAL = CEF_LOG_ERROR;
 #else
-const LogSeverity LOG_DFATAL = LOG_FATAL;
+const LogSeverity CEF_LOG_DFATAL = CEF_LOG_FATAL;
 #endif
 
 // A few definitions of macros that don't generate much code. These are used
-// by LOG() and LOG_IF, etc. Since these are used all over our code, it's
+// by CEF_LOG() and CEF_LOG_IF, etc. Since these are used all over our code, it's
 // better to have compact code for these operations.
-#define COMPACT_GOOGLE_LOG_EX_INFO(ClassName, ...) \
-  cef::logging::ClassName(__FILE__, __LINE__, cef::logging::LOG_INFO , \
+#define COMPACT_GOOGLE_CEF_LOG_EX_INFO(ClassName, ...) \
+  cef::logging::ClassName(__FILE__, __LINE__, cef::logging::CEF_LOG_INFO , \
                          ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_EX_WARNING(ClassName, ...) \
-  cef::logging::ClassName(__FILE__, __LINE__, cef::logging::LOG_WARNING , \
+#define COMPACT_GOOGLE_CEF_LOG_EX_WARNING(ClassName, ...) \
+  cef::logging::ClassName(__FILE__, __LINE__, cef::logging::CEF_LOG_WARNING , \
                          ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_EX_ERROR(ClassName, ...) \
-  cef::logging::ClassName(__FILE__, __LINE__, cef::logging::LOG_ERROR , \
+#define COMPACT_GOOGLE_CEF_LOG_EX_ERROR(ClassName, ...) \
+  cef::logging::ClassName(__FILE__, __LINE__, cef::logging::CEF_LOG_ERROR , \
                          ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_EX_FATAL(ClassName, ...) \
-  cef::logging::ClassName(__FILE__, __LINE__, cef::logging::LOG_FATAL , \
+#define COMPACT_GOOGLE_CEF_LOG_EX_FATAL(ClassName, ...) \
+  cef::logging::ClassName(__FILE__, __LINE__, cef::logging::CEF_LOG_FATAL , \
                          ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_EX_DFATAL(ClassName, ...) \
-  cef::logging::ClassName(__FILE__, __LINE__, cef::logging::LOG_DFATAL , \
+#define COMPACT_GOOGLE_CEF_LOG_EX_DFATAL(ClassName, ...) \
+  cef::logging::ClassName(__FILE__, __LINE__, cef::logging::CEF_LOG_DFATAL , \
                          ##__VA_ARGS__)
 
-#define COMPACT_GOOGLE_LOG_INFO \
-  COMPACT_GOOGLE_LOG_EX_INFO(LogMessage)
-#define COMPACT_GOOGLE_LOG_WARNING \
-  COMPACT_GOOGLE_LOG_EX_WARNING(LogMessage)
-#define COMPACT_GOOGLE_LOG_ERROR \
-  COMPACT_GOOGLE_LOG_EX_ERROR(LogMessage)
-#define COMPACT_GOOGLE_LOG_FATAL \
-  COMPACT_GOOGLE_LOG_EX_FATAL(LogMessage)
-#define COMPACT_GOOGLE_LOG_DFATAL \
-  COMPACT_GOOGLE_LOG_EX_DFATAL(LogMessage)
+#define COMPACT_GOOGLE_CEF_LOG_INFO \
+  COMPACT_GOOGLE_CEF_LOG_EX_INFO(LogMessage)
+#define COMPACT_GOOGLE_CEF_LOG_WARNING \
+  COMPACT_GOOGLE_CEF_LOG_EX_WARNING(LogMessage)
+#define COMPACT_GOOGLE_CEF_LOG_ERROR \
+  COMPACT_GOOGLE_CEF_LOG_EX_ERROR(LogMessage)
+#define COMPACT_GOOGLE_CEF_LOG_FATAL \
+  COMPACT_GOOGLE_CEF_LOG_EX_FATAL(LogMessage)
+#define COMPACT_GOOGLE_CEF_LOG_DFATAL \
+  COMPACT_GOOGLE_CEF_LOG_EX_DFATAL(LogMessage)
 
 #if defined(OS_WIN)
-// wingdi.h defines ERROR to be 0. When we call LOG(ERROR), it gets
-// substituted with 0, and it expands to COMPACT_GOOGLE_LOG_0. To allow us
+// wingdi.h defines ERROR to be 0. When we call CEF_LOG(ERROR), it gets
+// substituted with 0, and it expands to COMPACT_GOOGLE_CEF_LOG_0. To allow us
 // to keep using this syntax, we define this macro to do the same thing
-// as COMPACT_GOOGLE_LOG_ERROR, and also define ERROR the same way that
+// as COMPACT_GOOGLE_CEF_LOG_ERROR, and also define ERROR the same way that
 // the Windows SDK does for consistency.
 #define ERROR 0
-#define COMPACT_GOOGLE_LOG_EX_0(ClassName, ...) \
-  COMPACT_GOOGLE_LOG_EX_ERROR(ClassName , ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_0 COMPACT_GOOGLE_LOG_ERROR
-// Needed for LOG_IS_ON(ERROR).
-const LogSeverity LOG_0 = LOG_ERROR;
+#define COMPACT_GOOGLE_CEF_LOG_EX_0(ClassName, ...) \
+  COMPACT_GOOGLE_CEF_LOG_EX_ERROR(ClassName , ##__VA_ARGS__)
+#define COMPACT_GOOGLE_CEF_LOG_0 COMPACT_GOOGLE_CEF_LOG_ERROR
+// Needed for CEF_LOG_IS_ON(ERROR).
+const LogSeverity CEF_LOG_0 = CEF_LOG_ERROR;
 #endif
 
-// As special cases, we can assume that LOG_IS_ON(FATAL) always holds. Also,
-// LOG_IS_ON(DFATAL) always holds in debug mode. In particular, CHECK()s will
+// As special cases, we can assume that CEF_LOG_IS_ON(FATAL) always holds. Also,
+// CEF_LOG_IS_ON(DFATAL) always holds in debug mode. In particular, CHECK()s will
 // always fire if they fail.
-#define LOG_IS_ON(severity) \
-  ((::cef::logging::LOG_ ## severity) >= ::cef::logging::GetMinLogLevel())
+#define CEF_LOG_IS_ON(severity) \
+  ((::cef::logging::CEF_LOG_ ## severity) >= ::cef::logging::GetMinLogLevel())
 
-// We can't do any caching tricks with VLOG_IS_ON() like the
+// We can't do any caching tricks with VCEF_LOG_IS_ON() like the
 // google-glog version since it requires GCC extensions.  This means
 // that using the v-logging functions in conjunction with --vmodule
 // may be slow.
-#define VLOG_IS_ON(verboselevel) \
+#define VCEF_LOG_IS_ON(verboselevel) \
   ((verboselevel) <= ::cef::logging::GetVlogLevel(__FILE__))
 
 // Helper macro which avoids evaluating the arguments to a stream if
@@ -261,76 +261,76 @@ const LogSeverity LOG_0 = LOG_ERROR;
   !(condition) ? (void) 0 : ::cef::logging::LogMessageVoidify() & (stream)
 
 // We use the preprocessor's merging operator, "##", so that, e.g.,
-// LOG(INFO) becomes the token COMPACT_GOOGLE_LOG_INFO.  There's some funny
+// CEF_LOG(INFO) becomes the token COMPACT_GOOGLE_CEF_LOG_INFO.  There's some funny
 // subtle difference between ostream member streaming functions (e.g.,
 // ostream::operator<<(int) and ostream non-member streaming functions
 // (e.g., ::operator<<(ostream&, string&): it turns out that it's
 // impossible to stream something like a string directly to an unnamed
 // ostream. We employ a neat hack by calling the stream() member
 // function of LogMessage which seems to avoid the problem.
-#define LOG_STREAM(severity) COMPACT_GOOGLE_LOG_ ## severity.stream()
+#define CEF_LOG_STREAM(severity) COMPACT_GOOGLE_CEF_LOG_ ## severity.stream()
 
-#define LOG(severity) LAZY_STREAM(LOG_STREAM(severity), LOG_IS_ON(severity))
-#define LOG_IF(severity, condition) \
-  LAZY_STREAM(LOG_STREAM(severity), LOG_IS_ON(severity) && (condition))
+#define CEF_LOG(severity) LAZY_STREAM(CEF_LOG_STREAM(severity), CEF_LOG_IS_ON(severity))
+#define CEF_LOG_IF(severity, condition) \
+  LAZY_STREAM(CEF_LOG_STREAM(severity), CEF_LOG_IS_ON(severity) && (condition))
 
-#define SYSLOG(severity) LOG(severity)
-#define SYSLOG_IF(severity, condition) LOG_IF(severity, condition)
+#define SYSCEF_LOG(severity) CEF_LOG(severity)
+#define SYSCEF_LOG_IF(severity, condition) CEF_LOG_IF(severity, condition)
 
 // The VLOG macros log with negative verbosities.
-#define VLOG_STREAM(verbose_level) \
+#define VCEF_LOG_STREAM(verbose_level) \
   cef::logging::LogMessage(__FILE__, __LINE__, -verbose_level).stream()
 
-#define VLOG(verbose_level) \
-  LAZY_STREAM(VLOG_STREAM(verbose_level), VLOG_IS_ON(verbose_level))
+#define VCEF_LOG(verbose_level) \
+  LAZY_STREAM(VCEF_LOG_STREAM(verbose_level), VCEF_LOG_IS_ON(verbose_level))
 
-#define VLOG_IF(verbose_level, condition) \
-  LAZY_STREAM(VLOG_STREAM(verbose_level), \
-      VLOG_IS_ON(verbose_level) && (condition))
+#define VCEF_LOG_IF(verbose_level, condition) \
+  LAZY_STREAM(VCEF_LOG_STREAM(verbose_level), \
+      VCEF_LOG_IS_ON(verbose_level) && (condition))
 
 #if defined (OS_WIN)
-#define VPLOG_STREAM(verbose_level) \
+#define VPCEF_LOG_STREAM(verbose_level) \
   cef::logging::Win32ErrorLogMessage(__FILE__, __LINE__, -verbose_level, \
     ::cef::logging::GetLastSystemErrorCode()).stream()
 #elif defined(OS_POSIX)
-#define VPLOG_STREAM(verbose_level) \
+#define VPCEF_LOG_STREAM(verbose_level) \
   cef::logging::ErrnoLogMessage(__FILE__, __LINE__, -verbose_level, \
     ::cef::logging::GetLastSystemErrorCode()).stream()
 #endif
 
-#define VPLOG(verbose_level) \
-  LAZY_STREAM(VPLOG_STREAM(verbose_level), VLOG_IS_ON(verbose_level))
+#define VPCEF_LOG(verbose_level) \
+  LAZY_STREAM(VPCEF_LOG_STREAM(verbose_level), VCEF_LOG_IS_ON(verbose_level))
 
-#define VPLOG_IF(verbose_level, condition) \
-  LAZY_STREAM(VPLOG_STREAM(verbose_level), \
-    VLOG_IS_ON(verbose_level) && (condition))
+#define VPCEF_LOG_IF(verbose_level, condition) \
+  LAZY_STREAM(VPCEF_LOG_STREAM(verbose_level), \
+    VCEF_LOG_IS_ON(verbose_level) && (condition))
 
 // TODO(akalin): Add more VLOG variants, e.g. VPLOG.
 
-#define LOG_ASSERT(condition)  \
-  LOG_IF(FATAL, !(condition)) << "Assert failed: " #condition ". "
-#define SYSLOG_ASSERT(condition) \
-  SYSLOG_IF(FATAL, !(condition)) << "Assert failed: " #condition ". "
+#define CEF_LOG_ASSERT(condition)  \
+  CEF_LOG_IF(FATAL, !(condition)) << "Assert failed: " #condition ". "
+#define SYSCEF_LOG_ASSERT(condition) \
+  SYSCEF_LOG_IF(FATAL, !(condition)) << "Assert failed: " #condition ". "
 
 #if defined(OS_WIN)
-#define PLOG_STREAM(severity) \
-  COMPACT_GOOGLE_LOG_EX_ ## severity(Win32ErrorLogMessage, \
+#define PCEF_LOG_STREAM(severity) \
+  COMPACT_GOOGLE_CEF_LOG_EX_ ## severity(Win32ErrorLogMessage, \
       ::cef::logging::GetLastSystemErrorCode()).stream()
 #elif defined(OS_POSIX)
-#define PLOG_STREAM(severity) \
-  COMPACT_GOOGLE_LOG_EX_ ## severity(ErrnoLogMessage, \
+#define PCEF_LOG_STREAM(severity) \
+  COMPACT_GOOGLE_CEF_LOG_EX_ ## severity(ErrnoLogMessage, \
       ::cef::logging::GetLastSystemErrorCode()).stream()
 #endif
 
-#define PLOG(severity)                                          \
-  LAZY_STREAM(PLOG_STREAM(severity), LOG_IS_ON(severity))
+#define PCEF_LOG(severity)                                          \
+  LAZY_STREAM(PCEF_LOG_STREAM(severity), CEF_LOG_IS_ON(severity))
 
-#define PLOG_IF(severity, condition) \
-  LAZY_STREAM(PLOG_STREAM(severity), LOG_IS_ON(severity) && (condition))
+#define PCEF_LOG_IF(severity, condition) \
+  LAZY_STREAM(PCEF_LOG_STREAM(severity), CEF_LOG_IS_ON(severity) && (condition))
 
 // The actual stream used isn't important.
 #define EAT_STREAM_PARAMETERS                                           \
-  true ? (void) 0 : ::cef::logging::LogMessageVoidify() & LOG_STREAM(FATAL)
+  true ? (void) 0 : ::cef::logging::LogMessageVoidify() & CEF_LOG_STREAM(FATAL)
 
 // CHECK dies with a fatal error if condition is not true.  It is *not*
 // controlled by NDEBUG, so the check will be executed regardless of
@@ -340,11 +340,11 @@ const LogSeverity LOG_0 = LOG_ERROR;
 // doing CHECK(FunctionWithSideEffect()) is a common idiom.
 
 #define CHECK(condition)                       \
-  LAZY_STREAM(LOG_STREAM(FATAL), !(condition)) \
+  LAZY_STREAM(CEF_LOG_STREAM(FATAL), !(condition)) \
   << "Check failed: " #condition ". "
 
 #define PCHECK(condition) \
-  LAZY_STREAM(PLOG_STREAM(FATAL), !(condition)) \
+  LAZY_STREAM(PCEF_LOG_STREAM(FATAL), !(condition)) \
   << "Check failed: " #condition ". "
 
 // Helper macro for binary operators.
@@ -436,12 +436,12 @@ DEFINE_CHECK_OP_IMPL(GT, > )
 
 #if ENABLE_DLOG
 
-#define DLOG_IS_ON(severity) LOG_IS_ON(severity)
-#define DLOG_IF(severity, condition) LOG_IF(severity, condition)
-#define DLOG_ASSERT(condition) LOG_ASSERT(condition)
-#define DPLOG_IF(severity, condition) PLOG_IF(severity, condition)
-#define DVLOG_IF(verboselevel, condition) VLOG_IF(verboselevel, condition)
-#define DVPLOG_IF(verboselevel, condition) VPLOG_IF(verboselevel, condition)
+#define DCEF_LOG_IS_ON(severity) CEF_LOG_IS_ON(severity)
+#define DCEF_LOG_IF(severity, condition) CEF_LOG_IF(severity, condition)
+#define DCEF_LOG_ASSERT(condition) CEF_LOG_ASSERT(condition)
+#define DPCEF_LOG_IF(severity, condition) PCEF_LOG_IF(severity, condition)
+#define DVCEF_LOG_IF(verboselevel, condition) VCEF_LOG_IF(verboselevel, condition)
+#define DVPCEF_LOG_IF(verboselevel, condition) VPCEF_LOG_IF(verboselevel, condition)
 
 #else  // ENABLE_DLOG
 
@@ -450,12 +450,12 @@ DEFINE_CHECK_OP_IMPL(GT, > )
 // is not defined).  Contrast this with DCHECK et al., which has
 // different behavior.
 
-#define DLOG_IS_ON(severity) false
-#define DLOG_IF(severity, condition) EAT_STREAM_PARAMETERS
-#define DLOG_ASSERT(condition) EAT_STREAM_PARAMETERS
-#define DPLOG_IF(severity, condition) EAT_STREAM_PARAMETERS
-#define DVLOG_IF(verboselevel, condition) EAT_STREAM_PARAMETERS
-#define DVPLOG_IF(verboselevel, condition) EAT_STREAM_PARAMETERS
+#define DCEF_LOG_IS_ON(severity) false
+#define DCEF_LOG_IF(severity, condition) EAT_STREAM_PARAMETERS
+#define DCEF_LOG_ASSERT(condition) EAT_STREAM_PARAMETERS
+#define DPCEF_LOG_IF(severity, condition) EAT_STREAM_PARAMETERS
+#define DVCEF_LOG_IF(verboselevel, condition) EAT_STREAM_PARAMETERS
+#define DVPCEF_LOG_IF(verboselevel, condition) EAT_STREAM_PARAMETERS
 
 #endif  // ENABLE_DLOG
 
@@ -471,46 +471,46 @@ enum { DEBUG_MODE = ENABLE_DLOG };
 
 #undef ENABLE_DLOG
 
-#define DLOG(severity)                                          \
-  LAZY_STREAM(LOG_STREAM(severity), DLOG_IS_ON(severity))
+#define DCEF_LOG(severity)                                          \
+  LAZY_STREAM(CEF_LOG_STREAM(severity), DCEF_LOG_IS_ON(severity))
 
-#define DPLOG(severity)                                         \
-  LAZY_STREAM(PLOG_STREAM(severity), DLOG_IS_ON(severity))
+#define DPCEF_LOG(severity)                                         \
+  LAZY_STREAM(PCEF_LOG_STREAM(severity), DCEF_LOG_IS_ON(severity))
 
-#define DVLOG(verboselevel) DVLOG_IF(verboselevel, VLOG_IS_ON(verboselevel))
+#define DVCEF_LOG(verboselevel) DVCEF_LOG_IF(verboselevel, VCEF_LOG_IS_ON(verboselevel))
 
-#define DVPLOG(verboselevel) DVPLOG_IF(verboselevel, VLOG_IS_ON(verboselevel))
+#define DVPCEF_LOG(verboselevel) DVPCEF_LOG_IF(verboselevel, VCEF_LOG_IS_ON(verboselevel))
 
 // Definitions for DCHECK et al.
 
 #if DCHECK_IS_ON()
 
-#define COMPACT_GOOGLE_LOG_EX_DCHECK(ClassName, ...) \
-  COMPACT_GOOGLE_LOG_EX_FATAL(ClassName , ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_DCHECK COMPACT_GOOGLE_LOG_FATAL
-const LogSeverity LOG_DCHECK = LOG_FATAL;
+#define COMPACT_GOOGLE_CEF_LOG_EX_DCHECK(ClassName, ...) \
+  COMPACT_GOOGLE_CEF_LOG_EX_FATAL(ClassName , ##__VA_ARGS__)
+#define COMPACT_GOOGLE_CEF_LOG_DCHECK COMPACT_GOOGLE_CEF_LOG_FATAL
+const LogSeverity CEF_LOG_DCHECK = CEF_LOG_FATAL;
 
 #else  // DCHECK_IS_ON()
 
 // These are just dummy values.
-#define COMPACT_GOOGLE_LOG_EX_DCHECK(ClassName, ...) \
-  COMPACT_GOOGLE_LOG_EX_INFO(ClassName , ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_DCHECK COMPACT_GOOGLE_LOG_INFO
-const LogSeverity LOG_DCHECK = LOG_INFO;
+#define COMPACT_GOOGLE_CEF_LOG_EX_DCHECK(ClassName, ...) \
+  COMPACT_GOOGLE_CEF_LOG_EX_INFO(ClassName , ##__VA_ARGS__)
+#define COMPACT_GOOGLE_CEF_LOG_DCHECK COMPACT_GOOGLE_CEF_LOG_INFO
+const LogSeverity CEF_LOG_DCHECK = CEF_LOG_INFO;
 
 #endif  // DCHECK_IS_ON()
 
 // DCHECK et al. make sure to reference |condition| regardless of
 // whether DCHECKs are enabled; this is so that we don't get unused
 // variable warnings if the only use of a variable is in a DCHECK.
-// This behavior is different from DLOG_IF et al.
+// This behavior is different from DCEF_LOG_IF et al.
 
 #define DCHECK(condition)                                           \
-  LAZY_STREAM(LOG_STREAM(DCHECK), DCHECK_IS_ON() && !(condition))   \
+  LAZY_STREAM(CEF_LOG_STREAM(DCHECK), DCHECK_IS_ON() && !(condition))   \
       << "Check failed: " #condition ". "
 
 #define DPCHECK(condition)                                          \
-  LAZY_STREAM(PLOG_STREAM(DCHECK), DCHECK_IS_ON() && !(condition))  \
+  LAZY_STREAM(PCEF_LOG_STREAM(DCHECK), DCHECK_IS_ON() && !(condition))  \
       << "Check failed: " #condition ". "
 
 // Helper macro for binary operators.
@@ -520,10 +520,10 @@ const LogSeverity LOG_DCHECK = LOG_INFO;
     if (std::string* _result = cef::logging::Check##name##Impl(           \
             (val1), (val2), #val1 " " #op " " #val2))                     \
   cef::logging::LogMessage(__FILE__, __LINE__,                            \
-      ::cef::logging::LOG_DCHECK, _result).stream()
+      ::cef::logging::CEF_LOG_DCHECK, _result).stream()
 
 // Equality/Inequality checks - compare two values, and log a
-// LOG_DCHECK message including the two values when the result is not
+// CEF_LOG_DCHECK message including the two values when the result is not
 // as expected.  The values must have operator<<(ostream, ...)
 // defined.
 //
@@ -549,7 +549,7 @@ const LogSeverity LOG_DCHECK = LOG_INFO;
 #define DCHECK_GT(val1, val2) DCHECK_OP(GT, > , val1, val2)
 
 #if defined(NDEBUG) && defined(OS_CHROMEOS)
-#define NOTREACHED() LOG(ERROR) << "NOTREACHED() hit in " << \
+#define NOTREACHED() CEF_LOG(ERROR) << "NOTREACHED() hit in " << \
     __FUNCTION__ << ". "
 #else
 #define NOTREACHED() DCHECK(false)
@@ -557,7 +557,7 @@ const LogSeverity LOG_DCHECK = LOG_INFO;
 
 // Redefine the standard assert to use our nice log files
 #undef assert
-#define assert(x) DLOG_ASSERT(x)
+#define assert(x) DCEF_LOG_ASSERT(x)
 
 // This class more or less represents a particular log message.  You
 // create an instance of LogMessage and then stream stuff to it.
@@ -565,15 +565,15 @@ const LogSeverity LOG_DCHECK = LOG_INFO;
 // full message gets streamed to the appropriate destination.
 //
 // You shouldn't actually use LogMessage's constructor to log things,
-// though.  You should use the LOG() macro (and variants thereof)
+// though.  You should use the CEF_LOG() macro (and variants thereof)
 // above.
 class LogMessage {
  public:
-  // Used for LOG(severity).
+  // Used for CEF_LOG(severity).
   LogMessage(const char* file, int line, LogSeverity severity);
 
   // Used for CHECK_EQ(), etc. Takes ownership of the given string.
-  // Implied severity = LOG_FATAL.
+  // Implied severity = CEF_LOG_FATAL.
   LogMessage(const char* file, int line, std::string* result);
 
   // Used for DCHECK_EQ(), etc. Takes ownership of the given string.
@@ -707,14 +707,14 @@ inline std::ostream& operator<<(std::ostream& out, const std::wstring& wstr) {
 //   1 -- Warn at compile time
 //   2 -- Fail at compile time
 //   3 -- Fail at runtime (DCHECK)
-//   4 -- [default] LOG(ERROR) at runtime
-//   5 -- LOG(ERROR) at runtime, only once per call-site
+//   4 -- [default] CEF_LOG(ERROR) at runtime
+//   5 -- CEF_LOG(ERROR) at runtime, only once per call-site
 
 #ifndef NOTIMPLEMENTED_POLICY
 #if defined(OS_ANDROID) && defined(OFFICIAL_BUILD)
 #define NOTIMPLEMENTED_POLICY 0
 #else
-// Select default policy: LOG(ERROR)
+// Select default policy: CEF_LOG(ERROR)
 #define NOTIMPLEMENTED_POLICY 4
 #endif
 #endif
@@ -737,11 +737,11 @@ inline std::ostream& operator<<(std::ostream& out, const std::wstring& wstr) {
 #elif NOTIMPLEMENTED_POLICY == 3
 #define NOTIMPLEMENTED() NOTREACHED()
 #elif NOTIMPLEMENTED_POLICY == 4
-#define NOTIMPLEMENTED() LOG(ERROR) << NOTIMPLEMENTED_MSG
+#define NOTIMPLEMENTED() CEF_LOG(ERROR) << NOTIMPLEMENTED_MSG
 #elif NOTIMPLEMENTED_POLICY == 5
 #define NOTIMPLEMENTED() do {\
   static bool logged_once = false;\
-  LOG_IF(ERROR, !logged_once) << NOTIMPLEMENTED_MSG;\
+  CEF_LOG_IF(ERROR, !logged_once) << NOTIMPLEMENTED_MSG;\
   logged_once = true;\
 } while(0);\
 EAT_STREAM_PARAMETERS

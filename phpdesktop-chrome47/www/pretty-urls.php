@@ -1,8 +1,36 @@
+<style type="text/css">@import url("style.css");</style>
 <a href="/index.php">Go back to index</a>
 | <a href="<?php echo $_SERVER["REQUEST_URI"];?>">Refresh</a>
 
 <title>Pretty urls</title>
 <h1>Pretty urls</h1>
+
+<h2>$_SERVER</h2>
+
+<?php
+function print_url_variables()
+{
+    $url_vars = [];
+    foreach ($_SERVER as $k => $v) {
+        if (is_array($v)) {
+            continue;
+        }
+        if (strpos($v, "pretty-urls.php") !== false
+                || strpos($v, "company") !== false
+                || strpos($v, "xyz") !== false
+                || strpos($v, "foo") !== false
+                || strpos($v, "bar") !== false
+                || $k == "REQUEST_METHOD"
+                || $k == "REQUEST_URI") {
+            $url_vars[$k] = $v;
+        }
+    }
+    print "<pre>";
+    print_r($url_vars);
+    print "</pre>";
+}
+print_url_variables();
+?>
 
 <p>
     Pretty urls can be handled by setting ["web_server"]["404_handler"]
@@ -27,7 +55,7 @@
 </p>
 
 <p>
-    Test POST request to 
+    Test POST request to
     <select onchange="document.getElementById('myform').action=this.value;">
         <option value="/company/5">/company/5</option>
         <option value="/company.html">/company.html</option>
@@ -46,13 +74,13 @@
 
 <?php if ($_SERVER["REQUEST_METHOD"] == "POST"): ?>
 <h2>POST data</h2>
-<pre style="background:#ddd;">
+<pre>
 <?php print_r($_POST); ?>
 </pre>
 <?php endif; ?>
 
 <p>
-    Other tests (these urls do not require 404_handler to be set): 
+    Other tests (these urls do not require 404_handler to be set):
     <ul>
     <li><a href="/pretty-urls.php/company/5">
         /pretty-urls.php/company/5</a>
@@ -65,29 +93,4 @@
     </ul>
 </p>
 
-<h2>$_SERVER</h2>
 
-<?php
-function print_url_variables()
-{
-    $url_vars = [];
-    foreach ($_SERVER as $k => $v) {
-        if (is_array($v)) {
-            continue;
-        }
-        if (strpos($v, "pretty-urls.php") !== false
-                || strpos($v, "company") !== false
-                || strpos($v, "xyz") !== false
-                || strpos($v, "foo") !== false
-                || strpos($v, "bar") !== false
-                || $k == "REQUEST_METHOD"
-                || $k == "REQUEST_URI") {
-            $url_vars[$k] = $v;
-        }
-    }
-    print "<pre style='background:#ddd;'>";
-    print_r($url_vars);
-    print "</pre>";
-}
-print_url_variables();
-?>

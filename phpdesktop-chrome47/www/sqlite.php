@@ -1,3 +1,4 @@
+<style type="text/css">@import url("style.css");</style>
 <a href="index.php">Go back to index</a>
 | <a href="<?php echo $_SERVER["REQUEST_URI"];?>">Refresh</a>
 
@@ -19,7 +20,7 @@ INSERT INTO test VALUES (2, "Beatrice");
 HTML;
 
 print("<h2>Create table and insert exampe data</h2>");
-print("<pre style='background:#ddd'>");
+print("<pre>");
 $queries = explode(";", $queries);
 foreach ($queries as $query) {
     $query = trim($query);
@@ -36,7 +37,7 @@ print("</pre>");
 
 print("<h2>Fetch data</h2>");
 print("PDO_FetchAll('SELECT * FROM test')");
-print("<pre style='background:#ddd'>");
+print("<pre>");
 $data = PDO_FetchAll("SELECT * FROM test");
 print_r($data);
 print("</pre>");

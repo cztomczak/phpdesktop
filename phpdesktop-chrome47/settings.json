@@ -12,8 +12,8 @@
     "main_window": {
         "title": "PHP Desktop Chrome",
         "icon": "",
-        "default_size": [1024, 768],
-        "minimum_size": [800, 600],
+        "default_size": [800, 600],
+        "minimum_size": [640, 480],
         "maximum_size": [0, 0],
         "disable_maximize_button": false,
         "center_on_screen": true,

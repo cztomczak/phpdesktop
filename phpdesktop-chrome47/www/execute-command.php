@@ -1,3 +1,4 @@
+<style type="text/css">@import url("style.css");</style>
 <a href="index.php">Go back to index</a>
 | <a href="<?php echo $_SERVER["REQUEST_URI"];?>">Refresh</a>
 
@@ -5,7 +6,7 @@
 <title>Execute command</title>
 <h1>Execute command</h1>
 
-<pre style="background:#ddd">
+<pre>
 // Execution of commands may hang on Windows XP for some programs,
 // wmic.exe is one of them. The solution is to use a command like
 // this "echo | command...". See Issue 124:
