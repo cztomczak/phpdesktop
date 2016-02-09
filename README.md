@@ -40,7 +40,6 @@ like Perl, Ruby, Python, that provide a CGI interface for script execution. See 
 
 ## Help ##
 
-  * See the [Hello World!](../../wiki/Knowledge-Base#hello-world) example
   * Documentation is on the [wiki pages](../../wiki). Start with the [Knowledge Base](../../wiki/Knowledge-Base), 
     [Settings](../../wiki/Settings) and [Chrome settings](../../wiki/Chrome-settings) wiki pages.
   * Having problems or questions? Go to the [PHP Desktop Forum](https://groups.google.com/group/phpdesktop).
