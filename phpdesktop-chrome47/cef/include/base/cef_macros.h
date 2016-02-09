@@ -41,6 +41,7 @@
 // updated to match.
 
 #include <stddef.h>  // For size_t.
+#include "include/base/cef_build.h"  // For COMPILER_MSVC
 
 #if !defined(ALLOW_THIS_IN_INITIALIZER_LIST)
 #if defined(COMPILER_MSVC)
@@ -165,7 +166,8 @@ struct CompileAssert {
 }  // namespace cef
 
 #define COMPILE_ASSERT(expr, msg) \
-  typedef cef::CompileAssert<(bool(expr))> msg[bool(expr) ? 1 : -1] ALLOW_UNUSED
+  typedef cef::CompileAssert<(bool(expr))> msg[bool(expr) ? 1 : -1] \
+      ALLOW_UNUSED_TYPE
 
 // Implementation details of COMPILE_ASSERT:
 //

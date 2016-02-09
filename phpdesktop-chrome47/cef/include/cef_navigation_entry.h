@@ -1,4 +1,4 @@
-// Copyright (c) 2012 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2014 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -34,18 +34,20 @@
 // tools directory for more information.
 //
 
-#ifndef CEF_INCLUDE_CEF_DOWNLOAD_ITEM_H_
-#define CEF_INCLUDE_CEF_DOWNLOAD_ITEM_H_
+#ifndef CEF_INCLUDE_CEF_NAVIGATION_ENTRY_H_
+#define CEF_INCLUDE_CEF_NAVIGATION_ENTRY_H_
 #pragma once
 
 #include "include/cef_base.h"
 
 ///
-// Class used to represent a download item.
+// Class used to represent an entry in navigation history.
 ///
 /*--cef(source=library)--*/
-class CefDownloadItem : public virtual CefBase {
+class CefNavigationEntry : public virtual CefBase {
  public:
+  typedef cef_transition_type_t TransitionType;
+
   ///
   // Returns true if this object is valid. Do not call any other methods if this
   // function returns false.
@@ -54,101 +56,58 @@ class CefDownloadItem : public virtual CefBase {
   virtual bool IsValid() =0;
 
   ///
-  // Returns true if the download is in progress.
-  ///
-  /*--cef()--*/
-  virtual bool IsInProgress() =0;
-
-  ///
-  // Returns true if the download is complete.
-  ///
-  /*--cef()--*/
-  virtual bool IsComplete() =0;
-
-  ///
-  // Returns true if the download has been canceled or interrupted.
-  ///
-  /*--cef()--*/
-  virtual bool IsCanceled() =0;
-
-  ///
-  // Returns a simple speed estimate in bytes/s.
-  ///
-  /*--cef()--*/
-  virtual int64 GetCurrentSpeed() =0;
-
-  ///
-  // Returns the rough percent complete or -1 if the receive total size is
-  // unknown.
-  ///
-  /*--cef()--*/
-  virtual int GetPercentComplete() =0;
-
-  ///
-  // Returns the total number of bytes.
-  ///
-  /*--cef()--*/
-  virtual int64 GetTotalBytes() =0;
-
-  ///
-  // Returns the number of received bytes.
-  ///
-  /*--cef()--*/
-  virtual int64 GetReceivedBytes() =0;
-
-  ///
-  // Returns the time that the download started.
-  ///
-  /*--cef()--*/
-  virtual CefTime GetStartTime() =0;
-
-  ///
-  // Returns the time that the download ended.
-  ///
-  /*--cef()--*/
-  virtual CefTime GetEndTime() =0;
-
-  ///
-  // Returns the full path to the downloaded or downloading file.
-  ///
-  /*--cef()--*/
-  virtual CefString GetFullPath() =0;
-
-  ///
-  // Returns the unique identifier for this download.
-  ///
-  /*--cef()--*/
-  virtual uint32 GetId() =0;
-
-  ///
-  // Returns the URL.
+  // Returns the actual URL of the page. For some pages this may be data: URL or
+  // similar. Use GetDisplayURL() to return a display-friendly version.
   ///
   /*--cef()--*/
   virtual CefString GetURL() =0;
 
   ///
-  // Returns the original URL before any redirections.
+  // Returns a display-friendly version of the URL.
   ///
   /*--cef()--*/
-  virtual CefString GetOriginalUrl() =0;
+  virtual CefString GetDisplayURL() =0;
 
   ///
-  // Returns the suggested file name.
+  // Returns the original URL that was entered by the user before any redirects.
   ///
   /*--cef()--*/
-  virtual CefString GetSuggestedFileName() =0;
+  virtual CefString GetOriginalURL() =0;
 
   ///
-  // Returns the content disposition.
+  // Returns the title set by the page. This value may be empty.
   ///
   /*--cef()--*/
-  virtual CefString GetContentDisposition() =0;
+  virtual CefString GetTitle() =0;
 
   ///
-  // Returns the mime type.
+  // Returns the transition type which indicates what the user did to move to
+  // this page from the previous page.
+  ///
+  /*--cef(default_retval=TT_EXPLICIT)--*/
+  virtual TransitionType GetTransitionType() =0;
+
+  ///
+  // Returns true if this navigation includes post data.
   ///
   /*--cef()--*/
-  virtual CefString GetMimeType() =0;
+  virtual bool HasPostData() =0;
+
+  ///
+  // Returns the time for the last known successful navigation completion. A
+  // navigation may be completed more than once if the page is reloaded. May be
+  // 0 if the navigation has not yet completed.
+  ///
+  /*--cef()--*/
+  virtual CefTime GetCompletionTime() =0;
+
+  ///
+  // Returns the HTTP status code for the last known successful navigation
+  // response. May be 0 if the response has not yet been received or if the
+  // navigation has not yet completed.
+  ///
+  /*--cef()--*/
+  virtual int GetHttpStatusCode() =0;
 };
 
-#endif  // CEF_INCLUDE_CEF_DOWNLOAD_ITEM_H_
+#endif  // CEF_INCLUDE_CEF_NAVIGATION_ENTRY_H_

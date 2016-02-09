@@ -132,22 +132,6 @@
 #error Please add support for your compiler in cef_build.h
 #endif
 
-// Annotate a virtual method indicating it must be overriding a virtual
-// method in the parent class.
-// Use like:
-//   virtual void foo() OVERRIDE;
-#ifndef OVERRIDE
-#if defined(__clang__) || defined(COMPILER_MSVC)
-#define OVERRIDE override
-#elif defined(COMPILER_GCC) && __cplusplus >= 201103 && \
-      (__GNUC__ * 10000 + __GNUC_MINOR__ * 100) >= 40700
-// GCC 4.7 supports explicit virtual overrides when C++11 support is enabled.
-#define OVERRIDE override
-#else
-#define OVERRIDE
-#endif
-#endif  // OVERRIDE
-
 // Annotate a function indicating the caller must examine the return value.
 // Use like:
 //   int foo() WARN_UNUSED_RESULT;
@@ -160,19 +144,49 @@
 #endif
 #endif  // WARN_UNUSED_RESULT
 
+// Annotate a typedef or function indicating it's ok if it's not used.
+// Use like:
+//   typedef Foo Bar ALLOW_UNUSED_TYPE;
+#ifndef ALLOW_UNUSED_TYPE
+#if defined(COMPILER_GCC)
+#define ALLOW_UNUSED_TYPE __attribute__((unused))
+#else
+#define ALLOW_UNUSED_TYPE
+#endif
+#endif  // ALLOW_UNUSED_TYPE
+
 // Annotate a variable indicating it's ok if the variable is not used.
 // (Typically used to silence a compiler warning when the assignment
 // is important for some other reason.)
 // Use like:
-//   int x ALLOW_UNUSED = ...;
-#ifndef ALLOW_UNUSED
-#if defined(COMPILER_GCC)
-#define ALLOW_UNUSED __attribute__((unused))
-#else
-#define ALLOW_UNUSED
+//   int x = ...;
+//   ALLOW_UNUSED_LOCAL(x);
+#ifndef ALLOW_UNUSED_LOCAL
+#define ALLOW_UNUSED_LOCAL(x) false ? (void)x : (void)0
 #endif
-#endif  // ALLOW_UNUSED
 
 #endif  // !BUILDING_CEF_SHARED
+
+// Annotate a virtual method indicating it must be overriding a virtual method
+// in the parent class.
+// Use like:
+//   void foo() OVERRIDE;
+// NOTE: This define should only be used in classes exposed to the client since
+// C++11 support may not be enabled in client applications. CEF internal classes
+// should use the `override` keyword directly.
+#ifndef OVERRIDE
+#if defined(__clang__)
+#define OVERRIDE override
+#elif defined(COMPILER_MSVC) && _MSC_VER >= 1600
+// Visual Studio 2010 and later support override.
+#define OVERRIDE override
+#elif defined(COMPILER_GCC) && __cplusplus >= 201103 && \
+      (__GNUC__ * 10000 + __GNUC_MINOR__ * 100) >= 40700
+// GCC 4.7 supports explicit virtual overrides when C++11 support is enabled.
+#define OVERRIDE override
+#else
+#define OVERRIDE
+#endif
+#endif  // OVERRIDE
 
 #endif  // CEF_INCLUDE_BASE_CEF_BUILD_H_
