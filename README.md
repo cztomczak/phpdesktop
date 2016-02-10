@@ -41,8 +41,8 @@ like Perl, Ruby, Python, that provide a CGI interface for script execution. See 
 ## Help ##
 
 * Ask questions and report problems on the [PHP Desktop Forum](https://groups.google.com/d/forum/phpdesktop)
-* Please do not submit issues in the issue tracker
-* Documentation is on the [wiki pages](../../wiki). Start with the [Knowledge Base](../../wiki/Knowledge-Base), 
+* Please do not create issues in the issue tracker
+* Documentation is on the [Wiki Pages](../../wiki). Start with the [Knowledge Base](../../wiki/Knowledge-Base), 
     [Settings](../../wiki/Settings) and [Chrome settings](../../wiki/Chrome-settings) wiki pages.
 
 ## Tutorials ##
