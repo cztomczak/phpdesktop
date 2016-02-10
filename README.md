@@ -40,10 +40,10 @@ like Perl, Ruby, Python, that provide a CGI interface for script execution. See 
 
 ## Help ##
 
-  * Documentation is on the [wiki pages](../../wiki). Start with the [Knowledge Base](../../wiki/Knowledge-Base), 
+* Ask questions and report problems on the [PHP Desktop Forum](https://groups.google.com/group/phpdesktop)
+* Please do not submit issues in the issue tracker
+* Documentation is on the [wiki pages](../../wiki). Start with the [Knowledge Base](../../wiki/Knowledge-Base), 
     [Settings](../../wiki/Settings) and [Chrome settings](../../wiki/Chrome-settings) wiki pages.
-  * Having problems or questions? Go to the [PHP Desktop Forum](https://groups.google.com/group/phpdesktop).
-  * Please do not submit new issues in the tracker ("Issues" tab in the top menu), use the Forum instead.
 
 ## Tutorials ##
 
