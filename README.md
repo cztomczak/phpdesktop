@@ -28,7 +28,7 @@ when using PHP Desktop, as it is running an internal web server and serving page
 execution PHP-CGI process is killed and all memory is always freed.
 
 Lots of other useful information can be found on the [Knowledge Base](../../wiki/Knowledge-Base) wiki page and on the 
-[PHP Desktop Forum](http://groups.google.com/group/phpdesktop).
+[PHP Desktop Forum](https://groups.google.com/d/forum/phpdesktop).
 
 ## Downloads ##
 
@@ -40,7 +40,7 @@ like Perl, Ruby, Python, that provide a CGI interface for script execution. See 
 
 ## Help ##
 
-* Ask questions and report problems on the [PHP Desktop Forum](https://groups.google.com/group/phpdesktop)
+* Ask questions and report problems on the [PHP Desktop Forum](https://groups.google.com/d/forum/phpdesktop)
 * Please do not submit issues in the issue tracker
 * Documentation is on the [wiki pages](../../wiki). Start with the [Knowledge Base](../../wiki/Knowledge-Base), 
     [Settings](../../wiki/Settings) and [Chrome settings](../../wiki/Chrome-settings) wiki pages.
@@ -62,4 +62,4 @@ a higher priority, but apart from that there are no other guarantees.
 ## Built a cool app? ##
 
 Built a cool app using PHP Desktop and would like to like to share info with the community? 
-Talk about it on the [PHP Desktop Forum](https://groups.google.com/group/phpdesktop).
+Talk about it on the [PHP Desktop Forum](https://groups.google.com/d/forum/phpdesktop).
