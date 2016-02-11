@@ -25,6 +25,8 @@
 extern HINSTANCE g_hInstance;
 extern wchar_t g_windowClassName[256];
 extern std::map<HWND, BrowserWindow*> g_browserWindows; // browser_window.cpp
+std::map<HWND, bool> g_isBrowserLoading;
+
 // This will be set to false when application completes loading
 // of the initial webpage in main browser window. If the OnLoadError
 // callback gets called it means that firewall has blocked the
@@ -322,6 +324,16 @@ void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> cefBrowser,
                                 bool canGoForward) {
     LOG_DEBUG << "OnLoadingStateChange: loading=" << isLoading << ", url=" 
             << cefBrowser->GetMainFrame()->GetURL().ToString().c_str();
+
+    // Is browser loading - if so changing mouse cursor in main.cpp
+    BrowserWindow* browserWindow = GetBrowserWindow(cefBrowser->GetHost()->GetWindowHandle());
+    if (!browserWindow) {
+        LOG_ERROR << "GetWindowHandle() failed in OnLoadingStateChange";
+        return;
+    }
+    g_isBrowserLoading[browserWindow->GetWindowHandle()] = isLoading;
+
+    // Start page loading
     static int calls = 0;
     calls++;
     if (calls > 1) {

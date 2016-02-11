@@ -32,6 +32,13 @@ SingleInstanceApplication g_singleInstanceApplication;
 wchar_t* g_singleInstanceApplicationGuid = 0;
 wchar_t g_windowClassName[256] = L"";
 HINSTANCE g_hInstance = 0;
+
+extern std::map<HWND, bool> g_isBrowserLoading; // client_handler.cpp
+// Default cursor
+HCURSOR g_arrowCursor = 0;
+// Standard arrow and small hourglass
+HCURSOR g_appStartingCursor = 0;
+
 extern std::map<HWND, BrowserWindow*> g_browserWindows; // browser_window.cpp
 std::string g_cgiEnvironmentFromArgv = "";
 
@@ -160,9 +167,42 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
+
+void CALLBACK CheckMousePointerTimer(HWND hwnd, UINT uMsg, UINT timerId, DWORD dwTime)
+{
+    HWND activeHwnd = GetActiveWindow();
+    if (!activeHwnd) {
+        return;
+    }
+    BrowserWindow* browserWindow = GetBrowserWindow(activeHwnd);
+    if (!browserWindow) {
+        return;
+    }
+    std::map<HWND, bool>::iterator it;
+    it = g_isBrowserLoading.find(browserWindow->GetWindowHandle());
+    if (it != g_isBrowserLoading.end()) {
+        bool isLoading = it->second;
+        if (isLoading && GetCursor() == g_arrowCursor) {
+            SetCursor(g_appStartingCursor);
+        } else if (!isLoading && GetCursor() == g_appStartingCursor) {
+            SetCursor(g_arrowCursor);
+        }
+    }
+}
+
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     LPTSTR lpstrCmdLine, int nCmdShow) {
     g_hInstance = hInstance;
+
+    // Mouse cursor indicator during loading of a web page
+    g_arrowCursor = (HCURSOR) LoadImage(
+            0, MAKEINTRESOURCE(IDC_ARROW), IMAGE_CURSOR, 0, 0,
+            LR_DEFAULTCOLOR | LR_DEFAULTSIZE | LR_SHARED);
+    g_appStartingCursor = (HCURSOR) LoadImage(
+            0, MAKEINTRESOURCE(IDC_APPSTARTING), IMAGE_CURSOR, 0, 0,
+            LR_DEFAULTCOLOR | LR_DEFAULTSIZE | LR_SHARED);
+    SetTimer(NULL, 0, 100, (TIMERPROC)&CheckMousePointerTimer);
+
     json_value* appSettings = GetApplicationSettings();
     if (GetApplicationSettingsError().length()) {
         std::string error = GetApplicationSettingsError();
