@@ -337,7 +337,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="AUTHORS.txt" />
-    <None Include="before-release.txt" />
     <None Include="cef\README.txt" />
     <None Include="icon.ico" />
     <None Include=".gitignore" />

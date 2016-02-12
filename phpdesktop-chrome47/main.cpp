@@ -42,6 +42,29 @@ HCURSOR g_appStartingCursor = 0;
 extern std::map<HWND, BrowserWindow*> g_browserWindows; // browser_window.cpp
 std::string g_cgiEnvironmentFromArgv = "";
 
+NOTIFYICONDATA GetTrayData(HWND hwnd)
+{
+    static NOTIFYICONDATA tray = {0};
+    tray.hWnd = hwnd;
+    if (tray.cbSize) {
+        return tray;
+    }
+    json_value* appSettings = GetApplicationSettings();
+    std::string main_window_title = (*appSettings)["main_window"]["title"];
+    std::string minimize_to_tray_message = (*appSettings)["main_window"]["minimize_to_tray_message"];
+    tray.cbSize = sizeof(tray);
+    tray.uID = 1;
+    tray.uCallbackMessage = WM_TRAY_MESSAGE;
+    tray.hIcon = (HICON)LoadImage(g_hInstance, MAKEINTRESOURCE(IDR_MAINWINDOW), IMAGE_ICON,
+        GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON),
+        LR_DEFAULTCOLOR);
+    wcscpy_s(tray.szInfo, 256, Utf8ToWide(minimize_to_tray_message).c_str());
+    wcscpy_s(tray.szInfoTitle, 64, Utf8ToWide(main_window_title).c_str());
+    tray.uFlags = NIF_ICON | NIF_INFO | NIF_MESSAGE;
+    tray.dwInfoFlags = NIIF_NONE;
+    return tray;
+}
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                             LPARAM lParam) {
     BrowserWindow* browser = 0;
@@ -55,19 +78,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
 
     // Minimize to system tray
     bool minimize_to_tray = (*appSettings)["main_window"]["minimize_to_tray"];
-    std::string minimize_to_tray_message = (*appSettings)["main_window"]["minimize_to_tray_message"];
-    NOTIFYICONDATA tray = {0};
-    tray.cbSize = sizeof(tray);
-    tray.hWnd = hwnd;
-    tray.uID = 1;
-    tray.uCallbackMessage = WM_TRAY_MESSAGE;
-    tray.hIcon = (HICON) LoadImage(g_hInstance, MAKEINTRESOURCE(IDR_MAINWINDOW), IMAGE_ICON,
-                                   GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON),
-                                   LR_DEFAULTCOLOR);
-    wcscpy_s(tray.szInfo, 256, Utf8ToWide(minimize_to_tray_message).c_str());
-    wcscpy_s(tray.szInfoTitle, 64, Utf8ToWide(main_window_title).c_str());
-    tray.uFlags = NIF_ICON | NIF_INFO | NIF_MESSAGE;
-    tray.dwInfoFlags = NIIF_NONE;
+    if (CountBrowserWindows() > 1) {
+        minimize_to_tray = false;
+    }
 
     switch (uMsg) {
         case WM_SIZE:
@@ -79,6 +92,17 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                                "could not fetch BrowserWindow";
             }
             break;
+        case WM_MOVE:
+        case WM_MOVING:
+        case WM_SIZING:
+            browser = GetBrowserWindow(hwnd);
+            if (browser) {
+                browser->GetCefBrowser()->GetHost()->NotifyMoveOrResizeStarted();
+            } else {
+                LOG_WARNING << "WindowProc(): event WM_MOVING/WM_MOVE/WM_SIZING: "
+                    "could not fetch BrowserWindow";
+            }
+            return 0;
         case WM_CREATE:
             if (GetWindow(hwnd, GW_OWNER)) {
                 browser = new BrowserWindow(hwnd, true);
@@ -92,13 +116,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             RemoveBrowserWindow(hwnd);
             if (g_browserWindows.empty()) {
                 StopWebServer();
-#ifdef DEBUG
-                // Debugging mongoose, see InitializeLogging().
-                printf("----------------------------------------");
-                printf("----------------------------------------\n");
+                Shell_NotifyIcon(NIM_DELETE, &GetTrayData(hwnd));
 
-                Shell_NotifyIcon(NIM_DELETE, &tray);
-#endif
                 // Cannot call PostQuitMessage as cookies won't be flushed to disk
                 // if application is closed immediately. See comment #2:
                 // https://code.google.com/p/phpdesktop/issues/detail?id=146
@@ -108,6 +127,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                 // -------------------
                 // PostQuitMessage(0);
                 // -------------------
+
+                #ifdef DEBUG
+                // Debugging mongoose, see InitializeLogging().
+                printf("----------------------------------------");
+                printf("----------------------------------------\n");
+                #endif
             }
             return 0;
         case WM_GETMINMAXINFO:
@@ -133,6 +158,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             }
             break;
         case WM_ERASEBKGND:
+            // Erase the background when the browser does not exist.
             browser = GetBrowserWindow(hwnd);
             if (browser && browser->GetCefBrowser().get()) {
                 CefWindowHandle hwnd = \
@@ -140,17 +166,22 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                 if (hwnd) {
                     // Dont erase the background if the browser window has been loaded
                     // (this avoids flashing)
-                    return 1;
+                    return 0;
                 }
             }
             break;
+        case WM_PAINT:
+            PAINTSTRUCT ps;
+            BeginPaint(hwnd, &ps);
+            EndPaint(hwnd, &ps);
+            return 0;
         case WM_SYSCOMMAND:
-            if (wParam == SC_MINIMIZE && minimize_to_tray && !GetBrowserWindow(hwnd)->IsPopup()) {
+            if (wParam == SC_MINIMIZE && minimize_to_tray) {
                 LOG_DEBUG << "Minimize to tray";
                 ShowWindow(hwnd, SW_MINIMIZE);
                 Sleep(200);
                 ShowWindow(hwnd, SW_HIDE);
-                Shell_NotifyIcon(NIM_ADD, &tray);
+                Shell_NotifyIcon(NIM_ADD, &GetTrayData(hwnd));
                 break;
             }
             break;
@@ -160,7 +191,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                 ShowWindow(hwnd, SW_SHOW);
                 ShowWindow(hwnd, SW_RESTORE);
                 SetForegroundWindow(hwnd);
-                Shell_NotifyIcon(NIM_DELETE, &tray);
+                Shell_NotifyIcon(NIM_DELETE, &GetTrayData(hwnd));
                 break;
             }
             break;

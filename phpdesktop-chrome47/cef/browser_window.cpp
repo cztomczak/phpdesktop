@@ -33,7 +33,7 @@ BrowserWindow* GetBrowserWindow(HWND hwnd) {
     // This would return parent browser for popup browsers,
     // which would not be an expected behavior. Commenting
     // out as it causes app hang when closing popup and then
-    // main window. See RemoveBrowserWindow in OnBeforeClose 
+    // main window. See RemoveBrowserWindow in OnBeforeClose
     // and WM_DESTROY.
     HWND owner = GetWindow(hwnd, GW_OWNER);
     if (owner) {
@@ -87,6 +87,11 @@ void RemoveBrowserWindow(HWND hwnd) {
     }
 }
 
+int CountBrowserWindows()
+{
+    return g_browserWindows.size();
+}
+
 BrowserWindow::BrowserWindow(HWND inWindowHandle, bool isPopup)
         : windowHandle_(inWindowHandle),
             isPopup_(isPopup),
@@ -124,6 +129,7 @@ void BrowserWindow::SetCefBrowser(CefRefPtr<CefBrowser> cefBrowser) {
         return;
     }
     cefBrowser_ = cefBrowser;
+    browserHandle_ = cefBrowser->GetHost()->GetWindowHandle();
     fullscreen_.reset(new Fullscreen(cefBrowser));
     json_value* appSettings = GetApplicationSettings();
     if (!IsPopup()) {
@@ -136,7 +142,7 @@ void BrowserWindow::SetCefBrowser(CefRefPtr<CefBrowser> cefBrowser) {
             cefBrowser->SendProcessMessage(PID_RENDERER, message);
         }
     }
-    
+
     // OnSize was called from WM_SIZE, but cefBrowser_ was not yet
     // set, so the window wasn't yet positioned correctly.
     this->OnSize();
@@ -162,7 +168,7 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     CefBrowserSettings browser_settings;
     // Create the first browser window.
     CefBrowserHost::CreateBrowser(
-            window_info, handler.get(), 
+            window_info, handler.get(),
             GetWebServerUrl(), browser_settings, NULL);
 
     return true;
@@ -209,12 +215,11 @@ void BrowserWindow::OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam) {
     }
 }
 void BrowserWindow::OnSize() {
-    if (cefBrowser_) {
+    if (browserHandle_) {
         RECT rect;
         GetClientRect(windowHandle_, &rect);
-        HDWP hdwp = BeginDeferWindowPos(1);
-        CefWindowHandle cefHwnd = cefBrowser_->GetHost()->GetWindowHandle();
-        hdwp = DeferWindowPos(hdwp, cefHwnd, NULL,
+        HDWP hdwp = BeginDeferWindowPos(2);
+        hdwp = DeferWindowPos(hdwp, browserHandle_, NULL,
                 rect.left, rect.top,
                 rect.right - rect.left,
                 rect.bottom - rect.top,

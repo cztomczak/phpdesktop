@@ -17,10 +17,12 @@ class BrowserWindow;
 BrowserWindow* GetBrowserWindow(HWND hwnd);
 void StoreBrowserWindow(HWND hwnd, BrowserWindow* browser);
 void RemoveBrowserWindow(HWND hwnd);
+int CountBrowserWindows();
 
 class BrowserWindow {
 private:
     HWND windowHandle_;
+    HWND browserHandle_;
     bool isPopup_;
 	CefRefPtr<CefBrowser> cefBrowser_; // may be empty, always check using .get()
     std::tr1::shared_ptr<Fullscreen> fullscreen_; // may be empty
