@@ -123,13 +123,12 @@ Fullscreen* BrowserWindow::GetFullscreenObject() {
 void BrowserWindow::SetCefBrowser(CefRefPtr<CefBrowser> cefBrowser) {
     // Called from ClientHandler::OnAfterCreated().
     _ASSERT(!cefBrowser_.get());
-    if (cefBrowser_) {
+    if (cefBrowser_.get()) {
         LOG_ERROR << "BrowserWindow::SetCefBrowser() called, "
                   << "but it is already set";
         return;
     }
     cefBrowser_ = cefBrowser;
-    browserHandle_ = cefBrowser->GetHost()->GetWindowHandle();
     fullscreen_.reset(new Fullscreen(cefBrowser));
     json_value* appSettings = GetApplicationSettings();
     if (!IsPopup()) {
@@ -215,7 +214,11 @@ void BrowserWindow::OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam) {
     }
 }
 void BrowserWindow::OnSize() {
-    if (browserHandle_) {
+    if (cefBrowser_.get()) {
+        HWND browserHandle_ = cefBrowser_->GetHost()->GetWindowHandle();
+        if (!browserHandle_) {
+            return;
+        }
         RECT rect;
         GetClientRect(windowHandle_, &rect);
         HDWP hdwp = BeginDeferWindowPos(2);
