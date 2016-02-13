@@ -51,7 +51,7 @@ like Perl, Ruby, Python, that provide a CGI interface for script execution. See 
   
 ## Donations ##
 
-If you would like to support PHP Desktop general development efforts by making a donation please click the Donate button below
+If you would like to support PHP Desktop general development efforts by making a donation please click the Donate button below:
 
 [![Donate](https://raw.githubusercontent.com/cztomczak/phpdesktop/master/var/donate.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JQSTPDRRM8AQ8)
 
