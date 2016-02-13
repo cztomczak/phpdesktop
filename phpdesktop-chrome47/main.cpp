@@ -85,22 +85,20 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
     switch (uMsg) {
         case WM_SIZE:
             browser = GetBrowserWindow(hwnd);
-            if (browser) {
+            if (browser && browser->GetCefBrowser()) {
                 browser->OnSize();
-            } else {
-                LOG_WARNING << "WindowProc(): event WM_SIZE: "
-                               "could not fetch BrowserWindow";
+            } else if (!browser) {
+                LOG_WARNING << "WindowProc() WM_SIZE: could not fetch BrowserWindow";
             }
             break;
         case WM_MOVE:
         case WM_MOVING:
         case WM_SIZING:
             browser = GetBrowserWindow(hwnd);
-            if (browser) {
+            if (browser && browser->GetCefBrowser()) {
                 browser->GetCefBrowser()->GetHost()->NotifyMoveOrResizeStarted();
-            } else {
-                LOG_WARNING << "WindowProc(): event WM_MOVING/WM_MOVE/WM_SIZING: "
-                    "could not fetch BrowserWindow";
+            } else if (!browser) {
+                LOG_WARNING << "WindowProc() WM_MOVE: could not fetch BrowserWindow";
             }
             return 0;
         case WM_CREATE:
@@ -160,14 +158,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
         case WM_ERASEBKGND:
             // Erase the background when the browser does not exist.
             browser = GetBrowserWindow(hwnd);
-            if (browser && browser->GetCefBrowser().get()) {
-                CefWindowHandle hwnd = \
-                        browser->GetCefBrowser()->GetHost()->GetWindowHandle();
-                if (hwnd) {
-                    // Dont erase the background if the browser window has been loaded
-                    // (this avoids flashing)
-                    return 0;
-                }
+            if (browser && browser->GetCefBrowser()) {
+                // Dont erase the background if the browser window has been loaded
+                // (this avoids flashing)
+                return 0;
             }
             break;
         case WM_PAINT:

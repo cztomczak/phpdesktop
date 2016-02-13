@@ -122,8 +122,8 @@ Fullscreen* BrowserWindow::GetFullscreenObject() {
 }
 void BrowserWindow::SetCefBrowser(CefRefPtr<CefBrowser> cefBrowser) {
     // Called from ClientHandler::OnAfterCreated().
-    _ASSERT(!cefBrowser_.get());
-    if (cefBrowser_.get()) {
+    _ASSERT(!cefBrowser_);
+    if (cefBrowser_) {
         LOG_ERROR << "BrowserWindow::SetCefBrowser() called, "
                   << "but it is already set";
         return;
@@ -214,23 +214,21 @@ void BrowserWindow::OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam) {
     }
 }
 void BrowserWindow::OnSize() {
-    if (cefBrowser_.get()) {
-        HWND browserHandle_ = cefBrowser_->GetHost()->GetWindowHandle();
-        if (!browserHandle_) {
-            return;
-        }
+    if (cefBrowser_) {
+        HWND browserHandle = cefBrowser_->GetHost()->GetWindowHandle();
+        _ASSERT(browserHandle);
         RECT rect;
         GetClientRect(windowHandle_, &rect);
         HDWP hdwp = BeginDeferWindowPos(2);
-        hdwp = DeferWindowPos(hdwp, browserHandle_, NULL,
+        hdwp = DeferWindowPos(hdwp, browserHandle, NULL,
                 rect.left, rect.top,
                 rect.right - rect.left,
                 rect.bottom - rect.top,
                 SWP_NOZORDER);
         EndDeferWindowPos(hdwp);
     } else {
-        LOG_DEBUG << "BrowserWindow::OnSize() failed: "
-                       "CefBrowser object not created yet";
+        LOG_DEBUG << "BrowserWindow::OnSize(): "
+                       "CefBrowser object not yet created";
     }
 }
 void BrowserWindow::SetTitleFromSettings() {
@@ -289,8 +287,8 @@ void BrowserWindow::SetIconFromSettings() {
 }
 bool BrowserWindow::SetFocus() {
     // Calling SetFocus() on shellBrowser handle does not work.
-    if (cefBrowser_.get()) {
+    if (cefBrowser_) {
         cefBrowser_->GetHost()->SetFocus(true);
-	}
+    }
     return true;
 }
