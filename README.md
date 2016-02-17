@@ -44,10 +44,7 @@ like Perl, Ruby, Python, that provide a CGI interface for script execution. See 
 * Please do not create issues in the issue tracker
 * Documentation is on the [Wiki Pages](../../wiki). Start with the [Knowledge Base](../../wiki/Knowledge-Base), 
     [Settings](../../wiki/Settings) and [Chrome settings](../../wiki/Chrome-settings) wiki pages.
-
-## Tutorials ##
-
-  * [Create your first Desktop Application with PHP and PHP Desktop](http://phpocean.com/tutorials/design-and-illustration/create-your-first-desktop-application-with-php-and-php-desktop/4) (phpocean.com)
+* See also this tutorial (externally maintained): [Create your first Desktop Application with PHP and PHP Desktop](http://phpocean.com/tutorials/design-and-illustration/create-your-first-desktop-application-with-php-and-php-desktop/4) (phpocean.com)
   
 ## Donations ##
 
