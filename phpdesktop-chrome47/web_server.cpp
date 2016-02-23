@@ -146,8 +146,14 @@ bool StartWebServer() {
     cgiEnvironment.append("TMP=").append(cgi_temp_dir).append(",");
     cgiEnvironment.append("TEMP=").append(cgi_temp_dir).append(",");
     cgiEnvironment.append("TMPDIR=").append(cgi_temp_dir).append(",");
-    // Mongoose sets SERVER_NAME to "mydomain.com"
-    cgiEnvironment.append("SERVER_NAME=").append(ipAddress).append(",");
+    // Mongoose sets SERVER_NAME to "127.0.0.1" by default.
+    // In case of "*" it should be set to what HTTP_HOST is being set.
+    // A local or public address depending from what ip address it is
+    // being accessed from. Currently just setting it to 127.0.0.1
+    // but this may cause troubles in PHP scripts, so mention this in docs.
+    if (ipAddress != "*") {
+        cgiEnvironment.append("SERVER_NAME=").append(ipAddress).append(",");
+    }
     // Let users identify whether web app runs in a normal browser
     // or a phpdesktop browser.
     cgiEnvironment.append("PHPDESKTOP_VERSION=").append(GetPhpDesktopVersion());
@@ -158,7 +164,12 @@ bool StartWebServer() {
     LOG_INFO << "CGI environment variables set: " << cgiEnvironment;
 
     // Mongoose web server.
-    std::string listening_ports = ipAddress + ":" + port;
+    std::string listening_ports;
+    if (ipAddress == "*") {
+        listening_ports = port;
+    } else {
+        listening_ports = ipAddress + ":" + port;
+    }
     const char* options[] = {
         "document_root", wwwDirectory.c_str(),
         "listening_ports", listening_ports.c_str(),
@@ -184,8 +195,13 @@ bool StartWebServer() {
 
     // When port was set to 0 then a random free port was assigned.
     g_webServerPort = mg_get_listening_port(g_mongooseContext);
-    g_webServerIpAddress = ipAddress;
-    g_webServerUrl = "http://" + ipAddress + ":" + IntToString(g_webServerPort) + "/";
+    if (ipAddress == "*") {
+        g_webServerIpAddress = "127.0.0.1";
+        g_webServerUrl = "http://127.0.0.1:" + IntToString(g_webServerPort) + "/";
+    } else {
+        g_webServerIpAddress = ipAddress;
+        g_webServerUrl = "http://" + ipAddress + ":" + IntToString(g_webServerPort) + "/";
+    }
     LOG_INFO << "Web server url: " << g_webServerUrl;
 
     return true;
