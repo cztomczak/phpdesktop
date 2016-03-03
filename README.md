@@ -1,6 +1,14 @@
-# PHP Desktop #
+# PHP Desktop
 
-## Introduction ##
+
+Table of contents:
+* [Introduction](#introduction)
+* [Downloads](#downloads)
+* [Support](#support)
+* [Donate](#donate)
+
+
+## Introduction
 
 PHP Desktop is an open source project founded by Czarek Tomczak in 2012 to provide a way for developing native 
 desktop GUI applications using web technologies such as PHP, HTML5, JavaScript and SQLite. The development workflow 
@@ -30,7 +38,8 @@ execution PHP-CGI process is killed and all memory is always freed.
 Lots of other useful information can be found on the [Knowledge Base](../../wiki/Knowledge-Base) wiki page and on the 
 [PHP Desktop Forum](https://groups.google.com/d/forum/phpdesktop).
 
-## Downloads ##
+
+## Downloads
 
   * PHP Desktop Chrome - go to the [Download Chrome](../../wiki/Download-Chrome) wiki page.
   * PHP Desktop MSIE (Internet Explorer) - go to the [Download MSIE](../../wiki/Download-MSIE) wiki page.
@@ -38,15 +47,17 @@ Lots of other useful information can be found on the [Knowledge Base](../../wiki
 PHP Desktop is not strongly tied to PHP, it can also act as a packager for any other scripting languages 
 like Perl, Ruby, Python, that provide a CGI interface for script execution. See the [Embedding other scripting languages](../../wiki/Embedding-other-scripting-languages) wiki page to download examples for other languages.
 
-## Help ##
+
+## Support
 
 * Documentation is on the [Wiki Pages](../../wiki). Start with the [Knowledge Base](../../wiki/Knowledge-Base), 
     [Settings](../../wiki/Settings) and [Chrome settings](../../wiki/Chrome-settings) wiki pages.
 * Ask questions and report problems on the [PHP Desktop Forum](https://groups.google.com/d/forum/phpdesktop)
 * Please do not create issues in the Issue Tracker
-* See also this tutorial (externally maintained): [Create your first Desktop Application with PHP and PHP Desktop](http://phpocean.com/tutorials/design-and-illustration/create-your-first-desktop-application-with-php-and-php-desktop/4) (phpocean.com)
-  
-## Donations ##
+* See also this tutorial (externally maintained): [Create your first Desktop Application with PHP and PHP Desktop](http://phpocean.com/tutorials/design-and-illustration/create-your-first-desktop-application-with-php-and-php-desktop/4)
+
+
+## Donate
 
 If you would like to support PHP Desktop general development efforts by making a donation please click the Donate button below:
 
@@ -55,8 +66,3 @@ If you would like to support PHP Desktop general development efforts by making a
 Please note that at this time PHP Desktop is unable to accept donations that sponsor the development of specific features. 
 However you can make a donation with a comment that you would like to see some feature implemented and this will give it 
 a higher priority, but apart from that there are no other guarantees.
-
-## Built a cool app? ##
-
-Built a cool app using PHP Desktop and would like to like to share info with the community? 
-Talk about it on the [PHP Desktop Forum](https://groups.google.com/d/forum/phpdesktop).
