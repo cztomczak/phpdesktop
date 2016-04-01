@@ -37,7 +37,8 @@
         "cgi_extensions": ["php"],
         "cgi_temp_dir": "",
         "404_handler": "/pretty-urls.php",
-        "hide_files": []
+        "hide_files": [],
+        "extra_mime_types": ""
     },
     "chrome": {
         "log_file": "debug.log",
