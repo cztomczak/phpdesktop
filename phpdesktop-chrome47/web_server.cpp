@@ -163,13 +163,18 @@ bool StartWebServer() {
     }
     LOG_INFO << "CGI environment variables set: " << cgiEnvironment;
 
-    // Mongoose web server.
+    // Listening ports
     std::string listening_ports;
     if (ipAddress == "*") {
         listening_ports = port;
     } else {
         listening_ports = ipAddress + ":" + port;
     }
+    
+    // Extra mime types
+    std::string extra_mime_types = (*appSettings)["web_server"]["extra_mime_types"];
+    
+    // Mongoose C options
     const char* options[] = {
         "document_root", wwwDirectory.c_str(),
         "listening_ports", listening_ports.c_str(),
@@ -179,6 +184,7 @@ bool StartWebServer() {
         "cgi_environment", cgiEnvironment.c_str(),
         "404_handler", _404_handler.c_str(),
         "hide_files_patterns", hide_files_patterns.c_str(),
+        "extra_mime_types", extra_mime_types.c_str(),
         NULL
     };
 
