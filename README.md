@@ -44,8 +44,8 @@ Lots of other useful information can be found on the [Knowledge Base](../../wiki
   * PHP Desktop Chrome - go to the [Download Chrome](../../wiki/Download-Chrome) wiki page.
   * PHP Desktop MSIE (Internet Explorer) - go to the [Download MSIE](../../wiki/Download-MSIE) wiki page.
 
-PHP Desktop is not strongly tied to PHP, it can also act as a packager for any other scripting languages 
-like Perl, Ruby, Python, that provide a CGI interface for script execution. See the [Embedding other scripting languages](../../wiki/Embedding-other-scripting-languages) wiki page to download examples for other languages.
+__New releases RSS/Atom feed__  
+To be notified of new releases subscribe to this [Atom feed](https://github.com/cztomczak/phpdesktop/releases.atom).
 
 
 ## Support
