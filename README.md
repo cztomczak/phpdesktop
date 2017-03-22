@@ -63,6 +63,4 @@ If you would like to support PHP Desktop general development efforts by making a
 
 [![Donate](https://raw.githubusercontent.com/cztomczak/phpdesktop/master/var/donate.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JQSTPDRRM8AQ8)
 
-Please note that at this time PHP Desktop is unable to accept donations that sponsor the development of specific features. 
-However you can make a donation with a comment that you would like to see some feature implemented and this will give it 
-a higher priority, but apart from that there are no other guarantees.
+If you would like to see some feature implemented you can make a comment about that when making a donation. It will give it a higher priority.
