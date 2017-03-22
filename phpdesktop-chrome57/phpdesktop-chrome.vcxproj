@@ -1,0 +1,384 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D6CAC1B9-0B7C-4D5F-9F8C-5D497B1B0E81}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140_xp</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140_xp</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">phpdesktop-chrome</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">phpdesktop-chrome</TargetName>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;$(IncludePath);cef</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;cef;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir)lib;$(FrameworkSDKDir)\lib;$(LibraryPath);lib\Debug</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir)lib;$(FrameworkSDKDir)\lib;lib\Release;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)phpdesktop-chrome.tlb</TypeLibraryName>
+      <HeaderFileName>phpdesktop-chrome.h</HeaderFileName>
+      <DllDataFileName>
+      </DllDataFileName>
+      <InterfaceIdentifierFileName>phpdesktop-chrome_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>phpdesktop-chrome_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalOptions>/DDEBUG %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Manifest>
+      <AdditionalManifestFiles>DeclareDPIAware.manifest %(AdditionalManifestFiles)</AdditionalManifestFiles>
+    </Manifest>
+    <PreBuildEvent>
+      <Command>copy /y "$(ProjectDir)settings.json" "$(ProjectDir)$(Configuration)/settings.json" </Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)phpdesktop-chrome.tlb</TypeLibraryName>
+      <HeaderFileName>phpdesktop-chrome.h</HeaderFileName>
+      <DllDataFileName>
+      </DllDataFileName>
+      <InterfaceIdentifierFileName>phpdesktop-chrome_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>phpdesktop-chrome_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PreBuildEvent>
+      <Command>copy /y "$(ProjectDir)settings.json" "$(ProjectDir)$(Configuration)/settings.json" </Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="cef\app.cpp" />
+    <ClCompile Include="cef\browser_window.cpp" />
+    <ClCompile Include="cef\client_handler.cpp" />
+    <ClCompile Include="cef\fullscreen.cpp" />
+    <ClCompile Include="cef\javascript_api.cpp" />
+    <ClCompile Include="debug.cpp" />
+    <ClCompile Include="cef\devtools.cpp" />
+    <ClCompile Include="dpi_aware.cpp" />
+    <ClCompile Include="executable.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="fatal_error.cpp" />
+    <ClCompile Include="file_utils.cpp" />
+    <ClCompile Include="json.c" />
+    <ClCompile Include="logging.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="main_window.cpp" />
+    <ClCompile Include="mongoose.c" />
+    <ClCompile Include="php_server.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="popup_window.cpp" />
+    <ClCompile Include="settings.cpp" />
+    <ClCompile Include="string_utils.cpp" />
+    <ClCompile Include="temp_dir.cpp" />
+    <ClCompile Include="version.cpp" />
+    <ClCompile Include="web_server.cpp" />
+    <ClCompile Include="window_utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cef\browser_window.h" />
+    <ClInclude Include="cef\app.h" />
+    <ClInclude Include="cef\client_handler.h" />
+    <ClInclude Include="cef\fullscreen.h" />
+    <ClInclude Include="cef\include\base\cef_atomicops.h" />
+    <ClInclude Include="cef\include\base\cef_atomic_ref_count.h" />
+    <ClInclude Include="cef\include\base\cef_basictypes.h" />
+    <ClInclude Include="cef\include\base\cef_bind.h" />
+    <ClInclude Include="cef\include\base\cef_bind_helpers.h" />
+    <ClInclude Include="cef\include\base\cef_build.h" />
+    <ClInclude Include="cef\include\base\cef_callback.h" />
+    <ClInclude Include="cef\include\base\cef_callback_forward.h" />
+    <ClInclude Include="cef\include\base\cef_callback_helpers.h" />
+    <ClInclude Include="cef\include\base\cef_callback_list.h" />
+    <ClInclude Include="cef\include\base\cef_cancelable_callback.h" />
+    <ClInclude Include="cef\include\base\cef_lock.h" />
+    <ClInclude Include="cef\include\base\cef_logging.h" />
+    <ClInclude Include="cef\include\base\cef_macros.h" />
+    <ClInclude Include="cef\include\base\cef_move.h" />
+    <ClInclude Include="cef\include\base\cef_platform_thread.h" />
+    <ClInclude Include="cef\include\base\cef_ref_counted.h" />
+    <ClInclude Include="cef\include\base\cef_scoped_ptr.h" />
+    <ClInclude Include="cef\include\base\cef_string16.h" />
+    <ClInclude Include="cef\include\base\cef_template_util.h" />
+    <ClInclude Include="cef\include\base\cef_thread_checker.h" />
+    <ClInclude Include="cef\include\base\cef_thread_collision_warner.h" />
+    <ClInclude Include="cef\include\base\cef_trace_event.h" />
+    <ClInclude Include="cef\include\base\cef_tuple.h" />
+    <ClInclude Include="cef\include\base\cef_weak_ptr.h" />
+    <ClInclude Include="cef\include\base\internal\cef_atomicops_x86_msvc.h" />
+    <ClInclude Include="cef\include\base\internal\cef_bind_internal.h" />
+    <ClInclude Include="cef\include\base\internal\cef_bind_internal_win.h" />
+    <ClInclude Include="cef\include\base\internal\cef_callback_internal.h" />
+    <ClInclude Include="cef\include\base\internal\cef_lock_impl.h" />
+    <ClInclude Include="cef\include\base\internal\cef_raw_scoped_refptr_mismatch_checker.h" />
+    <ClInclude Include="cef\include\base\internal\cef_thread_checker_impl.h" />
+    <ClInclude Include="cef\include\cef_app.h" />
+    <ClInclude Include="cef\include\cef_auth_callback.h" />
+    <ClInclude Include="cef\include\cef_base.h" />
+    <ClInclude Include="cef\include\cef_browser.h" />
+    <ClInclude Include="cef\include\cef_browser_process_handler.h" />
+    <ClInclude Include="cef\include\cef_callback.h" />
+    <ClInclude Include="cef\include\cef_client.h" />
+    <ClInclude Include="cef\include\cef_command_line.h" />
+    <ClInclude Include="cef\include\cef_context_menu_handler.h" />
+    <ClInclude Include="cef\include\cef_cookie.h" />
+    <ClInclude Include="cef\include\cef_dialog_handler.h" />
+    <ClInclude Include="cef\include\cef_display_handler.h" />
+    <ClInclude Include="cef\include\cef_dom.h" />
+    <ClInclude Include="cef\include\cef_download_handler.h" />
+    <ClInclude Include="cef\include\cef_download_item.h" />
+    <ClInclude Include="cef\include\cef_drag_data.h" />
+    <ClInclude Include="cef\include\cef_drag_handler.h" />
+    <ClInclude Include="cef\include\cef_find_handler.h" />
+    <ClInclude Include="cef\include\cef_focus_handler.h" />
+    <ClInclude Include="cef\include\cef_frame.h" />
+    <ClInclude Include="cef\include\cef_geolocation.h" />
+    <ClInclude Include="cef\include\cef_geolocation_handler.h" />
+    <ClInclude Include="cef\include\cef_jsdialog_handler.h" />
+    <ClInclude Include="cef\include\cef_keyboard_handler.h" />
+    <ClInclude Include="cef\include\cef_life_span_handler.h" />
+    <ClInclude Include="cef\include\cef_load_handler.h" />
+    <ClInclude Include="cef\include\cef_menu_model.h" />
+    <ClInclude Include="cef\include\cef_navigation_entry.h" />
+    <ClInclude Include="cef\include\cef_origin_whitelist.h" />
+    <ClInclude Include="cef\include\cef_pack_resources.h" />
+    <ClInclude Include="cef\include\cef_pack_strings.h" />
+    <ClInclude Include="cef\include\cef_parser.h" />
+    <ClInclude Include="cef\include\cef_path_util.h" />
+    <ClInclude Include="cef\include\cef_print_handler.h" />
+    <ClInclude Include="cef\include\cef_print_settings.h" />
+    <ClInclude Include="cef\include\cef_process_message.h" />
+    <ClInclude Include="cef\include\cef_process_util.h" />
+    <ClInclude Include="cef\include\cef_render_handler.h" />
+    <ClInclude Include="cef\include\cef_render_process_handler.h" />
+    <ClInclude Include="cef\include\cef_request.h" />
+    <ClInclude Include="cef\include\cef_request_context.h" />
+    <ClInclude Include="cef\include\cef_request_context_handler.h" />
+    <ClInclude Include="cef\include\cef_request_handler.h" />
+    <ClInclude Include="cef\include\cef_resource_bundle.h" />
+    <ClInclude Include="cef\include\cef_resource_bundle_handler.h" />
+    <ClInclude Include="cef\include\cef_resource_handler.h" />
+    <ClInclude Include="cef\include\cef_response.h" />
+    <ClInclude Include="cef\include\cef_response_filter.h" />
+    <ClInclude Include="cef\include\cef_runnable.h" />
+    <ClInclude Include="cef\include\cef_sandbox_win.h" />
+    <ClInclude Include="cef\include\cef_scheme.h" />
+    <ClInclude Include="cef\include\cef_ssl_info.h" />
+    <ClInclude Include="cef\include\cef_stream.h" />
+    <ClInclude Include="cef\include\cef_string_visitor.h" />
+    <ClInclude Include="cef\include\cef_task.h" />
+    <ClInclude Include="cef\include\cef_trace.h" />
+    <ClInclude Include="cef\include\cef_urlrequest.h" />
+    <ClInclude Include="cef\include\cef_v8.h" />
+    <ClInclude Include="cef\include\cef_values.h" />
+    <ClInclude Include="cef\include\cef_version.h" />
+    <ClInclude Include="cef\include\cef_web_plugin.h" />
+    <ClInclude Include="cef\include\cef_xml_reader.h" />
+    <ClInclude Include="cef\include\cef_zip_reader.h" />
+    <ClInclude Include="cef\include\internal\cef_export.h" />
+    <ClInclude Include="cef\include\internal\cef_logging_internal.h" />
+    <ClInclude Include="cef\include\internal\cef_ptr.h" />
+    <ClInclude Include="cef\include\internal\cef_string.h" />
+    <ClInclude Include="cef\include\internal\cef_string_list.h" />
+    <ClInclude Include="cef\include\internal\cef_string_map.h" />
+    <ClInclude Include="cef\include\internal\cef_string_multimap.h" />
+    <ClInclude Include="cef\include\internal\cef_string_types.h" />
+    <ClInclude Include="cef\include\internal\cef_string_wrappers.h" />
+    <ClInclude Include="cef\include\internal\cef_thread_internal.h" />
+    <ClInclude Include="cef\include\internal\cef_time.h" />
+    <ClInclude Include="cef\include\internal\cef_trace_event_internal.h" />
+    <ClInclude Include="cef\include\internal\cef_types.h" />
+    <ClInclude Include="cef\include\internal\cef_types_win.h" />
+    <ClInclude Include="cef\include\internal\cef_types_wrappers.h" />
+    <ClInclude Include="cef\include\internal\cef_win.h" />
+    <ClInclude Include="cef\include\wrapper\cef_byte_read_handler.h" />
+    <ClInclude Include="cef\include\wrapper\cef_closure_task.h" />
+    <ClInclude Include="cef\include\wrapper\cef_helpers.h" />
+    <ClInclude Include="cef\include\wrapper\cef_message_router.h" />
+    <ClInclude Include="cef\include\wrapper\cef_resource_manager.h" />
+    <ClInclude Include="cef\include\wrapper\cef_stream_resource_handler.h" />
+    <ClInclude Include="cef\include\wrapper\cef_xml_object.h" />
+    <ClInclude Include="cef\include\wrapper\cef_zip_archive.h" />
+    <ClInclude Include="cef\javascript_api.h" />
+    <ClInclude Include="cef\include\cef_trace_event.h" />
+    <ClInclude Include="cef\include\cef_url.h" />
+    <ClInclude Include="cef\include\internal\cef_build.h" />
+    <ClInclude Include="cef\include\internal\cef_tuple.h" />
+    <ClInclude Include="cef\util.h" />
+    <ClInclude Include="debug.h" />
+    <ClInclude Include="defines.h" />
+    <ClInclude Include="cef\devtools.h" />
+    <ClInclude Include="dpi_aware.h" />
+    <ClInclude Include="executable.h" />
+    <ClInclude Include="fatal_error.h" />
+    <ClInclude Include="file_utils.h" />
+    <ClInclude Include="json.h" />
+    <ClInclude Include="log.h" />
+    <ClInclude Include="logging.h" />
+    <ClInclude Include="main.h" />
+    <ClInclude Include="main_window.h" />
+    <ClInclude Include="mongoose.h" />
+    <ClInclude Include="php_server.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="popup_window.h" />
+    <ClInclude Include="random.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="settings.h" />
+    <ClInclude Include="single_instance_application.h" />
+    <ClCompile Include="random.cpp">
+      <FileType>CppHeader</FileType>
+    </ClCompile>
+    <ClInclude Include="string_utils.h" />
+    <ClInclude Include="temp_dir.h" />
+    <ClInclude Include="version.h" />
+    <ClInclude Include="web_server.h" />
+    <ClInclude Include="window_utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AUTHORS.txt" />
+    <None Include="cef\README.txt" />
+    <None Include="icon.ico" />
+    <None Include=".gitignore" />
+    <None Include="icon.png" />
+    <None Include="settings.json">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="www\cookies.php" />
+    <None Include="www\download.php" />
+    <None Include="www\env-variables.php" />
+    <None Include="www\forms.php" />
+    <None Include="www\google.php" />
+    <None Include="www\html5-video.php" />
+    <None Include="www\iframe.php" />
+    <None Include="www\index.php" />
+    <None Include="license.txt" />
+    <None Include="www\javascript-api.php" />
+    <None Include="www\loading-error.php" />
+    <None Include="www\no-cache.php" />
+    <None Include="www\phpinfo.php" />
+    <None Include="resource.aps" />
+    <None Include="www\chrome-version.php" />
+    <None Include="www\popup.php" />
+    <None Include="www\session.php" />
+    <None Include="www\speech-recognition.php" />
+    <None Include="www\sqlite.php" />
+    <None Include="www\temp-dir.php" />
+    <None Include="www\upload.php" />
+    <None Include="www\_pdo.php" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc">
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="DeclareDPIAware.manifest" />
+    <None Include="RequireAdministrator.manifest">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </None>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
