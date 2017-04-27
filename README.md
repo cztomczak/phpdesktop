@@ -64,3 +64,5 @@ If you would like to support PHP Desktop general development efforts by making a
 [![Donate](https://raw.githubusercontent.com/cztomczak/phpdesktop/master/var/donate.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JQSTPDRRM8AQ8)
 
 If you would like to see some feature implemented you can make a comment about that when making a donation. It will give it a higher priority.
+
+For sponsorship opportunities please contact Czarek directly.
