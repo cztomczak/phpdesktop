@@ -4,6 +4,7 @@
 Table of contents:
 * [Introduction](#introduction)
 * [Funding for a Mac release](#funding-for-a-mac-release)
+* [Funding for a Linux release](#funding-for-a-linux-release)
 * [Downloads](#downloads)
 * [Support](#support)
 * [Support development](#support-development)
@@ -39,9 +40,15 @@ execution PHP-CGI process is killed and all memory is always freed.
 Lots of other useful information can be found on the [Knowledge Base](../../wiki/Knowledge-Base) wiki page and on the 
 [PHP Desktop Forum](https://groups.google.com/d/forum/phpdesktop).
 
+
 ## Funding for a Mac release
 
 For those interested in sponsoring a Mac release please see [Issue #208](https://github.com/cztomczak/phpdesktop/issues/208).
+
+
+## Funding for a Linux release
+
+For those interested in sponsoring a Linux release please see [Issue #221](https://github.com/cztomczak/phpdesktop/issues/221).
 
 
 ## Downloads
