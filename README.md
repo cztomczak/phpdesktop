@@ -12,7 +12,7 @@ Table of contents:
 
 ## Introduction
 
-PHP Desktop is an open source project founded by Czarek Tomczak in 2012 to provide a way for developing native 
+PHP Desktop is an open source project founded by Czarek Tomczak (hire me! download my [resume](https://drive.google.com/file/d/17xmoT5Z_zTHkVclqPzrs2aAV64Uiu7fh/view)) in 2012 to provide a way for developing native 
 desktop GUI applications using web technologies such as PHP, HTML5, JavaScript and SQLite. The development workflow 
 you are used to while creating web applications remains the same. There is no new API/framework to learn. The process 
 of turning an existing website into a desktop application is basically a matter of copying it to the "phpdesktop/www/" 
