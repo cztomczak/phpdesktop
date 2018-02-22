@@ -77,4 +77,4 @@ If you would like to support PHP Desktop general development efforts by making a
 
 If you would like to see some feature implemented you can make a comment about that when making a donation. It will give it a higher priority.
 
-For sponsorship opportunities please contact Czarek directly.
+For sponsorship opportunities please contact Czarek directly - contact details are available in his [Resume](https://drive.google.com/file/d/17xmoT5Z_zTHkVclqPzrs2aAV64Uiu7fh/view).
