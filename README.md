@@ -44,9 +44,10 @@ Lots of other useful information can be found on the [Knowledge Base](../../wiki
 ## Sponsors
 
 If you would like to sponsor PHP Desktop development and see your company logo with a link here,
-please contact Czarek - contact details are available in his [Resume](https://drive.google.com/file/d/17xmoT5Z_zTHkVclqPzrs2aAV64Uiu7fh/view).
-This README page alone has 1070 visitors and 2402 views every two weeks (stats from Mar 9, 2018),
-so your company logo and a website link will be visible to many PHP users.
+please contact Czarek (contact details are available in his [Resume](https://drive.google.com/file/d/17xmoT5Z_zTHkVclqPzrs2aAV64Uiu7fh/view)).
+This README page alone has 1,762 visitors and 3,787 views every two weeks (stats from Mar 9, 2018),
+so your company logo and a website link will be visible to many PHP users. Complete statistics are
+available in this topic on the Forum: [[ANN] Call for sponsors](https://groups.google.com/d/topic/phpdesktop/1T7jictpJ5M/discussion).
 
 
 ## Fundings for new features
