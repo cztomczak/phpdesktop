@@ -4,7 +4,7 @@
 Table of contents:
 * [Introduction](#introduction)
 * [Sponsors](#sponsors)
-* [Fundings for new features](#funding-for-new-features)
+* [Fundings for new features](#fundings-for-new-features)
 * [Downloads](#downloads)
 * [Support](#support)
 * [Support development](#support-development)
@@ -53,20 +53,19 @@ so your company logo and a website link will be visible to many PHP users.
 
 Here is a list of ongoing fundings for new features in PHP Desktop Chrome:
 
-**Funding for PHP Desktop Chrome v65.0 release**
+1. Funding for PHP Desktop Chrome v65.0 release. For those interested in
+   sponsoring an update to the latest Chrome v65, please see
+   [Issue #227](https://github.com/cztomczak/phpdesktop/issues/227).
 
-For those interested in sponsoring an update to the latest Chrome v65,
-please see [Issue #227](https://github.com/cztomczak/phpdesktop/issues/227).
+2. Funding for a Mac release. For those interested in sponsoring a Mac release,
+   please see [Issue #208](https://github.com/cztomczak/phpdesktop/issues/208).
 
-**Funding for a Mac release**
+3. Funding for a Linux release. For those interested in sponsoring a Linux
+   release, please see [Issue #221](https://github.com/cztomczak/phpdesktop/issues/221).
 
-For those interested in sponsoring a Mac release,
-please see [Issue #208](https://github.com/cztomczak/phpdesktop/issues/208).
-
-**Funding for a Linux release**
-
-For those interested in sponsoring a Linux release,
-please see [Issue #221](https://github.com/cztomczak/phpdesktop/issues/221).
+Fundings for other features presented on the
+[PHP Desktop Pro](https://github.com/cztomczak/phpdesktop/wiki/PHP-Desktop-Pro)
+wiki page are also possible.
 
 
 ## Downloads
