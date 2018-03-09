@@ -3,6 +3,7 @@
 
 Table of contents:
 * [Introduction](#introduction)
+* [Sponsors](#sponsors)
 * [Funding for PHP Desktop Chrome v65.0 release](#funding-for-php-desktop-chrome-v650-release)
 * [Funding for a Mac release](#funding-for-a-mac-release)
 * [Funding for a Linux release](#funding-for-a-linux-release)
