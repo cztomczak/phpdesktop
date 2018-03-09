@@ -4,9 +4,7 @@
 Table of contents:
 * [Introduction](#introduction)
 * [Sponsors](#sponsors)
-* [Funding for PHP Desktop Chrome v65.0 release](#funding-for-php-desktop-chrome-v650-release)
-* [Funding for a Mac release](#funding-for-a-mac-release)
-* [Funding for a Linux release](#funding-for-a-linux-release)
+* [Fundings for new features](#funding-for-new-features)
 * [Downloads](#downloads)
 * [Support](#support)
 * [Support development](#support-development)
@@ -51,19 +49,21 @@ This README page alone has 1070 visitors and 2402 views every two weeks (stats f
 so your company logo and a website link will be visible to many PHP users.
 
 
-## Funding for PHP Desktop Chrome v65.0 release
+## Fundings for new features
+
+Here is a list of ongoing fundings for new features in PHP Desktop Chrome:
+
+**Funding for PHP Desktop Chrome v65.0 release**
 
 For those interested in sponsoring an update to the latest Chrome v65,
 please see [Issue #227](https://github.com/cztomczak/phpdesktop/issues/227).
 
-
-## Funding for a Mac release
+**Funding for a Mac release**
 
 For those interested in sponsoring a Mac release,
 please see [Issue #208](https://github.com/cztomczak/phpdesktop/issues/208).
 
-
-## Funding for a Linux release
+**Funding for a Linux release**
 
 For those interested in sponsoring a Linux release,
 please see [Issue #221](https://github.com/cztomczak/phpdesktop/issues/221).
