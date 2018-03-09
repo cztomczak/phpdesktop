@@ -3,6 +3,7 @@
 
 Table of contents:
 * [Introduction](#introduction)
+* [Funding for PHP Desktop Chrome v65.0 release](#funding-for-php-desktop-chrome-v650-release)
 * [Funding for a Mac release](#funding-for-a-mac-release)
 * [Funding for a Linux release](#funding-for-a-linux-release)
 * [Downloads](#downloads)
@@ -41,14 +42,30 @@ Lots of other useful information can be found on the [Knowledge Base](../../wiki
 [PHP Desktop Forum](https://groups.google.com/d/forum/phpdesktop).
 
 
+## Sponsors
+
+If you would like to sponsor PHP Desktop development and see your company logo with a link here,
+please contact Czarek - contact details are available in his [Resume](https://drive.google.com/file/d/17xmoT5Z_zTHkVclqPzrs2aAV64Uiu7fh/view).
+This README page alone has 1070 visitors and 2402 views every two weeks (stats from Mar 9, 2018),
+so your company logo and a website link will be visible to many PHP users.
+
+
+## Funding for PHP Desktop Chrome v65.0 release
+
+For those interested in sponsoring an update to the latest Chrome v65,
+please see [Issue #227](https://github.com/cztomczak/phpdesktop/issues/227).
+
+
 ## Funding for a Mac release
 
-For those interested in sponsoring a Mac release please see [Issue #208](https://github.com/cztomczak/phpdesktop/issues/208).
+For those interested in sponsoring a Mac release,
+please see [Issue #208](https://github.com/cztomczak/phpdesktop/issues/208).
 
 
 ## Funding for a Linux release
 
-For those interested in sponsoring a Linux release please see [Issue #221](https://github.com/cztomczak/phpdesktop/issues/221).
+For those interested in sponsoring a Linux release,
+please see [Issue #221](https://github.com/cztomczak/phpdesktop/issues/221).
 
 
 ## Downloads
