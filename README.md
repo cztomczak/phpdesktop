@@ -55,8 +55,8 @@ available in this topic on the Forum: [[ANN] Call for sponsors](https://groups.g
 
 Here is a list of ongoing fundings for new features in PHP Desktop Chrome:
 
-1. Funding for PHP Desktop Chrome v65.0 release. For those interested in
-   sponsoring an update to the latest Chrome v65, please see
+1. Funding for PHP Desktop Chrome v68.0 release. For those interested in
+   sponsoring an update to the latest Chrome v68, please see
    [Issue #227](https://github.com/cztomczak/phpdesktop/issues/227).
 
 2. Funding for a Mac release. For those interested in sponsoring a Mac release,
