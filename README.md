@@ -55,15 +55,11 @@ available in this topic on the Forum: [[ANN] Call for sponsors](https://groups.g
 
 Here is a list of ongoing fundings for new features in PHP Desktop Chrome:
 
-1. Funding for PHP Desktop Chrome v70.0 release. For those interested in
-   sponsoring an update to the latest Chrome v70, please see
-   [Issue #227](https://github.com/cztomczak/phpdesktop/issues/227).
-
-2. Funding for a Mac release. For those interested in sponsoring a Mac release,
-   please see [Issue #208](https://github.com/cztomczak/phpdesktop/issues/208).
-
-3. Funding for a Linux release. For those interested in sponsoring a Linux
-   release, please see [Issue #221](https://github.com/cztomczak/phpdesktop/issues/221).
+Feature | Funds gathered | Issue
+--- | --- | ---
+Chrome v70 release for Windows | $0 of $2,500 | [Issue #227](https://github.com/cztomczak/phpdesktop/issues/227)
+Mac release | $150 of $2,000 | [Issue #208](https://github.com/cztomczak/phpdesktop/issues/208)
+Linux release | $1,500 of $1,500 | [Issue #221](https://github.com/cztomczak/phpdesktop/issues/221)
 
 Fundings for other features presented on the
 [PHP Desktop Pro](https://github.com/cztomczak/phpdesktop/wiki/PHP-Desktop-Pro)
