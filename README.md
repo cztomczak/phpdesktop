@@ -55,8 +55,8 @@ Here is a list of ongoing fundings for new features in PHP Desktop Chrome:
 Feature | Funds gathered | Issue
 --- | --- | ---
 Chrome v70 release for Windows | $0 of $2,000 | [Issue #227](https://github.com/cztomczak/phpdesktop/issues/227)
-Mac release | $150 of $2,000 | [Issue #208](https://github.com/cztomczak/phpdesktop/issues/208)
-Linux release | $1,500 of $1,500 | [Issue #221](https://github.com/cztomczak/phpdesktop/issues/221)
+Initial Mac release | $150 of $2,000 | [Issue #208](https://github.com/cztomczak/phpdesktop/issues/208)
+Initial Linux release | $1,500 of $1,500 | [Issue #221](https://github.com/cztomczak/phpdesktop/issues/221)
 
 Fundings for other features presented on the
 [PHP Desktop Pro](https://github.com/cztomczak/phpdesktop/wiki/PHP-Desktop-Pro)
