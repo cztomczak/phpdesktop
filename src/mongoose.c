@@ -1,7 +1,7 @@
 // Forked from Mongoose MIT licensed revision 04fc209. 
 // Bug fixes and minor changes were made for PHP Desktop.
-// Copyright (c) 2012-2014 PHP Desktop.
-// Copyright (c) 2004-2013 Sergey Lyubka.
+// Copyright (c) 2012 PHP Desktop.
+// Copyright (c) 2004 Sergey Lyubka.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
