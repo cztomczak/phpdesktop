@@ -1,6 +1,9 @@
 #!/bin/bash
 
+# Exit immediately if a command exits with a non-zero status.
 set -e
+
+# Print all executed commands to terminal.
 # set -x
 
 if [[ -f build/bin/phpdesktop ]]; then
@@ -18,6 +21,8 @@ rc=$?;
 if [[ ${rc} = 0 ]]; then
     echo "OK phpdesktop was built";
     ./build/bin/phpdesktop
+    rm -r blob_storage/
+    rm -r GPUCache/
 else
     echo "ERROR";
     exit ${rc};
