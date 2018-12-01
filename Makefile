@@ -16,11 +16,15 @@ OBJS=\
 	src/client_handler.o \
 
 CC=g++
-.PHONY: clean all
+.PHONY: clean release debug
 
-all: $(TARGET)
+# When switching between debug/release modes always clean
+# all objects by executing either "./build.sh clean debug"
+# or "./build.sh clean release". Otherwise changes to the
+# DEBUG macro are not applied.
 
-debug: CXXFLAGS += -DDEBUG
+release: $(TARGET)
+
 debug: CCFLAGS += -DDEBUG
 debug: $(TARGET)
 
