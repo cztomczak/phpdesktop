@@ -1,7 +1,8 @@
 #include "include/cef_app.h"
 
 // Implement application-level callbacks for the browser process
-class App : public CefApp, public CefBrowserProcessHandler
+class App : public CefApp,
+            public CefBrowserProcessHandler
 {
 public:
     App();

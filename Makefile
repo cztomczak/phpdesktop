@@ -20,6 +20,10 @@ CC=g++
 
 all: $(TARGET)
 
+debug: CXXFLAGS += -DDEBUG
+debug: CCFLAGS += -DDEBUG
+debug: $(TARGET)
+
 -include $(patsubst %, %.deps, $(OBJS))
 
 %.o : %.cpp

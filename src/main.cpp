@@ -90,6 +90,9 @@ int main(int argc, char **argv) {
     // gdk_threads_init();
 
     LOG(INFO) << "Initialize CEF";
+    // Log messages created by LOG() macro will be written to debug.log
+    // file only after CEF was initialized. Before CEF is initialized
+    // all logs are only printed to console.
     CefInitialize(main_args, settings, app.get(), NULL);
 
     // The Chromium sandbox requires that there only be a single thread during
