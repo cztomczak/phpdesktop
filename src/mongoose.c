@@ -1471,6 +1471,9 @@ static pid_t spawn_process(struct mg_connection *conn, const char *prog,
         (void) execle(prog, prog, NULL, envp);
         cry(conn, "%s: execle(%s): %s", __func__, prog, strerror(ERRNO));
       } else {
+        // char prog_abspath[PATH_MAX];
+        // strcpy(prog_abspath, dir);
+        // strcat(prog_abspath, prog);
         (void) execle(interp, interp, prog, NULL, envp);
         cry(conn, "%s: execle(%s %s): %s", __func__, interp, prog,
             strerror(ERRNO));
@@ -1832,6 +1835,7 @@ static void support_path_info_for_cgi_scripts(
                 struct mg_connection *conn, char *buf,
                 size_t buf_len, struct file *filep) {
   char *p;
+  if (buf_len) {} // unused paramter during compilation
   // Support PATH_INFO for CGI scripts.
   for (p = buf + strlen(buf); p > buf + 1; p--) {
     if (*p == '/') {
@@ -3387,8 +3391,8 @@ static void prepare_cgi_environment(struct mg_connection *conn,
     if (prog2[i] == '/') {
       prog2[i] = '\\';
     }
-#endif
   }
+#endif
 
   addenv(blk, "SCRIPT_FILENAME=%s", prog2);
   addenv(blk, "PATH_TRANSLATED=%s", prog2);
@@ -4689,14 +4693,15 @@ static void close_all_listening_sockets(struct mg_context *ctx) {
 static int is_valid_port(unsigned int port) {
   // PHP Desktop Fix:
   //    Allow value of 0, so that OS assigns a random free port.
-  return port >= 0 && port < 0xffff;
+  return port < 0xffff;
 }
 
 // Valid listening port specification is: [ip_address:]port[s]
 // Examples: 80, 443s, 127.0.0.1:3128, 1.2.3.4:8080s
 // TODO(lsm): add parsing of the IPv6 address
 static int parse_port_string(const struct vec *vec, struct socket *so) {
-  unsigned int a, b, c, d, ch, len, port;
+  unsigned int a, b, c, d, ch, port;
+  int len;
 #if defined(USE_IPV6)
   char buf[100];
 #endif
@@ -5518,6 +5523,7 @@ void mg_stop(struct mg_context *ctx) {
 }
 
 void mg_stop_immediately(struct mg_context *ctx) {
+    if (ctx) {} // unused parameter warning
     // Stopping Mongoose and freeing resources will hang when
     // used with IE webbrowser control. It seems that IE is not
     // freeing reources properly, it does it with some delay.

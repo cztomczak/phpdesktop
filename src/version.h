@@ -1,0 +1,1 @@
+#define PHPDESKTOP_VERSION "70.0"

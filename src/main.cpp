@@ -4,6 +4,8 @@
 
 #include "app.h"
 #include "client_handler.h"
+#include "utils.h"
+#include "mongoose_server.h"
 
 #include "include/base/cef_logging.h"
 #include "include/wrapper/cef_helpers.h"
@@ -15,6 +17,8 @@
 #include <iostream>
 #include <cstring>
 #include <cerrno>
+
+std::string g_cgi_env_from_argv = "";
 
 
 int XErrorHandlerImpl(Display* display, XErrorEvent* event) {
@@ -33,6 +37,24 @@ int XIOErrorHandlerImpl(Display* display) {
 }
 
 int main(int argc, char **argv) {
+    LOG(INFO) << "Executable directory: " << executable_dir();
+
+    // Passing ENV variables to PHP using the --cgi-environment
+    // command line arg passed to app.
+    if (argv) {
+        for (int i = 0; i < argc; i++) {
+            std::string arg = argv[i];
+            size_t pos = arg.find("=");
+            if (pos != std::string::npos) {
+                std::string name = arg.substr(0, pos);
+                std::string value = arg.substr(pos+1, std::string::npos);
+                if (name == "--cgi-environment" && value.length()) {
+                    g_cgi_env_from_argv.assign(value);
+                }
+            }
+        }
+    }
+
     // Create a copy of |argv| on Linux because Chromium mangles the value
     // internally (see CEF issue #620).
     CefScopedArgArray scoped_arg_array(argc, argv);
@@ -74,6 +96,15 @@ int main(int argc, char **argv) {
         return exit_code;
     }
 
+    // Single instance application
+    // @TODO
+
+    // Main window title
+    // @TODO from settings.json
+
+    // Start Mongoose server
+    MongooseStart();
+
     // Install xlib error handlers so that the application won't be terminated
     // on non-fatal errors. X11 errors appearing in debug logs usually can be
     // ignored.
@@ -83,8 +114,12 @@ int main(int argc, char **argv) {
     // Specify CEF global settings here.
     CefSettings settings;
     settings.no_sandbox = true;
-    CefString( &settings.log_file ) = "debug.log";
-    settings.log_severity = LOGSEVERITY_INFO;
+    CefString( &settings.log_file ) = "debug.log"; // @TODO from settings.json
+    settings.log_severity = LOGSEVERITY_INFO; // @TODO from settings.json
+    // @TODO cache_path settings.json option
+
+    // Remote debugging port
+    // @todo from settings.json
 
     // App implements application-level callbacks for the browser
     // process.
@@ -113,11 +148,14 @@ int main(int argc, char **argv) {
     CefBrowserHost::CreateBrowserSync(
         window_info,
         ClientHandler::GetInstance(),
-        "https://www.google.com/",
+        MongooseGetUrl(),
         browser_settings,
         NULL);
 
     CefRunMessageLoop();
+
+    LOG(INFO) << "Stop Mongoose server";
+    MongooseStop();
     
     LOG(INFO) << "Shutdown CEF";
     CefShutdown();

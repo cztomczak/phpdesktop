@@ -24,6 +24,11 @@ make -R -f Makefile "$@"
 rc=$?;
 if [[ ${rc} = 0 ]]; then
     echo "OK phpdesktop was built";
+    cp src/php.ini build/bin/
+    if [[ -d build/bin/www ]]; then
+        rm -r build/bin/www
+    fi
+    cp -r src/www/ build/bin/
     ./build/bin/phpdesktop
     rm -r blob_storage/
     rm -r GPUCache/
