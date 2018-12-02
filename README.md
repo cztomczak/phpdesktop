@@ -43,9 +43,8 @@ Lots of other useful information can be found on the [Knowledge Base](../../wiki
 
 ## Sponsors
 
-If you would like to sponsor PHP Desktop development efforts and see your company logo with a link here,
-please contact Czarek, contact details are available in his [Resume](https://drive.google.com/file/d/17xmoT5Z_zTHkVclqPzrs2aAV64Uiu7fh/view).
-Complete github statistics are available in this topic on the Forum: [[ANN] Call for sponsors](https://groups.google.com/d/topic/phpdesktop/1T7jictpJ5M/discussion).
+If you would like to sponsor PHP Desktop development efforts and see your company logo with a link here then
+please contact Czarek. Complete github statistics are available in this topic on the Forum: [[ANN] Call for sponsors](https://groups.google.com/d/topic/phpdesktop/1T7jictpJ5M/discussion).
 
 
 ## Fundings for new features
