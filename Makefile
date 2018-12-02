@@ -2,12 +2,12 @@ TARGET=build/bin/phpdesktop
 
 INCLUDES = -Isrc -Lbuild/lib -Lbuild/bin
 
-CCFLAGS = -g -Wall -Werror -std=gnu++11 $(INCLUDES)
+CCFLAGS = -g -Wall -Werror -std=gnu++11 -pthread $(INCLUDES)
 CCFLAGS += $(shell pkg-config --cflags glib-2.0 gtk+-3.0)
 
 CFLAGS_OPTIMIZE = -O3 -fvisibility=hidden
 
-LDFLAGS = -Wl,-rpath,. -Wl,-rpath,"\$$ORIGIN" -lX11 -lcef -lcef_dll_wrapper -Wl,--as-needed -ldl
+LDFLAGS = -Wl,-rpath,. -Wl,-rpath,"\$$ORIGIN" -lX11 -lcef -lcef_dll_wrapper -Wl,--as-needed -ldl -lpthread
 LDFLAGS += $(shell pkg-config --libs glib-2.0 gtk+-3.0)
 
 OBJS=\

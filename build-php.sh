@@ -14,6 +14,7 @@ set -e
 root_dir=$(dirname $0)
 cd ${root_dir}/build/php*/
 php_dir=$(pwd)
+echo "Found PHP: ${php_dir}"
 echo "Configure PHP..."
 ./configure \
     --prefix=${php_dir}/dist-install \

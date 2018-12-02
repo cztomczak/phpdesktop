@@ -1,5 +1,5 @@
 // Forked from Mongoose MIT licensed revision 04fc209. 
-// Bug fixes and minor changes were made for PHP Desktop.
+// This is a custom edition of Mongoose web server for PHP Desktop.
 // Copyright (c) 2012 PHP Desktop.
 // Copyright (c) 2004 Sergey Lyubka.
 //
@@ -1294,6 +1294,19 @@ static int kill(pid_t pid, int sig_num) {
   return 0;
 }
 
+#define WNOHANG 1 /* do not wait for child to exit */
+static pid_t waitpid(pid_t pid, int *status, int flags) {
+  (void)status;
+  DWORD waitres = WaitForSingleObject((HANDLE)pid, 0);
+  if (waitres == WAIT_OBJECT_0) {
+    return pid;
+  }
+  if (waitres == WAIT_TIMEOUT) {
+    return 0;
+  }
+  return (pid_t)-1;
+}
+
 static void trim_trailing_whitespaces(char *s) {
   char *e = s + strlen(s) - 1;
   while (e > s && isspace(* (unsigned char *) e)) {
@@ -1466,6 +1479,15 @@ static pid_t spawn_process(struct mg_connection *conn, const char *prog,
       // if it was set to be ignored. Restore it to default action.
       signal(SIGCHLD, SIG_DFL);
 
+      // It is recommended to use sigaction() instead of signal()
+      // as it is more reliable. However this does not fix issue
+      // with php-cgi zombie processes hanging after PHP script
+      // was served. (Linux issue).
+      // struct sigaction sa;
+      // memset(&sa, 0, sizeof(sa));
+      // sa.sa_handler = SIG_DFL;
+      // sigaction(SIGCHLD, &sa, NULL);
+
       interp = conn->ctx->config[CGI_INTERPRETER];
       if (interp == NULL) {
         (void) execle(prog, prog, NULL, envp);
@@ -1473,7 +1495,9 @@ static pid_t spawn_process(struct mg_connection *conn, const char *prog,
       } else {
         // char prog_abspath[PATH_MAX];
         // strcpy(prog_abspath, dir);
+        // strcat(prog_abspath, "/");
         // strcat(prog_abspath, prog);
+        // conn->ctx->callbacks.log_message(conn, interp);
         (void) execle(interp, interp, prog, NULL, envp);
         cry(conn, "%s: execle(%s %s): %s", __func__, interp, prog,
             strerror(ERRNO));
@@ -3666,7 +3690,14 @@ static void handle_cgi_request(struct mg_connection *conn, const char *prog) {
 
 done:
   if (pid != (pid_t) -1) {
-    kill(pid, SIGKILL);
+    // Use SIGABRT so that CGI process has an opportunity to
+    // handle event and exit gracefully.
+    kill(pid, SIGABRT);
+    // Wait until process is terminated, otherwise CGI process will be
+    // hanging forever on Linux. This code should also be used on Windows.
+    // Do not use the "status" param that can be returned by waitpid().
+    // These statuses are buggy and CGI process will still be hanging.
+    while (waitpid(pid, NULL, 0) != (pid_t) -1);
   }
   if (fdin[0] != -1) {
     close(fdin[0]);
@@ -5616,7 +5647,7 @@ struct mg_context *mg_start(const struct mg_callbacks *callbacks,
   // won't kill the whole process.
   (void) signal(SIGPIPE, SIG_IGN);
   // Also ignoring SIGCHLD to let the OS to reap zombies properly.
-  (void) signal(SIGCHLD, SIG_IGN);
+  // (void) signal(SIGCHLD, SIG_IGN);
 #endif // !_WIN32
 
   (void) pthread_mutex_init(&ctx->mutex, NULL);

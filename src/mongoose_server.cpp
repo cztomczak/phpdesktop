@@ -14,11 +14,12 @@ std::string g_mongoose_url = "";
 struct mg_context* g_mongoose_context = 0;
 extern std::string g_cgi_env_from_argv;
 
-static int mongoose_log_message(const struct mg_connection* conn,
+static int mongoose_error_message(const struct mg_connection* conn,
                                 const char *message) {
-    // Called when mongoose is about to log a message. If callback returns
-    // non-zero, mongoose does not log anything.
-    LOG(WARNING) << message;
+    // Called when mongoose is about to log an error message.
+    // If callback returns non-zero, mongoose does not log anything
+    // to a file ("error_log_file" option).
+    LOG(ERROR) << message;
     return 0;
 }
 
@@ -109,7 +110,7 @@ bool MongooseStart() {
 
     // Start mongoose
     mg_callbacks callbacks = {0};
-    callbacks.log_message = &mongoose_log_message;
+    callbacks.log_message = &mongoose_error_message;
     callbacks.end_request = &mongoose_end_request;
     g_mongoose_context = mg_start(&callbacks, NULL, options);
     if (g_mongoose_context == NULL) {
