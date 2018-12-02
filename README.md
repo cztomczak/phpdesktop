@@ -22,7 +22,7 @@ In a certain sense phpdesktop acts as a PHP to EXE compiler. It embeds a web bro
 and a PHP interpreter. All embedded into a single application. The web server embedded is 
 [Mongoose](https://en.wikipedia.org/wiki/Mongoose_(web_server)) (the MIT-licensed version). Supported browsers are
 Internet Explorer and Google Chrome. The package with Chrome embedded has no external dependencies, everything 
-is included in the phpdesktop binaries and works out of the box on a user's computer.
+is included in the phpdesktop binaries and works out of the box on a user's computer. PHP Desktop actually embeds Chromium browser ([Chromium Embedded Framework](https://bitbucket.org/chromiumembedded/cef) to be specific) which is open source software on which Google Chrome is based, but for the sake of simplicity we just call it Chrome or Google Chrome.
 
 All popular PHP frameworks are supported, see the [PHP frameworks support](../../wiki/PHP-frameworks-support) wiki page 
 for example configurations for CakePHP, CodeIgniter, Laravel, Symfony, Yii and Zend Framework.  You can create 
