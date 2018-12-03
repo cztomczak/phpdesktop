@@ -44,7 +44,7 @@ Lots of other useful information can be found on the [Knowledge Base](../../wiki
 
 ## Sponsors
 
-If your company would like to sponsor PHP Desktop development efforts then please contact [Czarek](https://drive.google.com/file/d/17xmoT5Z_zTHkVclqPzrs2aAV64Uiu7fh/view). Your company logo would appear here on the project's main page. Long term sponsorships are welcome. Czarek would love to spend more time on developing this project, but he can't afford doing so in his free time anymore. He already put hundreds of hours developing this project after his work hours.
+The PHP Desktop project is seeking companies to help make the project great again. If your company would like to sponsor PHP Desktop development efforts then please contact [Czarek](https://drive.google.com/file/d/17xmoT5Z_zTHkVclqPzrs2aAV64Uiu7fh/view). Your company logo would appear here on the project's main page. Long term sponsorships are welcome. Czarek would love to spend more time on developing this project, but he can't afford doing so in his free time anymore.
 
 
 ## Fundings for new features
