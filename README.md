@@ -29,18 +29,18 @@ applications like the ones you can see developed in C++ programming language.
 PHP Desktop is more of a GUI tool for converting your PHP web apps and PHP CLI
 tools to desktop applications with little effort. If you have a big PHP code base
 and want to reuse it on desktop then it makes sense to use PHP Desktop. If you
-like programming in PHP and are more efficient in it than in Javascript then it
+are more efficient in PHP programming than in JS programming then it
 makes sense to use PHP Desktop instead of Electron. If you have PHP CLI tools
 that you would like to convert to GUI tools then it makes sense to use PHP Desktop
-then to rewrite everything to some other language or specific framework APIs.
+than to rewrite everything in some other language or specific framework APIs.
 With PHP Desktop you can accomplish great things in no time and painlessly.
-But be aware that PHP Desktop APIs are limited. This project is not supported
+But be aware that PHP Desktop APIs can be limited. This project is not supported
 by big companies like Electron is and thus its development resources are limited.
 Before creating a desktop application I suggest that you go through documentation
-and see if the desktop integration API is available in PHP Desktop. PHP Desktop
-doesn't provide many of the built-in desktop integration functionality that you
-can find in Electron, but you can still accomplish many of these tasks by integrating
-external tools/libraries with PHP Desktop.
+and see if the desktop integration API you need is available in PHP Desktop. PHP
+Desktop doesn't provide many of the built-in desktop integration functionality that
+you can find in Electron, but you can still accomplish many of these tasks by
+integrating external tools/libraries with PHP Desktop.
 
 In a certain sense phpdesktop acts as a PHP to EXE compiler. It embeds a web browser,
 a multithreaded web server and a PHP interpreter. All embedded into a single application.
