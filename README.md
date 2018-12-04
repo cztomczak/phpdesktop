@@ -13,38 +13,70 @@ Table of contents:
 ## Introduction
 
 PHP Desktop is an open source project founded by [Czarek Tomczak](https://drive.google.com/file/d/17xmoT5Z_zTHkVclqPzrs2aAV64Uiu7fh/view)
-(hire me!) in 2012 to provide a way for developing native 
-desktop GUI applications using web technologies such as PHP, HTML5, JavaScript and SQLite. The development workflow 
-you are used to while creating web applications remains the same. There is no new API/framework to learn. The process 
-of turning an existing website into a desktop application is basically a matter of copying it to the "phpdesktop/www/" 
-directory.
+in 2012 to provide a way for developing native desktop GUI applications
+using web technologies such as PHP, HTML5, JavaScript and SQLite. PHP Desktop
+is basically what [Electron](https://electronjs.org/) is, but with PHP support
+added. You create client interface in JS/HTML5 and use PHP for back-end stuff
+such as interacting with OS, filesystem and processing of data. So it works
+similarly as your web application, but can run and act like a native desktop
+application. The development workflow you are used to while creating web
+applications remains the same. There is no new API/framework to learn. The
+process of turning an existing website into a desktop application is basically
+a matter of copying it to the "phpdesktop/www/" directory.
 
-In a certain sense phpdesktop acts as a PHP to EXE compiler. It embeds a web browser, a multithreaded web server 
-and a PHP interpreter. All embedded into a single application. The web server embedded is 
-[Mongoose](https://en.wikipedia.org/wiki/Mongoose_(web_server)) (the MIT-licensed version). Supported browsers are
-Internet Explorer and Google Chrome. The package with Chrome embedded has no external dependencies, everything 
-is included in the phpdesktop binaries and works out of the box on a user's computer. PHP Desktop actually embeds Chromium browser (using [Chromium Embedded Framework](https://bitbucket.org/chromiumembedded/cef) to be specific) which is open source software on which Google Chrome is based, but for the sake of simplicity we just call it Chrome or Google Chrome.
+PHP Desktop is not meant as a professional environment for developing desktop
+applications like the ones you can see developed in C++ programming language.
+PHP Desktop is more of a GUI tool for converting your PHP web apps and PHP CLI
+tools to desktop applications with little effort. If you have a big PHP code base
+and want to reuse it on desktop then it makes sense to use PHP Desktop. If you
+like programming in PHP and are more efficient in it than in Javascript then it
+makes sense to use PHP Desktop instead of Electron. If you have PHP CLI tools
+that you would like to convert to GUI tools then it makes sense to use PHP Desktop
+then to rewrite everything to some other language or specific framework APIs.
+With PHP Desktop you can accomplish great things in no time and painlessly.
+But be aware that PHP Desktop APIs are limited. This project is not supported
+by big companies like Electron is and thus its development resources are limited.
+Before creating a desktop application I suggest that you go through documentation
+and see if the desktop integration API is available in PHP Desktop. PHP Desktop
+doesn't provide many of the built-in desktop integration functionality that you
+can find in Electron, but you can still accomplish many of these tasks by integrating
+external tools/libraries with PHP Desktop.
 
-All popular PHP frameworks are supported, see the [PHP frameworks support](../../wiki/PHP-frameworks-support) wiki page 
-for example configurations for CakePHP, CodeIgniter, Laravel, Symfony, Yii and Zend Framework.  You can create 
-a standalone executable for distribution with the help of the 
-[Inno Setup installer](../../wiki/Knowledge-Base#application-installer). PHP sources can be protected with the many
-of the available [PHP encoders](../../wiki/Knowledge-Base#how-do-i-protect-php-sources-in-the-www-directory).
+In a certain sense phpdesktop acts as a PHP to EXE compiler. It embeds a web browser,
+a multithreaded web server and a PHP interpreter. All embedded into a single application.
+The web server embedded is  [Mongoose](https://en.wikipedia.org/wiki/Mongoose_(web_server))
+(the MIT-licensed version). Supported browsers are Internet Explorer and Google Chrome.
+The package with Chrome embedded has no external dependencies, everything is included in
+the phpdesktop binaries and works out of the box on a user's computer. PHP Desktop actually
+embeds Chromium browser (using [Chromium Embedded Framework](https://bitbucket.org/chromiumembedded/cef)
+to be specific) which is open source software on which Google Chrome is based, but for
+the sake of simplicity we just call it Chrome or Google Chrome here.
+
+All popular PHP frameworks are supported, see the [PHP frameworks support](../../wiki/PHP-frameworks-support)
+wiki page for example configurations for CakePHP, CodeIgniter, Laravel, Symfony, Yii
+and Zend Framework.  You can create a standalone executable for distribution with the
+help of the [Inno Setup installer](../../wiki/Knowledge-Base#application-installer).
+PHP sources can be protected with the many of the available
+[PHP encoders](../../wiki/Knowledge-Base#how-do-i-protect-php-sources-in-the-www-directory).
 PHP Desktop is released under non-restrictive license, thus it is 
 [free for commercial use](../../wiki/Knowledge-Base#can-i-use-php-desktop-in-a-commercial-closed-sourced-project).
 
-It is one of the top goals for PHP Desktop to be stable, to work reliably. PHP Desktop does not suffer from memory leaks. 
-PHP by design was never intended for running long hours/days, as desktop applications usually do. This is not a concern 
-when using PHP Desktop, as it is running an internal web server and serving pages through CGI. So when PHP script ends 
+It is one of the top goals for PHP Desktop to be stable, to work reliably. PHP Desktop does
+not suffer from memory leaks. PHP by design was never intended for running long hours/days,
+as desktop applications usually do. This is not a concern when using PHP Desktop, as it is
+running an internal web server and serving pages through CGI. So when PHP script ends 
 execution PHP-CGI process is killed and all memory is always freed.
 
-Lots of other useful information can be found on the [Knowledge Base](../../wiki/Knowledge-Base) wiki page and on the 
-[PHP Desktop Forum](https://groups.google.com/d/forum/phpdesktop).
+Lots of other useful information can be found on the [Knowledge Base](../../wiki/Knowledge-Base)
+wiki page and on the [PHP Desktop Forum](https://groups.google.com/d/forum/phpdesktop).
 
 
 ## Sponsors
 
-The PHP Desktop project is seeking companies to help make the project great again. If your company would like to sponsor PHP Desktop development efforts then please contact [Czarek](https://drive.google.com/file/d/17xmoT5Z_zTHkVclqPzrs2aAV64Uiu7fh/view). Your company logo would appear here on the project's main page. Long term sponsorships are welcome. Czarek would love to spend more time on developing this project, but he can't afford doing so in his free time.
+The PHP Desktop project is seeking companies to help make the project greater than it is today.
+If your company would like to sponsor PHP Desktop development efforts then please contact [Czarek](https://drive.google.com/file/d/17xmoT5Z_zTHkVclqPzrs2aAV64Uiu7fh/view). Your company logo would
+appear here on the project's main page. Long term sponsorships are welcome. Czarek would love to
+spend more time on developing this project, but he can't afford doing so in his free time.
 
 
 ## Fundings for new features
