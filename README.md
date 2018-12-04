@@ -18,7 +18,7 @@ using web technologies such as PHP, HTML5, JavaScript and SQLite. PHP Desktop
 is basically what [Electron](https://electronjs.org/) is, but with PHP support
 added. You create client interface in JS/HTML5 and use PHP for back-end stuff
 such as interacting with OS, filesystem and processing of data. So it works
-similarly as your web application, but can run and act like a native desktop
+similarly to your web application, but can run and act like a native desktop
 application. The development workflow you are used to while creating web
 applications remains the same. There is no new API/framework to learn. The
 process of turning an existing website into a desktop application is basically
