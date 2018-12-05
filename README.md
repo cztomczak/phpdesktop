@@ -88,7 +88,7 @@ to spend more time on developing this project, but he can't afford doing so in h
 
 ## Fundings for new features
 
-Here is a list of ongoing fundings for new features in PHP Desktop Chrome:
+Here is a list of ongoing fundings for the new features in PHP Desktop Chrome:
 
 Feature | Funds gathered | Issue
 --- | --- | ---
