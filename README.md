@@ -78,8 +78,8 @@ wiki page and on the [PHP Desktop Forum](https://groups.google.com/d/forum/phpde
 The PHP Desktop project is seeking companies to help make the project greater than it is today.
 There is a lot that can be done for the project such as monthly releases with latest Chromium
 version, an automated build system, cross-platform support with full functionality on Mac and Linux,
-more Javascript and PHP API exposed for accomplishing desktop specific tasks and for better integration
-with the desktop, and the many proposals for new features submitted in the issue tracker.
+more Javascript and PHP API exposed for accomplishing desktop specific tasks, better integration
+with the desktop/taskbar/systray, and the many proposals for new features submitted in the issue tracker.
 If your company would like to sponsor PHP Desktop development efforts then please contact [Czarek](https://drive.google.com/file/d/17xmoT5Z_zTHkVclqPzrs2aAV64Uiu7fh/view). Your company logo would
 appear here on the project's main page. Long term sponsorships are welcome. Czarek would love to
 spend more time on developing this project, but he can't afford doing so in his free time.
