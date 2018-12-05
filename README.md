@@ -43,9 +43,11 @@ you can find in Electron, but you can still accomplish many of these tasks by
 integrating external tools/libraries with PHP Desktop.
 
 In a certain sense phpdesktop acts as a PHP to EXE compiler. It embeds a web browser,
-a multithreaded web server and a PHP interpreter. All embedded into a single application.
-The web server embedded is  [Mongoose](https://en.wikipedia.org/wiki/Mongoose_(web_server))
-(the MIT-licensed version). Supported browsers are Internet Explorer and Google Chrome.
+a multithreaded web server and a PHP interpreter, all embedded into a single application,
+a single folder, a portable zip that you can easily distribute to end users (or optionally
+make it an installer). The web server embedded is
+[Mongoose](https://en.wikipedia.org/wiki/Mongoose_(web_server)) (the MIT-licensed version).
+Supported browsers are Internet Explorer and Google Chrome.
 The package with Chrome embedded has no external dependencies, everything is included in
 the phpdesktop binaries and works out of the box on a user's computer. PHP Desktop actually
 embeds Chromium browser (using [Chromium Embedded Framework](https://bitbucket.org/chromiumembedded/cef)
