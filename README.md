@@ -13,7 +13,7 @@ Table of contents:
 ## Introduction
 
 PHP Desktop is an open source project founded by [Czarek Tomczak](https://drive.google.com/file/d/17xmoT5Z_zTHkVclqPzrs2aAV64Uiu7fh/view)
-(hire me!) in 2012 to provide a way for developing native desktop GUI applications
+in 2012 to provide a way for developing native desktop GUI applications
 using web technologies such as PHP, HTML5, JavaScript and SQLite. PHP Desktop
 is basically what [Electron](https://electronjs.org/) is, but with PHP support
 added. You create client interface in JS/HTML5 and use PHP for back-end stuff
