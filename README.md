@@ -81,9 +81,9 @@ version, an automated build system, cross-platform support with full functionali
 more Javascript and PHP API exposed for accomplishing desktop specific tasks, better integration
 with the desktop / taskbar / systray, and the many proposals for new features submitted in the issue
 tracker. If your company would like to sponsor PHP Desktop development efforts then please contact
-[Czarek](https://drive.google.com/file/d/17xmoT5Z_zTHkVclqPzrs2aAV64Uiu7fh/view). Your company logo
-would appear here on the project's main page. Long term sponsorships are welcome. Czarek would love
-to spend more time on developing this project, but he can't afford doing so in his free time.
+[Czarek](https://drive.google.com/file/d/17xmoT5Z_zTHkVclqPzrs2aAV64Uiu7fh/view). Long term sponsorships
+are welcome and Czarek is open to ideas about the project. He would love to spend more time on developing
+this project, but he can't afford doing so in his free time.
 
 
 ## Fundings for new features
