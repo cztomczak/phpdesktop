@@ -98,7 +98,7 @@ Chrome v70 release for Windows | $0 of $2,000 | [Issue #227](https://github.com/
 Initial Mac release | $150 of $2,000 | [Issue #208](https://github.com/cztomczak/phpdesktop/issues/208)
 Initial Linux release | $1,500 of $1,500 | [Issue #221](https://github.com/cztomczak/phpdesktop/issues/221)
 
-Fundings for other features like the ones presented on the
+Fundings for other features submitted in the issue tracker or the ones presented on the
 [PHP Desktop Pro](https://github.com/cztomczak/phpdesktop/wiki/PHP-Desktop-Pro)
 wiki page are also possible, just let know Czarek.
 
