@@ -34,11 +34,11 @@ makes sense to use PHP Desktop instead of Electron. If you have PHP CLI tools
 that you would like to convert to GUI tools then it makes sense to use PHP Desktop
 than to rewrite everything in some other language or specific framework APIs.
 With PHP Desktop you can accomplish great things in no time and painlessly.
-But be aware that PHP Desktop APIs can be limited. This project is not supported
-by big companies like Electron is and thus its development resources are limited.
-Before creating a desktop application I suggest that you go through documentation
-and see if the desktop integration API you need is available in PHP Desktop. PHP
-Desktop doesn't provide many of the built-in desktop integration functionality that
+But be aware that desktop integration APIs in PHP Desktop can be limited. This project
+is not supported y big companies like Electron is and thus its development resources
+are limited. Before creating a desktop application I suggest that you go through
+documentation and see if the desktop integration API you need is available in PHP Desktop.
+PHP Desktop doesn't provide many of the built-in desktop integration functionality that
 you can find in Electron, but you can still accomplish many of these tasks by
 integrating external tools/libraries with PHP Desktop.
 
