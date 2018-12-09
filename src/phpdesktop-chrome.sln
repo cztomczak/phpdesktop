@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{743D0316-53E2-4381-B9C8-2C68DB639764}") = "phpdesktop-chrome", "phpdesktop-chrome.vcxproj", "{D6CAC1B9-0B7C-4D5F-9F8C-5D497B1B0E81}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D6CAC1B9-0B7C-4D5F-9F8C-5D497B1B0E81}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D6CAC1B9-0B7C-4D5F-9F8C-5D497B1B0E81}.Debug|Win32.Build.0 = Debug|Win32
+		{D6CAC1B9-0B7C-4D5F-9F8C-5D497B1B0E81}.Release|Win32.ActiveCfg = Release|Win32
+		{D6CAC1B9-0B7C-4D5F-9F8C-5D497B1B0E81}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
