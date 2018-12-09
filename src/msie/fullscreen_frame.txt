@@ -1,0 +1,100 @@
+// Copyright (c) 2012-2014 The PHP Desktop authors. All rights reserved.
+// License: New BSD License.
+// Website: http://code.google.com/p/phpdesktop/
+
+// TODO: hiding the taskbar is not a good idea, there is a better solution:
+// http://stackoverflow.com/a/5299718/623622
+
+#pragma once
+
+#include "../defines.h"
+
+/*
+    Setting full screen immediately by hiding taskbar and menubar.
+
+    There is one caveat with this solution, if your application crashes
+    or is killed through task manager, then user losses taskbar on his
+    system permanently! (unless he runs your application again, goes
+    into fullscreen and exits, then he will see the taskbar again).
+
+    The simple way is to call:
+    SetWindowPos(window, HWND_TOP, 0, 0,
+        GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_FRAMECHANGED);
+    But it doesn't always work, for example when you do it in WM_CREATE event.
+
+*/
+
+template <class TopFrame>
+class FullscreenFrame
+{
+public:
+    bool isFullscreen_;
+    LONG windowStyles_;
+    WINDOWPLACEMENT windowPlacement_;
+
+    FullscreenFrame()
+        :
+        isFullscreen_(false),
+        windowStyles_(0)
+    {
+        ZeroMemory(&windowPlacement_, sizeof WINDOWPLACEMENT);
+    }
+
+    /*
+        If you call this function you have to call ShowTaskbar(true) in your WM_CLOSE message,
+        otherwise after closing application user will have no access to the taskbar.
+    */
+    void SetFullscreen(bool setFullscreen)
+    {
+        ShowTaskbar(!setFullscreen);
+
+        TopFrame* self = static_cast<TopFrame*>(this);
+        _ASSERT(self->IsWindow());
+
+        if (setFullscreen) {
+            if (!isFullscreen_) {
+                windowStyles_ = self->GetWindowLongW(GWL_STYLE);
+                self->GetWindowPlacement(&windowPlacement_);
+            }
+
+        }
+
+        // SM_CXSCREEN gives primary monitor, for multiple monitors use SM_CXVIRTUALSCREEN.
+        RECT fullrect = { 0 };
+        SetRect(&fullrect, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
+
+        WINDOWPLACEMENT newplacement = windowPlacement_;
+        newplacement.showCmd = SW_SHOWNORMAL;
+        newplacement.rcNormalPosition = fullrect;
+
+        if (setFullscreen) {
+            self->SetWindowPlacement(&newplacement);
+            self->SetWindowLongW(GWL_STYLE,  WS_VISIBLE);
+            self->UpdateWindow();
+        } else {
+            if (isFullscreen_) {
+                self->SetWindowPlacement(&windowPlacement_);
+                self->SetWindowLongW(GWL_STYLE, windowStyles_);
+                self->UpdateWindow();
+            }
+        }
+
+        isFullscreen_ = setFullscreen;
+    }
+
+    void ShowTaskbar(bool show)
+    {
+        HWND taskbar = FindWindow(_T("Shell_TrayWnd"), NULL);
+        HWND start = FindWindow(_T("Button"), NULL);
+
+        if (taskbar != NULL) {
+            ShowWindow(taskbar, show ? SW_SHOW : SW_HIDE);
+            UpdateWindow(taskbar);
+        }
+        if (start != NULL) {
+            // Vista
+            ShowWindow(start, show ? SW_SHOW : SW_HIDE);
+            UpdateWindow(start);
+        }
+    }
+};
