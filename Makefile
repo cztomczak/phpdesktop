@@ -3,12 +3,12 @@ TARGET=build/bin/phpdesktop
 INCLUDES = -Isrc -Lbuild/lib -Lbuild/bin
 
 CCFLAGS = -g -Wall -Werror -std=gnu++11 -pthread $(INCLUDES)
-CCFLAGS += $(shell pkg-config --cflags glib-2.0 gtk+-3.0)
+CCFLAGS += $(shell pkg-config --cflags glib-2.0 gtk+-2.0 gtk+-unix-print-2.0)
 
 CFLAGS_OPTIMIZE = -O3 -fvisibility=hidden
 
 LDFLAGS = -Wl,-rpath,. -Wl,-rpath,"\$$ORIGIN" -lX11 -lcef -lcef_dll_wrapper -Wl,--as-needed -ldl -lpthread
-LDFLAGS += $(shell pkg-config --libs glib-2.0 gtk+-3.0)
+LDFLAGS += $(shell pkg-config --libs glib-2.0 gtk+-2.0 gtk+-unix-print-2.0)
 
 OBJS=\
 	src/main.o \
@@ -16,9 +16,13 @@ OBJS=\
 	src/client_handler.o \
 	src/gtk.o \
 	src/json.o \
+	src/main_message_loop.o \
+	src/main_message_loop_std.o \
 	src/mongoose.o \
 	src/mongoose_server.o \
+	src/print_handler_gtk.o \
 	src/settings.o \
+	src/util_gtk.o \
 	src/utils.o \
 
 CC=g++

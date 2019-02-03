@@ -19,8 +19,11 @@ public:
 
     // CefBrowserProcessHandler methods:
     virtual void OnContextInitialized() override;
+    virtual CefRefPtr<CefPrintHandler> GetPrintHandler() override;
 
 private:
+    CefRefPtr<CefPrintHandler> print_handler_;
+
     // Include the default reference counting implementation.
     IMPLEMENT_REFCOUNTING(App);
 };

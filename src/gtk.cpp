@@ -8,10 +8,15 @@
 #include "include/cef_app.h"
 #include "include/base/cef_logging.h"
 
+namespace {
+    GtkWidget* g_main_window = NULL;
+} // namespace
+
 GtkWidget* create_gtk_window(const char* title, const char* icon,
                              bool center, int width, int height) {
     // Create window.
     GtkWidget* window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    g_main_window = window;
 
     // Signals
     g_signal_connect(G_OBJECT(window), "size-allocate",
@@ -50,6 +55,10 @@ GtkWidget* create_gtk_window(const char* title, const char* icon,
     gtk_widget_show_all(window);
 
     return vbox;
+}
+
+GtkWidget* get_main_window() {
+    return g_main_window;
 }
 
 ::Window get_window_xid(GtkWidget* window) {
@@ -109,6 +118,7 @@ void window_focus_out_signal(GtkWidget* widget, gpointer data) {
 }
 
 void window_destroy_signal(GtkWidget* widget, gpointer data) {
+    g_main_window = NULL;
     CefQuitMessageLoop();
 }
 

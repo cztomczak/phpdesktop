@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <gtk/gtk.h>
-#include <gtk/gtkx.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 #include <gdk-pixbuf/gdk-pixdata.h>
@@ -15,6 +14,7 @@
 GtkWidget* create_gtk_window(const char* title, const char* icon,
                              bool center, int width, int height);
 ::Window get_window_xid(GtkWidget* window);
+GtkWidget* get_main_window();
 void window_size_allocate_signal(GtkWidget* widget, GtkAllocation *alloc,
                                  gpointer data);
 void window_focus_in_signal(GtkWidget* widget, gpointer data);

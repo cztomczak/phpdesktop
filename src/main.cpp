@@ -7,6 +7,7 @@
 #include "utils.h"
 #include "mongoose_server.h"
 #include "settings.h"
+#include "main_message_loop_std.h"
 
 #include "include/base/cef_logging.h"
 #include "include/wrapper/cef_helpers.h"
@@ -180,6 +181,9 @@ int main(int argc, char **argv) {
     // Initialize GDK threads before CEF.
     gdk_threads_init();
 
+    scoped_ptr<MainMessageLoop> message_loop;
+    message_loop.reset(new MainMessageLoopStd);
+
     // Log messages created by LOG() macro will be written to debug.log
     // file only after CEF was initialized. Before CEF is initialized
     // all logs are only printed to console.
@@ -219,7 +223,8 @@ int main(int argc, char **argv) {
     LOG(INFO) << "Top window xid=" << xid;
     create_browser(xid);
 
-    CefRunMessageLoop();
+    // Run the message loop. This will block until Quit() is called.
+    int result = message_loop->Run();
 
     LOG(INFO) << "Stop Mongoose server";
     mongoose_stop();
@@ -227,7 +232,10 @@ int main(int argc, char **argv) {
     LOG(INFO) << "Shutdown CEF";
     CefShutdown();
 
-    return 0;
+    // Release objects in reverse order of creation.
+    message_loop.reset();
+
+    return result;
 }
 
 void create_browser(::Window xid) {

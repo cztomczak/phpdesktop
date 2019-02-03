@@ -1,0 +1,29 @@
+{
+    "files.exclude": {
+        "**/*.o": true,
+        "**/*.o.deps": true,
+        "**/build": true
+    },
+    "workbench.colorTheme": "Default Light+",
+    "window.zoomLevel": 0,
+    "C_Cpp.default.includePath": [
+        "/usr/include/gtk-2.0/",
+        "/usr/include/gtk-unix-print-2.0/",
+        "/usr/include/glib-2.0/",
+        "/usr/include/pango-1.0/",
+        "/usr/include/cairo/",
+        "/usr/include/gdk-pixbuf-2.0/",
+        "/usr/include/atk-1.0/",
+        "/usr/lib/x86_64-linux-gnu/gtk-2.0/include/",
+        "/usr/lib/x86_64-linux-gnu/glib-2.0/include/",
+        "/usr/lib/x86_64-linux-gnu/gtk-unix-print-2.0/",
+        "/usr/lib/x86_64-linux-gnu/pango-1.0/",
+        "/usr/lib/x86_64-linux-gnu/cairo/",
+        "/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/",
+        "/usr/lib/x86_64-linux-gnu/atk-1.0/",
+        "/home/cz/github/phpdesktop-linux70/src/",
+    ],
+    "html.format.wrapLineLength": 80,
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.rulers": [80],
+}
