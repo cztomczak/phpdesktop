@@ -72,6 +72,8 @@ bool mongoose_start() {
     if (g_mongoose_ip_address != "*") {
         cgi_env.append("SERVER_NAME=").append(g_mongoose_ip_address)
                .append(",");
+        cgi_env.append("SERVER_ADDR=").append(g_mongoose_ip_address)
+               .append(",");
     }
     cgi_env.append("PHPDESKTOP_VERSION=").append(PHPDESKTOP_VERSION);
     if (g_cgi_env_from_argv.length()) {
