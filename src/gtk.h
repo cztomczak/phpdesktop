@@ -21,5 +21,5 @@ void window_focus_in_signal(GtkWidget* widget, gpointer data);
 void window_focus_out_signal(GtkWidget* widget, gpointer data);
 void window_destroy_signal(GtkWidget* widget, gpointer data);
 void set_window_icon(GtkWindow* window, const char* icon);
-::Window find_child_browser(::Display* display, ::Window window);
+::Window find_child_browser(::Window window);
 void fix_default_x11_visual(GtkWidget* widget);

@@ -79,7 +79,7 @@ void window_size_allocate_signal(GtkWidget* widget, GtkAllocation *alloc,
     if (!xid) {
         return;
     }
-    ::Window xchild = find_child_browser(cef_get_xdisplay(), xid);
+    ::Window xchild = find_child_browser(xid);
     // LOG(INFO) << "window_size_allocate_signal() xchild=" << xchild;
     if (!xchild) {
         return;
@@ -97,7 +97,7 @@ void window_focus_in_signal(GtkWidget* widget, gpointer data) {
     // LOG(INFO) << "window_focus_in_signal";
     ClientHandler *handler = ClientHandler::GetInstance();
     ::Window window_xid = get_window_xid(widget);
-    ::Window browser_xid = find_child_browser(cef_get_xdisplay(), window_xid);
+    ::Window browser_xid = find_child_browser(window_xid);
     CefRefPtr<CefBrowser> browser = handler->FindBrowserByXid(browser_xid);
     if (browser_xid && browser.get()) {
         // LOG(INFO) << "window_focus_in_signal: Focus browser";
@@ -109,7 +109,7 @@ void window_focus_out_signal(GtkWidget* widget, gpointer data) {
     // LOG(INFO) << "window_focus_out_signal";
     ClientHandler *handler = ClientHandler::GetInstance();
     ::Window window_xid = get_window_xid(widget);
-    ::Window browser_xid = find_child_browser(cef_get_xdisplay(), window_xid);
+    ::Window browser_xid = find_child_browser(window_xid);
     CefRefPtr<CefBrowser> browser = handler->FindBrowserByXid(browser_xid);
     if (browser_xid && browser.get()) {
         // LOG(INFO) << "window_focus_out_signal: Unfocus browser";
@@ -144,13 +144,14 @@ void set_window_icon(GtkWindow* window, const char* icon) {
     }
 }
 
-::Window find_child_browser(::Display* display, ::Window window) {
+::Window find_child_browser(::Window window) {
     ::Window root;
     ::Window parent;
     ::Window* children;
     ::Window child_window = 0L;
     unsigned int nchildren;
-    if (XQueryTree(display, window, &root, &parent, &children, &nchildren)) {
+    if (XQueryTree(cef_get_xdisplay(), window, &root, &parent, &children,
+                   &nchildren)) {
         if (children && nchildren > 1) {
             child_window = children[1]; // sic!
             XFree(children);

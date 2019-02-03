@@ -4,6 +4,7 @@
 
 #include "client_handler.h"
 #include "settings.h"
+#include "gtk.h"
 
 #include "include/cef_app.h"
 #include "include/wrapper/cef_helpers.h"
@@ -166,6 +167,21 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     // Need to call FlushStore manually when browser is closing.
     browser->GetHost()->GetRequestContext()->GetDefaultCookieManager(NULL)
             ->FlushStore(NULL);
+
+    // Currently if main window is closed app other popups will be
+    // closed too and app terminates. However when "window.close" is
+    // executed in main window (and a popup browser lives) then
+    // it will close browser, but it won't destroy main window,
+    // leaving a gray main window (and a popup running in background).
+    // So to resolve this, detect that browser embedded in main window
+    // is closing and destroy its GTK window, so that app terminates.
+    if (!browser->IsPopup() && browser_list_.size() > 1) {
+        GtkWidget* main_window = get_main_window();
+        if (main_window) {
+            LOG(INFO) << "Force destroy GTK window in OnBeforeClose";
+            gtk_widget_destroy(main_window);
+        }
+    }
 
     // Remove from the list of existing browsers.
     BrowserList::iterator bit = browser_list_.begin();
