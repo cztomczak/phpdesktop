@@ -164,15 +164,51 @@ int main(int argc, char **argv) {
     // Start Mongoose server
     mongoose_start();
 
-    // Specify CEF global settings here.
-    CefSettings settings;
-    settings.no_sandbox = true;
-    CefString( &settings.log_file ) = "debug.log"; // @TODO from settings.json
-    settings.log_severity = LOGSEVERITY_INFO; // @TODO from settings.json
-    // @TODO cache_path settings.json option
+    // Specify CEF global settings here
+    CefSettings cef_settings;
+    cef_settings.no_sandbox = true;
 
-    // Remote debugging port
-    // @todo from settings.json
+    // log_file
+    std::string log_file((*app_settings)["chrome"]["log_file"]);
+    log_file = get_full_path(log_file);
+    CefString(&cef_settings.log_file) = log_file;
+
+    // log_severity
+    std::string log_severity((*app_settings)["chrome"]["log_severity"]);
+    if (log_severity == "verbose") {
+        cef_settings.log_severity = LOGSEVERITY_VERBOSE;
+    } else if (log_severity == "info") {
+        cef_settings.log_severity = LOGSEVERITY_INFO;
+    } else if (log_severity == "warning") {
+        cef_settings.log_severity = LOGSEVERITY_WARNING;
+    } else if (log_severity == "error") {
+        cef_settings.log_severity = LOGSEVERITY_ERROR;
+    } else if (log_severity == "disable") {
+        cef_settings.log_severity = LOGSEVERITY_DISABLE;
+    } else {
+        cef_settings.log_severity = LOGSEVERITY_DEFAULT;
+    }
+
+    // cache_path
+    std::string cache_path((*app_settings)["chrome"]["cache_path"]);
+    cache_path = get_full_path(cache_path);
+    CefString(&cef_settings.cache_path) = cache_path;
+
+    // remote_debugging_port
+    int remote_debugging_port(
+            (*app_settings)["chrome"]["remote_debugging_port"]);
+    if (remote_debugging_port == 0) {
+        remote_debugging_port = random(49152, 65535+1);
+        int i = 100;
+        while (((i--) > 0)
+                && remote_debugging_port == mongoose_get_port_int()) {
+            remote_debugging_port = random(49152, 65535+1);
+        }
+    }
+    if (remote_debugging_port > 0) {
+        LOG(INFO) << "remote_debugging_port = " << remote_debugging_port;
+        cef_settings.remote_debugging_port = remote_debugging_port;
+    }
 
     // App implements application-level callbacks for the browser
     // process.
@@ -188,7 +224,7 @@ int main(int argc, char **argv) {
     // file only after CEF was initialized. Before CEF is initialized
     // all logs are only printed to console.
     LOG(INFO) << "Initialize CEF";
-    CefInitialize(main_args, settings, app.get(), NULL);
+    CefInitialize(main_args, cef_settings, app.get(), NULL);
 
     // The Chromium sandbox requires that there only be a single thread during
     // initialization. Therefore initialize GTK after CEF.

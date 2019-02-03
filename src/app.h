@@ -11,13 +11,16 @@ class App : public CefApp,
 public:
     App();
 
-    // CefApp methods:
+    // CefApp
     virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler()
             override {
         return this;
     }
+    virtual void OnBeforeCommandLineProcessing(
+        const CefString& process_type,
+        CefRefPtr<CefCommandLine> command_line) override;
 
-    // CefBrowserProcessHandler methods:
+    // CefBrowserProcessHandler
     virtual void OnContextInitialized() override;
     virtual CefRefPtr<CefPrintHandler> GetPrintHandler() override;
 

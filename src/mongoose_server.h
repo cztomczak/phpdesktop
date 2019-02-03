@@ -7,5 +7,6 @@
 bool mongoose_start();
 void mongoose_stop();
 std::string mongoose_get_port();
+int mongoose_get_port_int();
 std::string mongoose_get_ip_address();
 std::string mongoose_get_url();

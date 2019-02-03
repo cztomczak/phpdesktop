@@ -7,7 +7,8 @@
 #include "version.h"
 #include "include/base/cef_logging.h"
 
-std::string g_mongoose_port = "0"; // @TODO from settings.json
+std::string g_mongoose_port = "0";
+int g_mongoose_port_int = 0;
 std::string g_mongoose_ip_address = "127.0.0.1"; // @TODO from settings.json
 std::string g_mongoose_url = "";
 
@@ -123,6 +124,7 @@ bool mongoose_start() {
     // When port was set to 0 then a random free port was assigned
     // by OS.
     int port = mg_get_listening_port(g_mongoose_context);
+    g_mongoose_port_int = port;
     std::stringstream port_ss;
     port_ss << port;
     g_mongoose_port = port_ss.str();
@@ -147,6 +149,10 @@ void mongoose_stop() {
 
 std::string mongoose_get_port() {
     return g_mongoose_port;
+}
+
+int mongoose_get_port_int() {
+    return g_mongoose_port_int;
 }
 
 std::string mongoose_get_ip_address() {

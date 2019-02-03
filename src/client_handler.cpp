@@ -47,6 +47,76 @@ CefRefPtr<CefBrowser> ClientHandler::FindBrowserByXid(::Window xid) {
     return NULL;
 }
 
+// CefContextMenuHandler
+
+#define _MENU_ID_DEVTOOLS                         MENU_ID_USER_FIRST + 1
+#define _MENU_ID_RELOAD_PAGE                      MENU_ID_USER_FIRST + 2
+
+void ClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
+                                        CefRefPtr<CefFrame> frame,
+                                        CefRefPtr<CefContextMenuParams> params,
+                                        CefRefPtr<CefMenuModel> model) {
+    CEF_REQUIRE_UI_THREAD();
+
+    json_value* settings = get_app_settings();
+    bool enable_menu = (*settings)["chrome"]["context_menu"]["enable_menu"];
+    bool navigation = (*settings)["chrome"]["context_menu"]["navigation"];
+    bool print = (*settings)["chrome"]["context_menu"]["print"];
+    bool view_source = (*settings)["chrome"]["context_menu"]["view_source"];
+    bool devtools = (*settings)["chrome"]["context_menu"]["devtools"];
+
+    if (!enable_menu) {
+        model->Clear();
+        return;
+    }
+
+    if (!navigation) {
+        model->Remove(MENU_ID_BACK);
+        model->Remove(MENU_ID_FORWARD);
+        // Remote separator.
+        model->RemoveAt(0);
+    }
+    if (!print) {
+        model->Remove(MENU_ID_PRINT);
+    }
+    if (!view_source) {
+        model->Remove(MENU_ID_VIEW_SOURCE);
+    }
+
+    if (!params->IsEditable() && params->GetSelectionText().empty()
+            && (params->GetPageUrl().length()
+                    || params->GetFrameUrl().length())) {
+        if (navigation) {
+            model->InsertItemAt(2, _MENU_ID_RELOAD_PAGE, "Reload");
+        }
+        if (devtools) {
+            model->AddSeparator();
+            model->AddItem(_MENU_ID_DEVTOOLS, "Show Developer Tools");
+        }
+    }
+}
+
+bool ClientHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
+                                         CefRefPtr<CefFrame> frame,
+                                         CefRefPtr<CefContextMenuParams> params,
+                                         int command_id,
+                                         EventFlags event_flags) {
+    CEF_REQUIRE_UI_THREAD();
+    if (command_id == _MENU_ID_RELOAD_PAGE) {
+        browser->ReloadIgnoreCache();
+        return true;
+    } else if (command_id == _MENU_ID_DEVTOOLS) {
+        CefWindowInfo window_info;
+        CefBrowserSettings settings;
+        CefPoint inspect;
+        browser->GetHost()->ShowDevTools(window_info, NULL, settings, inspect);
+        return true;
+    }
+    return false;
+}
+
+// CefDownloadHandler
+
 void ClientHandler::OnBeforeDownload(
         CefRefPtr<CefBrowser> browser,
         CefRefPtr<CefDownloadItem> download_item,
@@ -60,6 +130,21 @@ void ClientHandler::OnBeforeDownload(
         LOG(INFO) << "Tried to download a file, but downloads are disabled";
     }
 }
+
+// CefDragHandler
+
+bool ClientHandler::OnDragEnter(CefRefPtr<CefBrowser> browser,
+                                CefRefPtr<CefDragData> dragData,
+                                DragOperationsMask mask) {
+    bool external_drag = (*get_app_settings())["chrome"]["external_drag"];
+    if (external_drag) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+// CefLifeSpanHandler
 
 void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
     CEF_REQUIRE_UI_THREAD();
@@ -77,6 +162,11 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     CEF_REQUIRE_UI_THREAD();
 
+    // Cookies are not flushed to disk when closing app immediately.
+    // Need to call FlushStore manually when browser is closing.
+    browser->GetHost()->GetRequestContext()->GetDefaultCookieManager(NULL)
+            ->FlushStore(NULL);
+
     // Remove from the list of existing browsers.
     BrowserList::iterator bit = browser_list_.begin();
     for (; bit != browser_list_.end(); ++bit) {
@@ -91,6 +181,8 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
         CefQuitMessageLoop();
     }
 }
+
+// CefRequestHandler
 
 bool ClientHandler::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
                                    const CefString& origin_url,

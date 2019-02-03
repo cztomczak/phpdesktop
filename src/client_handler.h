@@ -10,8 +10,10 @@
 #include "dialog_handler_gtk.h"
 
 class ClientHandler : public CefClient,
+                      public CefContextMenuHandler,
                       public CefDisplayHandler,
                       public CefDownloadHandler,
+                      public CefDragHandler,
                       public CefLifeSpanHandler,
                       public CefLoadHandler,
                       public CefRequestHandler
@@ -26,6 +28,9 @@ public:
     virtual CefRefPtr<CefBrowser> FindBrowserByXid(::Window xid);
 
     // CefClient methods:
+    CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() override {
+        return this;
+    }
     CefRefPtr<CefDialogHandler> GetDialogHandler() override {
         return dialog_handler_;
     }
@@ -33,6 +38,9 @@ public:
         return this;
     }
     CefRefPtr<CefDownloadHandler> GetDownloadHandler() override {
+        return this;
+    }
+    CefRefPtr<CefDragHandler> GetDragHandler() override {
         return this;
     }
     CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() override {
@@ -48,12 +56,28 @@ public:
         return this;
     }
 
+    // CefContextMenuHandler
+    virtual void OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
+                                     CefRefPtr<CefFrame> frame,
+                                     CefRefPtr<CefContextMenuParams> params,
+                                     CefRefPtr<CefMenuModel> model) override;
+    virtual bool OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
+                                      CefRefPtr<CefFrame> frame,
+                                      CefRefPtr<CefContextMenuParams> params,
+                                      int command_id,
+                                      EventFlags event_flags) override;
+
     // CefDownloadHandler
     virtual void OnBeforeDownload(
         CefRefPtr<CefBrowser> browser,
         CefRefPtr<CefDownloadItem> download_item,
         const CefString& suggested_name,
         CefRefPtr<CefBeforeDownloadCallback> callback) override;
+
+    // CefDragHandler
+    virtual bool OnDragEnter(CefRefPtr<CefBrowser> browser,
+                             CefRefPtr<CefDragData> dragData,
+                             DragOperationsMask mask) override;
 
     // CefLifeSpanHandler
     virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;

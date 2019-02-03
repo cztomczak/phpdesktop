@@ -35,8 +35,8 @@ if [[ ${rc} = 0 ]]; then
     fi
     cp -r src/www/ build/bin/
     ./build/bin/phpdesktop
-    rm -r blob_storage/
-    rm -r GPUCache/
+    #rm -r build/bin/blob_storage/
+    #rm -r build/bin/GPUCache/
 else
     echo "ERROR";
     exit ${rc};

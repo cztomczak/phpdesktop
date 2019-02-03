@@ -24,14 +24,16 @@
         "cache_path": "webcache",
         "external_drag": true,
         "remote_debugging_port": 0,
-        "command_line_switches": {},
+        "command_line_switches": {
+            "enable-media-stream": "",
+            "enable-system-flash": ""
+        },
         "enable_downloads": true,
         "context_menu": {
             "enable_menu": true,
             "navigation": true,
             "print": true,
             "view_source": true,
-            "open_in_external_browser": true,
             "devtools": true
         }
     }
