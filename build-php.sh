@@ -4,6 +4,7 @@
 # - Tested on Ubuntu 14.04 64-bit.
 # - Before running script download sources from http://php.net/downloads.php
 #   and extract them to "build/php*/" directory (create build/ directory).
+# - With postgresql support. Install dep: `sudo apt-get install libpq-dev`.
 
 # Exit immediately if a command exits with a non-zero status.
 set -e
@@ -18,7 +19,9 @@ echo "Found PHP: ${php_dir}"
 echo "Configure PHP..."
 ./configure \
     --prefix=${php_dir}/dist-install \
-    --exec-prefix=${php_dir}/dist-install-exec-prefix
+    --exec-prefix=${php_dir}/dist-install-exec-prefix \
+    --with-mysqli \
+    --with-pgsql=/usr/include/postgresql
 echo "Build PHP..."
 make
 echo "Copy php-cgi to build/bin/"

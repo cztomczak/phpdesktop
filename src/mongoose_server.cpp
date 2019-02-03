@@ -43,7 +43,7 @@ static void mongoose_end_request(const struct mg_connection* conn,
     LOG(INFO) << message;
 }
 
-bool MongooseStart() {
+bool mongoose_start() {
     LOG(INFO) << "Start Mongoose server";
 
     // Temp directory
@@ -80,7 +80,7 @@ bool MongooseStart() {
     LOG(INFO) << "CGI environment variables set: " << cgi_env;
 
     // Document root
-    std::string document_root = executable_dir().append("/www");
+    std::string document_root = get_executable_dir().append("/www");
     LOG(INFO) << "document_root=" << document_root;
     
     // Listening ports
@@ -93,7 +93,7 @@ bool MongooseStart() {
     }
 
     // CGI interpreter
-    std::string cgi_interpreter = executable_dir().append("/php-cgi");
+    std::string cgi_interpreter = get_executable_dir().append("/php-cgi");
 
     // Mongoose options
     const char* options[] = {
@@ -136,21 +136,21 @@ bool MongooseStart() {
     return true;
 }
 
-void MongooseStop() {
+void mongoose_stop() {
     // Don't call mg_stop(), as there were issues in the past
     // with doing so. It is not necessary to stop mongoose server,
     // as this is done only when application quits and mongoose
     // server will automatically stop when application quits.
 }
 
-std::string MongooseGetPort() {
+std::string mongoose_get_port() {
     return g_mongoose_port;
 }
 
-std::string MongooseGetIpAddress() {
+std::string mongoose_get_ip_address() {
     return g_mongoose_ip_address;
 }
 
-std::string MongooseGetUrl() {
+std::string mongoose_get_url() {
     return g_mongoose_url;
 }

@@ -25,6 +25,8 @@ rc=$?;
 if [[ ${rc} = 0 ]]; then
     echo "OK phpdesktop was built";
     cp src/php.ini build/bin/
+    cp src/settings.json build/bin/
+    cp src/resources/app-icon.png build/bin/app-icon.png
     cp CEF.License.txt build/bin/
     cp CEF.Readme.txt build/bin/
     cp License.txt build/bin/

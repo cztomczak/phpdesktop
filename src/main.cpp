@@ -6,22 +6,25 @@
 #include "client_handler.h"
 #include "utils.h"
 #include "mongoose_server.h"
+#include "settings.h"
 
 #include "include/base/cef_logging.h"
 #include "include/wrapper/cef_helpers.h"
 
-#include <X11/Xlib.h>
-#include <gtk/gtk.h>
+#include "gtk.h"
 
 #include <cstdlib>
 #include <iostream>
 #include <cstring>
 #include <cerrno>
 
+// Forwards
+void create_browser(::Window xid);
+
+// Globals
 std::string g_cgi_env_from_argv = "";
 
-
-int XErrorHandlerImpl(Display* display, XErrorEvent* event) {
+int x11_error_handler(Display* display, XErrorEvent* event) {
     LOG(WARNING) << "X error received: "
                  << "type " << event->type << ", "
                  << "serial " << event->serial << ", "
@@ -32,12 +35,17 @@ int XErrorHandlerImpl(Display* display, XErrorEvent* event) {
     return 0;
 }
 
-int XIOErrorHandlerImpl(Display* display) {
+int x11_io_error_handler(Display* display) {
     return 0;
 }
 
+void app_terminate_signal(int signatl) {
+    LOG(INFO) << "App terminate signal";
+    CefQuitMessageLoop();
+}
+
 int main(int argc, char **argv) {
-    LOG(INFO) << "Executable directory: " << executable_dir();
+    LOG(INFO) << "Executable directory: " << get_executable_dir();
 
     // Passing ENV variables to PHP using the --cgi-environment
     // command line arg passed to app.
@@ -96,20 +104,31 @@ int main(int argc, char **argv) {
         return exit_code;
     }
 
+    // If reading settings.json fails exit app immediately
+    json_value* app_settings = get_app_settings();
+    if (get_app_settings_error().length()) {
+        std::string error = get_app_settings_error();
+        error.append(".\nApplication will terminate immediately.");
+        LOG(ERROR) << error.c_str();
+        gtk_init(&argc, &argv_copy);
+        GtkWidget *dialog;
+        dialog = gtk_message_dialog_new(NULL,
+                    GTK_DIALOG_DESTROY_WITH_PARENT,
+                    GTK_MESSAGE_ERROR,
+                    GTK_BUTTONS_OK,
+                    "%s",
+                    error.c_str());
+        gtk_window_set_title(GTK_WINDOW(dialog), "Error");
+        gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+        return 1;
+    }
+
     // Single instance application
     // @TODO
 
-    // Main window title
-    // @TODO from settings.json
-
     // Start Mongoose server
-    MongooseStart();
-
-    // Install xlib error handlers so that the application won't be terminated
-    // on non-fatal errors. X11 errors appearing in debug logs usually can be
-    // ignored.
-    XSetErrorHandler(XErrorHandlerImpl);
-    XSetIOErrorHandler(XIOErrorHandlerImpl);
+    mongoose_start();
 
     // Specify CEF global settings here.
     CefSettings settings;
@@ -126,39 +145,83 @@ int main(int argc, char **argv) {
     CefRefPtr<App> app(new App);
 
     // Initialize GDK threads before CEF.
-    // gdk_threads_init();
+    gdk_threads_init();
 
-    LOG(INFO) << "Initialize CEF";
     // Log messages created by LOG() macro will be written to debug.log
     // file only after CEF was initialized. Before CEF is initialized
     // all logs are only printed to console.
+    LOG(INFO) << "Initialize CEF";
     CefInitialize(main_args, settings, app.get(), NULL);
 
     // The Chromium sandbox requires that there only be a single thread during
     // initialization. Therefore initialize GTK after CEF.
     gtk_init(&argc, &argv_copy);
 
-     // Specify CEF browser settings here.
-    CefBrowserSettings browser_settings;
+    // Install xlib error handlers so that the application won't be terminated
+    // on non-fatal errors. X11 errors appearing in debug logs usually can be
+    // ignored.
+    XSetErrorHandler(x11_error_handler);
+    XSetIOErrorHandler(x11_io_error_handler);
+
+    // Install a signal handler so we clean up after ourselves.
+    signal(SIGINT, app_terminate_signal);
+    signal(SIGTERM, app_terminate_signal);
+
+    // Create Gtk window
+    std::string app_icon_path((*app_settings)["main_window"]["icon"]);
+    app_icon_path = get_full_path(app_icon_path);
+    bool center_on_screen = (*app_settings)["main_window"]["center_on_screen"];
+    int default_width = static_cast<long>(
+            (*app_settings)["main_window"]["default_size"][0]);
+    int default_height = static_cast<long>(
+            (*app_settings)["main_window"]["default_size"][1]);
+    GtkWidget* gtk_window = create_gtk_window(
+            (*app_settings)["main_window"]["title"],
+            app_icon_path.c_str(),
+            center_on_screen,
+            default_width, default_height);
 
     // Create browser
-    CefWindowInfo window_info;
-    CefRect browser_rect(0, 0, 800, 600);
-    window_info.SetAsChild(0, browser_rect);
-    CefBrowserHost::CreateBrowserSync(
-        window_info,
-        ClientHandler::GetInstance(),
-        MongooseGetUrl(),
-        browser_settings,
-        NULL);
+    ::Window xid = get_window_xid(gtk_window);
+    LOG(INFO) << "Top window xid=" << xid;
+    create_browser(xid);
 
     CefRunMessageLoop();
 
     LOG(INFO) << "Stop Mongoose server";
-    MongooseStop();
-    
+    mongoose_stop();
+
     LOG(INFO) << "Shutdown CEF";
     CefShutdown();
 
     return 0;
+}
+
+void create_browser(::Window xid) {
+    // The call to CreateBrowserSync cannot be in the same block scope
+    // as the call to CefShutdown otherwise it results in segmentation
+    // fault with the stack trace as seen below. Making a call to
+    // browser->Release() did not help.
+    // ----
+    // #0  MaybeSendDestroyedNotification () at
+    //     ./../../chrome/browser/profiles/profile.cc:294
+    // #1  0x00007ffff34c74b5 in Shutdown () at
+    //     ../../cef/libcef/browser/browser_context.cc:81
+    // ----
+    json_value* app_settings = get_app_settings();
+    CefBrowserSettings browser_settings;
+    CefWindowInfo window_info;
+    int default_width = static_cast<long>(
+            (*app_settings)["main_window"]["default_size"][0]);
+    int default_height = static_cast<long>(
+            (*app_settings)["main_window"]["default_size"][1]);
+    CefRect browser_rect(0, 0, default_width, default_height);
+    window_info.SetAsChild(xid, browser_rect);
+    CefRefPtr<CefBrowser> browser = CefBrowserHost::CreateBrowserSync(
+        window_info,
+        ClientHandler::GetInstance(),
+        mongoose_get_url(),
+        browser_settings,
+        NULL);
+    LOG(INFO) << "Browser xid=" << browser->GetHost()->GetWindowHandle();
 }

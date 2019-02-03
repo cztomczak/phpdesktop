@@ -14,8 +14,11 @@ OBJS=\
 	src/main.o \
 	src/app.o \
 	src/client_handler.o \
+	src/gtk.o \
+	src/json.o \
 	src/mongoose.o \
 	src/mongoose_server.o \
+	src/settings.o \
 	src/utils.o \
 
 CC=g++
@@ -34,10 +37,10 @@ debug: $(TARGET)
 -include $(patsubst %, %.deps, $(OBJS))
 
 %.o : %.cpp
-	+$(CC) -c -o $@ -MD -MP -MF $@.deps $(CCFLAGS) $(CFLAGS_OPTIMIZE) $<
+	+$(CC) -c -o $@ -MD -MP -MF $@.deps $(CCFLAGS) $(CFLAGS_OPTIMIZE) -Wno-error=deprecated-declarations $<
 
 %.o : %.c
-	+gcc -c -o $@ -MD -MP -MF $@.deps -g -std=c99 -O2 -W -Wall -Werror -pedantic -pthread -pipe $<
+	+gcc -c -o $@ -MD -MP -MF $@.deps -g -std=c99 -O2 -W -Wall -Werror -pedantic -pthread -pipe -Wno-error=unused-parameter $<
 
 $(TARGET): $(OBJS)
 	+$(CC) $(CCFLAGS) $(CFLAGS_OPTIMIZE) -o $@ $(OBJS) $(LDFLAGS)
