@@ -48,8 +48,6 @@ void app_terminate_signal(int signatl) {
 }
 
 int main(int argc, char **argv) {
-    LOG(INFO) << "Executable directory: " << get_executable_dir();
-
     // Passing ENV variables to PHP using the --cgi-environment
     // command line arg passed to app.
     if (argv) {
@@ -107,6 +105,8 @@ int main(int argc, char **argv) {
         return exit_code;
     }
 
+    LOG(INFO) << "Executable directory: " << get_executable_dir();
+
     // If reading settings.json fails exit app immediately
     json_value* app_settings = get_app_settings();
     if (get_app_settings_error().length()) {
@@ -157,9 +157,6 @@ int main(int argc, char **argv) {
             return 1;
         }
     }
-
-    // Single instance application
-    // @TODO
 
     // Start Mongoose server
     mongoose_start();

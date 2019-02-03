@@ -152,7 +152,7 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
     browser_list_.push_back(browser);
     if (browser->IsPopup()) {
         // Set window title for popup, same as main window title.
-        // Icon for popup is still missing (todo).
+        // Icon for popup is still missing.
         const char* title = (*get_app_settings())["main_window"]["title"];
         XStoreName(cef_get_xdisplay(), browser->GetHost()->GetWindowHandle(),
                    title);

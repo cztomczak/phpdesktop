@@ -10,8 +10,8 @@ if [[ -f build/bin/phpdesktop ]]; then
     rm build/bin/phpdesktop
 fi
 
-if [[ -f debug.log ]]; then
-    rm debug.log
+if [[ -f build/bin/debug.log ]]; then
+    rm build/bin/debug.log
 fi
 
 count=`ls -1 build/bin/phpdesktop/*.log 2>/dev/null | wc -l`
