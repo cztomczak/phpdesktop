@@ -69,7 +69,8 @@ class CefRenderHandler : public virtual CefBaseRefCounted {
 
   ///
   // Called to retrieve the root window rectangle in screen coordinates. Return
-  // true if the rectangle was provided.
+  // true if the rectangle was provided. If this method returns false the
+  // rectangle from GetViewRect will be used.
   ///
   /*--cef()--*/
   virtual bool GetRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
@@ -78,10 +79,10 @@ class CefRenderHandler : public virtual CefBaseRefCounted {
 
   ///
   // Called to retrieve the view rectangle which is relative to screen
-  // coordinates. Return true if the rectangle was provided.
+  // coordinates. This method must always provide a non-empty rectangle.
   ///
   /*--cef()--*/
-  virtual bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) = 0;
+  virtual void GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) = 0;
 
   ///
   // Called to retrieve the translation from view coordinates to actual screen
@@ -134,7 +135,8 @@ class CefRenderHandler : public virtual CefBaseRefCounted {
   // contains the pixel data for the whole image. |dirtyRects| contains the set
   // of rectangles in pixel coordinates that need to be repainted. |buffer| will
   // be |width|*|height|*4 bytes in size and represents a BGRA image with an
-  // upper-left origin.
+  // upper-left origin. This method is only called when
+  // CefWindowInfo::shared_texture_enabled is set to false.
   ///
   /*--cef()--*/
   virtual void OnPaint(CefRefPtr<CefBrowser> browser,
@@ -143,6 +145,21 @@ class CefRenderHandler : public virtual CefBaseRefCounted {
                        const void* buffer,
                        int width,
                        int height) = 0;
+
+  ///
+  // Called when an element has been rendered to the shared texture handle.
+  // |type| indicates whether the element is the view or the popup widget.
+  // |dirtyRects| contains the set of rectangles in pixel coordinates that need
+  // to be repainted. |shared_handle| is the handle for a D3D11 Texture2D that
+  // can be accessed via ID3D11Device using the OpenSharedResource method. This
+  // method is only called when CefWindowInfo::shared_texture_enabled is set to
+  // true, and is currently only supported on Windows.
+  ///
+  /*--cef()--*/
+  virtual void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser,
+                                  PaintElementType type,
+                                  const RectList& dirtyRects,
+                                  void* shared_handle) {}
 
   ///
   // Called when the browser's cursor has changed. If |type| is CT_CUSTOM then

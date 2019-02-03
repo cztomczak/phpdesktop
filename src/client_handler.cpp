@@ -137,12 +137,18 @@ void ClientHandler::OnBeforeDownload(
 bool ClientHandler::OnDragEnter(CefRefPtr<CefBrowser> browser,
                                 CefRefPtr<CefDragData> dragData,
                                 DragOperationsMask mask) {
-    bool external_drag = (*get_app_settings())["chrome"]["external_drag"];
-    if (external_drag) {
-        return false;
-    } else {
-        return true;
-    }
+    // On Linux for drag and drop to work on web pages it is required
+    // to integrate CEF dnd using GTK APIs. See cefclient for a sample
+    // implementation.
+
+    // bool external_drag = (*get_app_settings())["chrome"]["external_drag"];
+    // if (external_drag) {
+    //     return false;
+    // } else {
+    //     return true;
+    // }
+
+    return false;
 }
 
 // CefLifeSpanHandler
