@@ -11,6 +11,7 @@
 
 class ClientHandler : public CefClient,
                       public CefDisplayHandler,
+                      public CefDownloadHandler,
                       public CefLifeSpanHandler,
                       public CefLoadHandler,
                       public CefRequestHandler
@@ -31,7 +32,10 @@ public:
     CefRefPtr<CefDisplayHandler> GetDisplayHandler() override {
         return this;
     }
-    CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() {
+    CefRefPtr<CefDownloadHandler> GetDownloadHandler() override {
+        return this;
+    }
+    CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() override {
         return dialog_handler_;
     }
     CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override {
@@ -44,6 +48,13 @@ public:
         return this;
     }
 
+    // CefDownloadHandler
+    virtual void OnBeforeDownload(
+        CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefDownloadItem> download_item,
+        const CefString& suggested_name,
+        CefRefPtr<CefBeforeDownloadCallback> callback) override;
+
     // CefLifeSpanHandler
     virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
     virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
@@ -52,7 +63,8 @@ public:
     virtual bool OnQuotaRequest(CefRefPtr<CefBrowser> browser,
                                 const CefString& origin_url,
                                 int64 new_size,
-                                CefRefPtr<CefRequestCallback> callback);
+                                CefRefPtr<CefRequestCallback> callback)
+                                    override;
 
 private:
     // List of existing browser windows. Only accessed on the CEF UI thread.

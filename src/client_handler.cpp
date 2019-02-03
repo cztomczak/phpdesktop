@@ -47,6 +47,20 @@ CefRefPtr<CefBrowser> ClientHandler::FindBrowserByXid(::Window xid) {
     return NULL;
 }
 
+void ClientHandler::OnBeforeDownload(
+        CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefDownloadItem> download_item,
+        const CefString& suggested_name,
+        CefRefPtr<CefBeforeDownloadCallback> callback) {
+    bool enable_downloads = (*get_app_settings())["chrome"]["enable_downloads"];
+    if (enable_downloads) {
+        LOG(INFO) << "About to download a file: " << suggested_name.ToString();
+        callback->Continue(suggested_name, true);
+    } else {
+        LOG(INFO) << "Tried to download a file, but downloads are disabled";
+    }
+}
+
 void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
     CEF_REQUIRE_UI_THREAD();
     // Add to the list of existing browsers.
