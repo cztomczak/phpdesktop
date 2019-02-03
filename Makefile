@@ -14,6 +14,7 @@ OBJS=\
 	src/main.o \
 	src/app.o \
 	src/client_handler.o \
+	src/dialog_handler_gtk.o \
 	src/gtk.o \
 	src/json.o \
 	src/main_message_loop.o \

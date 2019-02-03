@@ -7,6 +7,8 @@
 
 #include "include/cef_client.h"
 
+#include "dialog_handler_gtk.h"
+
 class ClientHandler : public CefClient,
                       public CefDisplayHandler,
                       public CefLifeSpanHandler,
@@ -23,16 +25,22 @@ public:
     virtual CefRefPtr<CefBrowser> FindBrowserByXid(::Window xid);
 
     // CefClient methods:
-    virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() override {
+    CefRefPtr<CefDialogHandler> GetDialogHandler() override {
+        return dialog_handler_;
+    }
+    CefRefPtr<CefDisplayHandler> GetDisplayHandler() override {
         return this;
     }
-    virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override {
+    CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() {
+        return dialog_handler_;
+    }
+    CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override {
         return this;
     }
-    virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override {
+    CefRefPtr<CefLoadHandler> GetLoadHandler() override {
         return this;
     }
-    virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override {
+    CefRefPtr<CefRequestHandler> GetRequestHandler() override {
         return this;
     }
 
@@ -50,6 +58,8 @@ private:
     // List of existing browser windows. Only accessed on the CEF UI thread.
     typedef std::list<CefRefPtr<CefBrowser>> BrowserList;
     BrowserList browser_list_;
+
+    CefRefPtr<ClientDialogHandlerGtk> dialog_handler_;
 
     // Include the default reference counting implementation.
     IMPLEMENT_REFCOUNTING(ClientHandler);

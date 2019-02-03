@@ -8,7 +8,6 @@
 #include "include/cef_app.h"
 #include "include/wrapper/cef_helpers.h"
 
-
 namespace {
 
 ClientHandler* g_instance = NULL;
@@ -19,6 +18,8 @@ ClientHandler::ClientHandler()
 {
     DCHECK(!g_instance);
     g_instance = this;
+    const char* js_dialog_title = (*get_app_settings())["main_window"]["title"];
+    dialog_handler_ = new ClientDialogHandlerGtk(js_dialog_title);
 }
 
 ClientHandler::~ClientHandler()

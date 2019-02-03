@@ -5,7 +5,10 @@
 
 <h1>Dialogs</h1>
 
-<a href="javascript:alert('Test js alert dialog')">window.alert()</a>
+<a href="javascript:alert('Test alert')">window.alert()</a>,
+<a href="javascript:confirm('Test confirm')">window.confirm()</a>,
+<a href="javascript:void(prompt('Test', 'prompt'))">window.prompt()</a>
+
 <br><br>
 
 <a href="javascript:print()">window.print()</a>

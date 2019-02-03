@@ -22,7 +22,6 @@
 
 #include "util_gtk.h"
 #include "main_message_loop.h"
-
 #include "gtk.h"
 
 namespace {
