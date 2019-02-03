@@ -3,6 +3,8 @@
 // Project website: https://github.com/cztomczak/phpdesktop
 
 #include "gtk.h"
+#include "client_handler.h"
+
 #include "include/cef_app.h"
 #include "include/base/cef_logging.h"
 
@@ -16,6 +18,8 @@ GtkWidget* create_gtk_window(const char* title, const char* icon,
                      G_CALLBACK(window_size_allocate_signal), NULL);
     g_signal_connect(G_OBJECT(window), "focus-in-event",
                      G_CALLBACK(window_focus_in_signal), NULL);
+    g_signal_connect(G_OBJECT(window), "focus-out-event",
+                     G_CALLBACK(window_focus_out_signal), NULL);
     g_signal_connect(G_OBJECT(window), "destroy",
                      G_CALLBACK(window_destroy_signal), NULL);
     
@@ -81,7 +85,27 @@ void window_size_allocate_signal(GtkWidget* widget, GtkAllocation *alloc,
 }
 
 void window_focus_in_signal(GtkWidget* widget, gpointer data) {
-    // Should focus browser here.
+    // LOG(INFO) << "window_focus_in_signal";
+    ClientHandler *handler = ClientHandler::GetInstance();
+    ::Window window_xid = get_window_xid(widget);
+    ::Window browser_xid = find_child_browser(cef_get_xdisplay(), window_xid);
+    CefRefPtr<CefBrowser> browser = handler->FindBrowserByXid(browser_xid);
+    if (browser_xid && browser.get()) {
+        // LOG(INFO) << "window_focus_in_signal: Focus browser";
+        browser->GetHost()->SetFocus(true);
+    }
+}
+
+void window_focus_out_signal(GtkWidget* widget, gpointer data) {
+    // LOG(INFO) << "window_focus_out_signal";
+    ClientHandler *handler = ClientHandler::GetInstance();
+    ::Window window_xid = get_window_xid(widget);
+    ::Window browser_xid = find_child_browser(cef_get_xdisplay(), window_xid);
+    CefRefPtr<CefBrowser> browser = handler->FindBrowserByXid(browser_xid);
+    if (browser_xid && browser.get()) {
+        // LOG(INFO) << "window_focus_out_signal: Unfocus browser";
+        browser->GetHost()->SetFocus(false);
+    }
 }
 
 void window_destroy_signal(GtkWidget* widget, gpointer data) {

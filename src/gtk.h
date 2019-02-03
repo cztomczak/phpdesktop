@@ -18,6 +18,7 @@ GtkWidget* create_gtk_window(const char* title, const char* icon,
 void window_size_allocate_signal(GtkWidget* widget, GtkAllocation *alloc,
                                  gpointer data);
 void window_focus_in_signal(GtkWidget* widget, gpointer data);
+void window_focus_out_signal(GtkWidget* widget, gpointer data);
 void window_destroy_signal(GtkWidget* widget, gpointer data);
 void set_window_icon(GtkWindow* window, const char* icon);
 ::Window find_child_browser(::Display* display, ::Window window);
