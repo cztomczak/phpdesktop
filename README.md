@@ -60,7 +60,7 @@ wiki page and on the [PHP Desktop Forum](https://groups.google.com/d/forum/phpde
   * PHP Desktop Chrome for Windows - go to the
     [Download Chrome](../../wiki/Download-Chrome) wiki page.
   * PHP Desktop for Linux - see the
-    [linux-v70.0](https://github.com/cztomczak/phpdesktop/releases/tag/linux-v70.0)
+    [linux-v72.0](https://github.com/cztomczak/phpdesktop/releases/tag/linux-v72.0)
     release
   * PHP Desktop MSIE (Internet Explorer) - go to the
     [Download MSIE](../../wiki/Download-MSIE) wiki page.
