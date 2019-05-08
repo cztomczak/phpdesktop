@@ -14,15 +14,14 @@ Table of contents:
 
 PHP Desktop is an open source project founded by
 [Czarek Tomczak](https://drive.google.com/file/d/17xmoT5Z_zTHkVclqPzrs2aAV64Uiu7fh/view)
-(available for contract work) in 2012 to provide a way for developing
-native desktop GUI applications using web technologies such as PHP,
-HTML5, JavaScript and SQLite. Think of it as Electron for PHP.
-It is a convienient tool for converting PHP web apps and PHP CLI tools
-to desktop applications with little effort. The development workflow
-you are used to while creating web applications remains the same, there
-is no new framework / API to learn. The process of turning an existing
-website into a desktop application is basically a matter of copying it
-to the "phpdesktop/www/" directory.
+in 2012 to provide a way for developing native desktop GUI applications
+using web technologies such as PHP, HTML5, JavaScript and SQLite. Think
+of it as Electron for PHP. It is a convienient tool for converting PHP
+web apps and PHP CLI tools to desktop applications with little effort.
+The development workflow you are used to while creating web applications
+remains the same, there is no new framework / API to learn. The process
+of turning an existing website into a desktop application is basically
+a matter of copying it to the "phpdesktop/www/" directory.
 
 In a certain sense phpdesktop acts as a PHP to EXE compiler. It embeds
 a web browser, a multi-threaded web server and a PHP interpreter. All
@@ -98,7 +97,7 @@ Here is a list of ongoing fundings for new features in PHP Desktop:
 
 Feature | Funds gathered | Issue | Status
 --- | --- | --- | ---
-Chrome v70 release for Windows | $50 of $2,000 | [Issue #227](https://github.com/cztomczak/phpdesktop/issues/227) | Ongoing funding
+Chrome v73 release for Windows | $70 of $2,000 | [Issue #227](https://github.com/cztomczak/phpdesktop/issues/227) | Ongoing funding
 Initial Mac release | $150 of $2,000 | [Issue #208](https://github.com/cztomczak/phpdesktop/issues/208) | Ongoing funding
 
 Below is a list of completed fundings with features already implemented:
