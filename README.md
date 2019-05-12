@@ -86,7 +86,6 @@ There are two ways to be notified about new releases:
   and [Chrome settings](../../wiki/Chrome-settings) wiki pages.
 * Ask questions and report problems on the
   [PHP Desktop Forum](https://groups.google.com/d/forum/phpdesktop)
-* Please do not create issues in the Issue Tracker
 * See also this externally maintained tutorial:
   [Create your first Desktop Application with PHP and PHP Desktop](http://phpocean.com/tutorials/design-and-illustration/create-your-first-desktop-application-with-php-and-php-desktop/4)
 
