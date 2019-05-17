@@ -41,5 +41,5 @@ echo "Configure PHP..."
 echo "Build PHP..."
 make
 echo "Copy php-cgi to build/bin/"
-cp sapi/cgi/php-cgi ../bin/
+cp sapi/cgi/php-cgi ../bin/php-cgi-with-ext
 echo "OK completed."
