@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script builds with PHP extensions enabled: mysqli, pgsql
-# and openssl. Tested on Ubuntu 14.04 64-bit. Before running the
+# openssl and curl. Tested on Ubuntu 14.04 64-bit. Before running the
 # script see the requirements section.
 
 # REQUIREMENTS:
