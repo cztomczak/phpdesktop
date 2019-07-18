@@ -12,7 +12,7 @@
         "listen_on": ["127.0.0.1", 0],
         "www_directory": "www",
         "index_files": ["index.html", "index.php"],
-        "cgi_interpreter": "php-cgi",
+        "cgi_interpreter": "php-cgi-with-ext",
         "cgi_extensions": ["php"],
         "404_handler": "/pretty-urls.php",
         "hide_files": []

@@ -20,6 +20,16 @@
 #    Install these dependencies:
 #    >> sudo apt-get install libssl-dev libsslcommon2-dev
 
+# 4. Curl support
+#    Install these dependencies:
+#    >> sudo apt-get install libcurl4-gnutls-dev
+
+# How to enable other extensions?
+# Go to the build/php-xx/ directory and run the help command:
+# >> ./configure --help
+# Find the flag to enable the extension you want and add it in
+# the code below.
+
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
@@ -37,7 +47,8 @@ echo "Configure PHP..."
     --with-mysqli \
     --with-pgsql=/usr/include/postgresql \
     --with-libdir=/lib/x86_64-linux-gnu \
-    --with-openssl=/usr
+    --with-openssl=/usr \
+    --with-curl=/usr/include/curl
 echo "Build PHP..."
 make
 echo "Copy php-cgi to build/bin/"
