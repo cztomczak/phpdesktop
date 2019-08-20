@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # This script builds with PHP extensions enabled: mysqli, pgsql
-# openssl and curl. Tested on Ubuntu 14.04 64-bit. Before running the
-# script see the requirements section.
+# openssl, curl and zlib. Tested on Ubuntu 14.04 64-bit. Before
+# running the script see the requirements section.
 
 # REQUIREMENTS:
 
@@ -48,7 +48,8 @@ echo "Configure PHP..."
     --with-pgsql=/usr/include/postgresql \
     --with-libdir=/lib/x86_64-linux-gnu \
     --with-openssl=/usr \
-    --with-curl=/usr/include/curl
+    --with-curl=/usr/include/curl \
+    --with-zlib
 echo "Build PHP..."
 make
 echo "Copy php-cgi to build/bin/"
