@@ -45,7 +45,15 @@ $websocket->on('message', function (Hoa\Event\Bucket $bucket) {
     try {
         
         // write your own php ESCPOS scripts
-        // .....
+        // ..... or use this example
+        // Print a "Hello world" to receipt printer
+        /**
+        $connector = new WindowsPrintConnector($data['printer_name']);
+        $printer = new Printer($connector);
+        $printer->text("Hello world\n");
+        $printer->cut();
+        $printer->close();
+        **/
       
         sendToAll( $bucket, createMessage('info', "notifiy: Receipt has been printered!" );
         logger( createMessage('info', "notifiy: Receipt has been printered!" );
