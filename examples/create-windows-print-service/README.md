@@ -8,6 +8,7 @@ This example explain how to create and remove windows print service with nssm.ex
   - Hoa Project <https://github.com/hoaproject/Websocket> (Read Only Repository)
   - Workerman <https://github.com/walkor/workerman>
 - Create log file to store printer status and activities in www directory
+- set this value `"start_fullscreen": true` in `settings.json`
 
 ## Directery structure
 ```
