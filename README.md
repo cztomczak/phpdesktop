@@ -95,8 +95,8 @@ Here is a list of ongoing fundings for new features in PHP Desktop:
 
 Feature | Funds gathered | Issue | Status
 --- | --- | --- | ---
-Chrome v90 release for Windows | $500 of $2,000 | [Issue #227](https://github.com/cztomczak/phpdesktop/issues/227) | Ongoing funding
-Initial Mac release | $1050 of $2,000 | [Issue #208](https://github.com/cztomczak/phpdesktop/issues/208) | Ongoing funding
+Chrome v90 release for Windows | $505 of $2,000 | [Issue #227](https://github.com/cztomczak/phpdesktop/issues/227) | Ongoing funding
+Initial Mac release | $1250 of $2,000 | [Issue #208](https://github.com/cztomczak/phpdesktop/issues/208) | Ongoing funding
 
 Below is a list of completed fundings with features already implemented:
 
