@@ -29,7 +29,7 @@ distribute to end users by packing it to zip archive or by making an
 [installer for your application](../../wiki/Knowledge-Base#application-installer).
 The web server embedded is a custom edition of
 [Mongoose](https://en.wikipedia.org/wiki/Mongoose_(web_server)),
-a web server used by NASA on International Space Station.
+a web server used by NASA on the International Space Station.
 Supported browsers are Internet Explorer and Google Chrome via
 open source Chromium. The package with Chrome embedded has no
 external dependencies, everything is included in phpdesktop binaries
