@@ -86,7 +86,7 @@ There are two ways to be notified about new releases:
 * Ask questions and report problems on the
   [PHP Desktop Forum](https://groups.google.com/d/forum/phpdesktop)
 * See also this externally maintained tutorial:
-  [Create your first Desktop Application with PHP and PHP Desktop](https://lancecourse.com/tutorials/design-and-illustration/create-your-first-desktop-application-with-php-and-php-desktop/4)
+  [Create your first Desktop Application with PHP and PHP Desktop](http://phpocean.com/tutorials/design-and-illustration/create-your-first-desktop-application-with-php-and-php-desktop/4)
 
 
 ## Fundings for new features
