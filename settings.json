@@ -1,0 +1,38 @@
+{
+    "application": {
+        "single_instance_guid": "",
+    },
+    "main_window": {
+        "title": "PHP Desktop",
+        "icon": "app-icon.png",
+        "default_size": [800, 600],
+        "center_on_screen": true,
+    },
+    "web_server": {
+        "listen_on": ["127.0.0.1", 0],
+        "www_directory": "www",
+        "index_files": ["index.html", "index.php"],
+        "cgi_interpreter": "php-cgi-with-ext",
+        "cgi_extensions": ["php"],
+        "404_handler": "/pretty-urls.php",
+        "hide_files": []
+    },
+    "chrome": {
+        "log_file": "debug.log",
+        "log_severity": "default",
+        "cache_path": "webcache",
+        "remote_debugging_port": 0,
+        "command_line_switches": {
+            "enable-media-stream": "",
+            "enable-system-flash": ""
+        },
+        "enable_downloads": true,
+        "context_menu": {
+            "enable_menu": true,
+            "navigation": true,
+            "print": true,
+            "view_source": true,
+            "devtools": true
+        }
+    }
+}
