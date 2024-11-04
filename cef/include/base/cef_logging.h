@@ -27,116 +27,140 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-// ---------------------------------------------------------------------------
-//
-// The contents of this file are only available to applications that link
-// against the libcef_dll_wrapper target.
-//
-// WARNING: Logging macros should not be used in the main/browser process before
-// calling CefInitialize or in sub-processes before calling CefExecuteProcess.
-//
-// Instructions
-// ------------
-//
-// Make a bunch of macros for logging.  The way to log things is to stream
-// things to CEF_LOG(<a particular severity level>).  E.g.,
-//
-//   CEF_LOG(INFO) << "Found " << num_cookies << " cookies";
-//
-// You can also do conditional logging:
-//
-//   LOG_IF(INFO, num_cookies > 10) << "Got lots of cookies";
-//
-// The CHECK(condition) macro is active in both debug and release builds and
-// effectively performs a CEF_LOG(FATAL) which terminates the process and
-// generates a crashdump unless a debugger is attached.
-//
-// There are also "debug mode" logging macros like the ones above:
-//
-//   DLOG(INFO) << "Found cookies";
-//
-//   DLOG_IF(INFO, num_cookies > 10) << "Got lots of cookies";
-//
-// All "debug mode" logging is compiled away to nothing for non-debug mode
-// compiles.  LOG_IF and development flags also work well together
-// because the code can be compiled away sometimes.
-//
-// We also have
-//
-//   LOG_ASSERT(assertion);
-//   DLOG_ASSERT(assertion);
-//
-// which is syntactic sugar for {,D}LOG_IF(FATAL, assert fails) << assertion;
-//
-// There are "verbose level" logging macros.  They look like
-//
-//   VLOG(1) << "I'm printed when you run the program with --v=1 or more";
-//   VLOG(2) << "I'm printed when you run the program with --v=2 or more";
-//
-// These always log at the INFO log level (when they log at all).
-// The verbose logging can also be turned on module-by-module.  For instance,
-//    --vmodule=profile=2,icon_loader=1,browser_*=3,*/chromeos/*=4 --v=0
-// will cause:
-//   a. VLOG(2) and lower messages to be printed from profile.{h,cc}
-//   b. VLOG(1) and lower messages to be printed from icon_loader.{h,cc}
-//   c. VLOG(3) and lower messages to be printed from files prefixed with
-//      "browser"
-//   d. VLOG(4) and lower messages to be printed from files under a
-//     "chromeos" directory.
-//   e. VLOG(0) and lower messages to be printed from elsewhere
-//
-// The wildcarding functionality shown by (c) supports both '*' (match
-// 0 or more characters) and '?' (match any single character)
-// wildcards.  Any pattern containing a forward or backward slash will
-// be tested against the whole pathname and not just the module.
-// E.g., "*/foo/bar/*=2" would change the logging level for all code
-// in source files under a "foo/bar" directory.
-//
-// There's also VLOG_IS_ON(n) "verbose level" condition macro. To be used as
-//
-//   if (VLOG_IS_ON(2)) {
-//     // do some logging preparation and logging
-//     // that can't be accomplished with just VLOG(2) << ...;
-//   }
-//
-// There is also a VLOG_IF "verbose level" condition macro for sample
-// cases, when some extra computation and preparation for logs is not
-// needed.
-//
-//   VLOG_IF(1, (size > 1024))
-//      << "I'm printed when size is more than 1024 and when you run the "
-//         "program with --v=1 or more";
-//
-// We also override the standard 'assert' to use 'DLOG_ASSERT'.
-//
-// Lastly, there is:
-//
-//   PLOG(ERROR) << "Couldn't do foo";
-//   DPLOG(ERROR) << "Couldn't do foo";
-//   PLOG_IF(ERROR, cond) << "Couldn't do foo";
-//   DPLOG_IF(ERROR, cond) << "Couldn't do foo";
-//   PCHECK(condition) << "Couldn't do foo";
-//   DPCHECK(condition) << "Couldn't do foo";
-//
-// which append the last system error to the message in string form (taken from
-// GetLastError() on Windows and errno on POSIX).
-//
-// The supported severity levels for macros that allow you to specify one
-// are (in increasing order of severity) INFO, WARNING, ERROR, and FATAL.
-//
-// Very important: logging a message at the FATAL severity level causes
-// the program to terminate (after the message is logged).
-//
-// There is the special severity of DFATAL, which logs FATAL in debug mode,
-// ERROR in normal mode.
-//
+
+///
+/// \file
+/// A bunch of macros for logging.
+///
+/// NOTE: The contents of this file are only available to applications that link
+/// against the libcef_dll_wrapper target.
+///
+/// WARNING: Logging macros should not be used in the main/browser process
+/// before calling CefInitialize or in sub-processes before calling
+/// CefExecuteProcess.
+///
+/// INSTRUCTIONS:
+///
+/// The way to log things is to stream things to LOG(<a particular severity
+/// level>). E.g.,
+///
+/// <pre>
+///   LOG(INFO) << "Found " << num_cookies << " cookies";
+/// </pre>
+///
+/// You can also do conditional logging:
+///
+/// <pre>
+///   LOG_IF(INFO, num_cookies > 10) << "Got lots of cookies";
+/// </pre>
+///
+/// The CHECK(condition) macro is active in both debug and release builds and
+/// effectively performs a LOG(FATAL) which terminates the process and
+/// generates a crashdump unless a debugger is attached.
+///
+/// There are also "debug mode" logging macros like the ones above:
+///
+/// <pre>
+///   DLOG(INFO) << "Found cookies";
+///
+///   DLOG_IF(INFO, num_cookies > 10) << "Got lots of cookies";
+/// </pre>
+///
+/// All "debug mode" logging is compiled away to nothing for non-debug mode
+/// compiles.  LOG_IF and development flags also work well together
+/// because the code can be compiled away sometimes.
+///
+/// We also have
+///
+/// <pre>
+///   LOG_ASSERT(assertion);
+///   DLOG_ASSERT(assertion);
+/// </pre>
+///
+/// which is syntactic sugar for "{,D}LOG_IF(FATAL, assert fails) << assertion;"
+///
+/// There are "verbose level" logging macros.  They look like
+///
+/// <pre>
+///   VLOG(1) << "I'm printed when you run the program with --v=1 or more";
+///   VLOG(2) << "I'm printed when you run the program with --v=2 or more";
+/// </pre>
+///
+/// These always log at the INFO log level (when they log at all).
+/// The verbose logging can also be turned on module-by-module.  For instance,
+/// <pre>
+///    --vmodule=profile=2,icon_loader=1,browser_*=3,*/chromeos/*=4 --v=0
+/// </pre>
+/// will cause:
+/// 1. VLOG(2) and lower messages to be printed from profile.{h,cc}
+/// 2. VLOG(1) and lower messages to be printed from icon_loader.{h,cc}
+/// 3. VLOG(3) and lower messages to be printed from files prefixed with
+///    "browser"
+/// 4. VLOG(4) and lower messages to be printed from files under a
+///    "chromeos" directory.
+/// 5. VLOG(0) and lower messages to be printed from elsewhere
+///
+/// The wildcarding functionality shown by (c) supports both '*' (match
+/// 0 or more characters) and '?' (match any single character)
+/// wildcards.  Any pattern containing a forward or backward slash will
+/// be tested against the whole pathname and not just the module.
+/// E.g., "*/foo/bar/*=2" would change the logging level for all code
+/// in source files under a "foo/bar" directory.
+///
+/// There's also VLOG_IS_ON(n) "verbose level" condition macro. To be used as
+///
+/// <pre>
+///   if (VLOG_IS_ON(2)) {
+///     // do some logging preparation and logging
+///     // that can't be accomplished with just VLOG(2) << ...;
+///   }
+/// </pre>
+///
+/// There is also a VLOG_IF "verbose level" condition macro for sample
+/// cases, when some extra computation and preparation for logs is not
+/// needed.
+///
+/// <pre>
+///   VLOG_IF(1, (size > 1024))
+///      << "I'm printed when size is more than 1024 and when you run the "
+///         "program with --v=1 or more";
+/// </pre>
+///
+/// We also override the standard 'assert' to use 'DLOG_ASSERT'.
+///
+/// Lastly, there is:
+///
+/// <pre>
+///   PLOG(ERROR) << "Couldn't do foo";
+///   DPLOG(ERROR) << "Couldn't do foo";
+///   PLOG_IF(ERROR, cond) << "Couldn't do foo";
+///   DPLOG_IF(ERROR, cond) << "Couldn't do foo";
+///   PCHECK(condition) << "Couldn't do foo";
+///   DPCHECK(condition) << "Couldn't do foo";
+/// </pre>
+///
+/// which append the last system error to the message in string form (taken from
+/// GetLastError() on Windows and errno on POSIX).
+///
+/// The supported severity levels for macros that allow you to specify one
+/// are (in increasing order of severity) INFO, WARNING, ERROR, and FATAL.
+///
+/// Very important: logging a message at the FATAL severity level causes
+/// the program to terminate (after the message is logged).
+///
+/// There is the special severity of DFATAL, which logs FATAL in debug mode,
+/// ERROR in normal mode.
+///
 
 #ifndef CEF_INCLUDE_BASE_CEF_LOGGING_H_
 #define CEF_INCLUDE_BASE_CEF_LOGGING_H_
 #pragma once
 
-#if defined(DCHECK)
+#if defined(USING_CHROMIUM_INCLUDES)
+// When building CEF include the Chromium header directly.
+#include "base/logging.h"
+#include "base/notreached.h"
+#elif defined(DCHECK)
 // Do nothing if the macros provided by this header already exist.
 // This can happen in cases where Chromium code is used directly by the
 // client application. When using Chromium code directly always include
@@ -144,26 +168,22 @@
 
 // Always define the DCHECK_IS_ON macro which is used from other CEF headers.
 #if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
-#define DCHECK_IS_ON() 0
+#define DCHECK_IS_ON() false
 #else
-#define DCHECK_IS_ON() 1
+#define DCHECK_IS_ON() true
 #endif
 
-#elif defined(USING_CHROMIUM_INCLUDES)
-// When building CEF include the Chromium header directly.
-#include "base/logging.h"
-#else  // !USING_CHROMIUM_INCLUDES
+#else  // !defined(DCHECK)
 // The following is substantially similar to the Chromium implementation.
 // If the Chromium implementation diverges the below implementation should be
 // updated to match.
 
 #include <cassert>
-#include <string>
 #include <cstring>
 #include <sstream>
+#include <string>
 
 #include "include/base/cef_build.h"
-#include "include/base/cef_macros.h"
 #include "include/internal/cef_logging_internal.h"
 
 namespace cef {
@@ -185,68 +205,63 @@ typedef int LogSeverity;
 const LogSeverity LOG_VERBOSE = -1;  // This is level 1 verbosity
 // Note: the log severities are used to index into the array of names,
 // see log_severity_names.
-const LogSeverity CEF_LOG_INFO = 0;
-const LogSeverity CEF_LOG_WARNING = 1;
-const LogSeverity CEF_LOG_ERROR = 2;
+const LogSeverity LOG_INFO = 0;
+const LogSeverity LOG_WARNING = 1;
+const LogSeverity LOG_ERROR = 2;
 const LogSeverity LOG_FATAL = 3;
 const LogSeverity LOG_NUM_SEVERITIES = 4;
 
 // LOG_DFATAL is LOG_FATAL in debug mode, ERROR in normal mode
 #ifdef NDEBUG
-const LogSeverity LOG_DFATAL = CEF_LOG_ERROR;
+const LogSeverity LOG_DFATAL = LOG_ERROR;
 #else
 const LogSeverity LOG_DFATAL = LOG_FATAL;
 #endif
 
 // A few definitions of macros that don't generate much code. These are used
-// by CEF_LOG() and LOG_IF, etc. Since these are used all over our code, it's
+// by LOG() and LOG_IF, etc. Since these are used all over our code, it's
 // better to have compact code for these operations.
-#define COMPACT_GOOGLE_LOG_EX_INFO(ClassName, ...) \
-  cef::logging::ClassName(__FILE__, __LINE__, cef::logging::CEF_LOG_INFO , \
-                         ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_EX_WARNING(ClassName, ...) \
-  cef::logging::ClassName(__FILE__, __LINE__, cef::logging::CEF_LOG_WARNING , \
-                         ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_EX_ERROR(ClassName, ...) \
-  cef::logging::ClassName(__FILE__, __LINE__, cef::logging::CEF_LOG_ERROR , \
-                         ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_EX_FATAL(ClassName, ...) \
-  cef::logging::ClassName(__FILE__, __LINE__, cef::logging::LOG_FATAL , \
-                         ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_EX_DFATAL(ClassName, ...) \
-  cef::logging::ClassName(__FILE__, __LINE__, cef::logging::LOG_DFATAL , \
-                         ##__VA_ARGS__)
+#define COMPACT_GOOGLE_LOG_EX_INFO(ClassName, ...)                        \
+  ::cef::logging::ClassName(__FILE__, __LINE__, ::cef::logging::LOG_INFO, \
+                            ##__VA_ARGS__)
+#define COMPACT_GOOGLE_LOG_EX_WARNING(ClassName, ...)                        \
+  ::cef::logging::ClassName(__FILE__, __LINE__, ::cef::logging::LOG_WARNING, \
+                            ##__VA_ARGS__)
+#define COMPACT_GOOGLE_LOG_EX_ERROR(ClassName, ...)                        \
+  ::cef::logging::ClassName(__FILE__, __LINE__, ::cef::logging::LOG_ERROR, \
+                            ##__VA_ARGS__)
+#define COMPACT_GOOGLE_LOG_EX_FATAL(ClassName, ...)                        \
+  ::cef::logging::ClassName(__FILE__, __LINE__, ::cef::logging::LOG_FATAL, \
+                            ##__VA_ARGS__)
+#define COMPACT_GOOGLE_LOG_EX_DFATAL(ClassName, ...)                        \
+  ::cef::logging::ClassName(__FILE__, __LINE__, ::cef::logging::LOG_DFATAL, \
+                            ##__VA_ARGS__)
 
-#define COMPACT_GOOGLE_CEF_LOG_INFO \
-  COMPACT_GOOGLE_LOG_EX_INFO(LogMessage)
-#define COMPACT_GOOGLE_CEF_LOG_WARNING \
-  COMPACT_GOOGLE_LOG_EX_WARNING(LogMessage)
-#define COMPACT_GOOGLE_CEF_LOG_ERROR \
-  COMPACT_GOOGLE_LOG_EX_ERROR(LogMessage)
-#define COMPACT_GOOGLE_LOG_FATAL \
-  COMPACT_GOOGLE_LOG_EX_FATAL(LogMessage)
-#define COMPACT_GOOGLE_LOG_DFATAL \
-  COMPACT_GOOGLE_LOG_EX_DFATAL(LogMessage)
+#define COMPACT_GOOGLE_LOG_INFO COMPACT_GOOGLE_LOG_EX_INFO(LogMessage)
+#define COMPACT_GOOGLE_LOG_WARNING COMPACT_GOOGLE_LOG_EX_WARNING(LogMessage)
+#define COMPACT_GOOGLE_LOG_ERROR COMPACT_GOOGLE_LOG_EX_ERROR(LogMessage)
+#define COMPACT_GOOGLE_LOG_FATAL COMPACT_GOOGLE_LOG_EX_FATAL(LogMessage)
+#define COMPACT_GOOGLE_LOG_DFATAL COMPACT_GOOGLE_LOG_EX_DFATAL(LogMessage)
 
 #if defined(OS_WIN)
-// wingdi.h defines ERROR to be 0. When we call CEF_LOG(ERROR), it gets
+// wingdi.h defines ERROR to be 0. When we call LOG(ERROR), it gets
 // substituted with 0, and it expands to COMPACT_GOOGLE_LOG_0. To allow us
 // to keep using this syntax, we define this macro to do the same thing
-// as COMPACT_GOOGLE_CEF_LOG_ERROR, and also define ERROR the same way that
+// as COMPACT_GOOGLE_LOG_ERROR, and also define ERROR the same way that
 // the Windows SDK does for consistency.
 #define ERROR 0
 #define COMPACT_GOOGLE_LOG_EX_0(ClassName, ...) \
-  COMPACT_GOOGLE_LOG_EX_ERROR(ClassName , ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_0 COMPACT_GOOGLE_CEF_LOG_ERROR
+  COMPACT_GOOGLE_LOG_EX_ERROR(ClassName, ##__VA_ARGS__)
+#define COMPACT_GOOGLE_LOG_0 COMPACT_GOOGLE_LOG_ERROR
 // Needed for LOG_IS_ON(ERROR).
-const LogSeverity LOG_0 = CEF_LOG_ERROR;
+const LogSeverity LOG_0 = LOG_ERROR;
 #endif
 
 // As special cases, we can assume that LOG_IS_ON(FATAL) always holds. Also,
 // LOG_IS_ON(DFATAL) always holds in debug mode. In particular, CHECK()s will
 // always fire if they fail.
 #define LOG_IS_ON(severity) \
-  ((::cef::logging::LOG_ ## severity) >= ::cef::logging::GetMinLogLevel())
+  ((::cef::logging::LOG_##severity) >= ::cef::logging::GetMinLogLevel())
 
 // We can't do any caching tricks with VLOG_IS_ON() like the
 // google-glog version since it requires GCC extensions.  This means
@@ -257,24 +272,24 @@ const LogSeverity LOG_0 = CEF_LOG_ERROR;
 
 // Helper macro which avoids evaluating the arguments to a stream if
 // the condition doesn't hold.
-#define LAZY_STREAM(stream, condition)                                  \
-  !(condition) ? (void) 0 : ::cef::logging::LogMessageVoidify() & (stream)
+#define LAZY_STREAM(stream, condition) \
+  !(condition) ? (void)0 : ::cef::logging::LogMessageVoidify() & (stream)
 
 // We use the preprocessor's merging operator, "##", so that, e.g.,
-// CEF_LOG(INFO) becomes the token COMPACT_GOOGLE_CEF_LOG_INFO.  There's some funny
+// LOG(INFO) becomes the token COMPACT_GOOGLE_LOG_INFO.  There's some funny
 // subtle difference between ostream member streaming functions (e.g.,
 // ostream::operator<<(int) and ostream non-member streaming functions
 // (e.g., ::operator<<(ostream&, string&): it turns out that it's
 // impossible to stream something like a string directly to an unnamed
 // ostream. We employ a neat hack by calling the stream() member
 // function of LogMessage which seems to avoid the problem.
-#define LOG_STREAM(severity) COMPACT_GOOGLE_LOG_ ## severity.stream()
+#define LOG_STREAM(severity) COMPACT_GOOGLE_LOG_##severity.stream()
 
-#define CEF_LOG(severity) LAZY_STREAM(LOG_STREAM(severity), LOG_IS_ON(severity))
+#define LOG(severity) LAZY_STREAM(LOG_STREAM(severity), LOG_IS_ON(severity))
 #define LOG_IF(severity, condition) \
   LAZY_STREAM(LOG_STREAM(severity), LOG_IS_ON(severity) && (condition))
 
-#define SYSLOG(severity) CEF_LOG(severity)
+#define SYSLOG(severity) LOG(severity)
 #define SYSLOG_IF(severity, condition) LOG_IF(severity, condition)
 
 // The VLOG macros log with negative verbosities.
@@ -286,16 +301,18 @@ const LogSeverity LOG_0 = CEF_LOG_ERROR;
 
 #define VLOG_IF(verbose_level, condition) \
   LAZY_STREAM(VLOG_STREAM(verbose_level), \
-      VLOG_IS_ON(verbose_level) && (condition))
+              VLOG_IS_ON(verbose_level) && (condition))
 
-#if defined (OS_WIN)
-#define VPLOG_STREAM(verbose_level) \
-  cef::logging::Win32ErrorLogMessage(__FILE__, __LINE__, -verbose_level, \
-    ::cef::logging::GetLastSystemErrorCode()).stream()
+#if defined(OS_WIN)
+#define VPLOG_STREAM(verbose_level)                                            \
+  cef::logging::Win32ErrorLogMessage(__FILE__, __LINE__, -verbose_level,       \
+                                     ::cef::logging::GetLastSystemErrorCode()) \
+      .stream()
 #elif defined(OS_POSIX)
-#define VPLOG_STREAM(verbose_level) \
-  cef::logging::ErrnoLogMessage(__FILE__, __LINE__, -verbose_level, \
-    ::cef::logging::GetLastSystemErrorCode()).stream()
+#define VPLOG_STREAM(verbose_level)                                       \
+  cef::logging::ErrnoLogMessage(__FILE__, __LINE__, -verbose_level,       \
+                                ::cef::logging::GetLastSystemErrorCode()) \
+      .stream()
 #endif
 
 #define VPLOG(verbose_level) \
@@ -303,34 +320,35 @@ const LogSeverity LOG_0 = CEF_LOG_ERROR;
 
 #define VPLOG_IF(verbose_level, condition) \
   LAZY_STREAM(VPLOG_STREAM(verbose_level), \
-    VLOG_IS_ON(verbose_level) && (condition))
+              VLOG_IS_ON(verbose_level) && (condition))
 
 // TODO(akalin): Add more VLOG variants, e.g. VPLOG.
 
-#define LOG_ASSERT(condition)  \
+#define LOG_ASSERT(condition) \
   LOG_IF(FATAL, !(condition)) << "Assert failed: " #condition ". "
 #define SYSLOG_ASSERT(condition) \
   SYSLOG_IF(FATAL, !(condition)) << "Assert failed: " #condition ". "
 
 #if defined(OS_WIN)
-#define PLOG_STREAM(severity) \
-  COMPACT_GOOGLE_LOG_EX_ ## severity(Win32ErrorLogMessage, \
-      ::cef::logging::GetLastSystemErrorCode()).stream()
+#define PLOG_STREAM(severity)                                                \
+  COMPACT_GOOGLE_LOG_EX_##severity(Win32ErrorLogMessage,                     \
+                                   ::cef::logging::GetLastSystemErrorCode()) \
+      .stream()
 #elif defined(OS_POSIX)
-#define PLOG_STREAM(severity) \
-  COMPACT_GOOGLE_LOG_EX_ ## severity(ErrnoLogMessage, \
-      ::cef::logging::GetLastSystemErrorCode()).stream()
+#define PLOG_STREAM(severity)                                                \
+  COMPACT_GOOGLE_LOG_EX_##severity(ErrnoLogMessage,                          \
+                                   ::cef::logging::GetLastSystemErrorCode()) \
+      .stream()
 #endif
 
-#define PLOG(severity)                                          \
-  LAZY_STREAM(PLOG_STREAM(severity), LOG_IS_ON(severity))
+#define PLOG(severity) LAZY_STREAM(PLOG_STREAM(severity), LOG_IS_ON(severity))
 
 #define PLOG_IF(severity, condition) \
   LAZY_STREAM(PLOG_STREAM(severity), LOG_IS_ON(severity) && (condition))
 
 // The actual stream used isn't important.
-#define EAT_STREAM_PARAMETERS                                           \
-  true ? (void) 0 : ::cef::logging::LogMessageVoidify() & LOG_STREAM(FATAL)
+#define EAT_STREAM_PARAMETERS \
+  true ? (void)0 : ::cef::logging::LogMessageVoidify() & LOG_STREAM(FATAL)
 
 // CHECK dies with a fatal error if condition is not true.  It is *not*
 // controlled by NDEBUG, so the check will be executed regardless of
@@ -341,28 +359,27 @@ const LogSeverity LOG_0 = CEF_LOG_ERROR;
 
 #define CHECK(condition)                       \
   LAZY_STREAM(LOG_STREAM(FATAL), !(condition)) \
-  << "Check failed: " #condition ". "
+      << "Check failed: " #condition ". "
 
-#define PCHECK(condition) \
+#define PCHECK(condition)                       \
   LAZY_STREAM(PLOG_STREAM(FATAL), !(condition)) \
-  << "Check failed: " #condition ". "
+      << "Check failed: " #condition ". "
 
 // Helper macro for binary operators.
 // Don't use this macro directly in your code, use CHECK_EQ et al below.
 //
 // TODO(akalin): Rewrite this so that constructs like if (...)
 // CHECK_EQ(...) else { ... } work properly.
-#define CHECK_OP(name, op, val1, val2)                          \
-  if (std::string* _result =                                    \
-      cef::logging::Check##name##Impl((val1), (val2),                \
-                                 #val1 " " #op " " #val2))      \
-    cef::logging::LogMessage(__FILE__, __LINE__, _result).stream()
+#define CHECK_OP(name, op, val1, val2)                        \
+  if (std::string* _result = cef::logging::Check##name##Impl( \
+          (val1), (val2), #val1 " " #op " " #val2))           \
+  cef::logging::LogMessage(__FILE__, __LINE__, _result).stream()
 
 // Build the error message string.  This is separate from the "Impl"
 // function template because it is not performance critical and so can
 // be out of line, while the "Impl" code should be inline.  Caller
 // takes ownership of the returned string.
-template<class t1, class t2>
+template <class t1, class t2>
 std::string* MakeCheckOpString(const t1& v1, const t2& v2, const char* names) {
   std::ostringstream ss;
   ss << names << " (" << v1 << " vs. " << v2 << ")";
@@ -374,51 +391,60 @@ std::string* MakeCheckOpString(const t1& v1, const t2& v2, const char* names) {
 #if !defined(COMPILER_MSVC)
 // Commonly used instantiations of MakeCheckOpString<>. Explicitly instantiated
 // in logging.cc.
-extern template std::string* MakeCheckOpString<int, int>(
-    const int&, const int&, const char* names);
-extern template
-std::string* MakeCheckOpString<unsigned long, unsigned long>(
-    const unsigned long&, const unsigned long&, const char* names);
-extern template
-std::string* MakeCheckOpString<unsigned long, unsigned int>(
-    const unsigned long&, const unsigned int&, const char* names);
-extern template
-std::string* MakeCheckOpString<unsigned int, unsigned long>(
-    const unsigned int&, const unsigned long&, const char* names);
-extern template
-std::string* MakeCheckOpString<std::string, std::string>(
-    const std::string&, const std::string&, const char* name);
+extern template std::string* MakeCheckOpString<int, int>(const int&,
+                                                         const int&,
+                                                         const char* names);
+extern template std::string* MakeCheckOpString<unsigned long, unsigned long>(
+    const unsigned long&,
+    const unsigned long&,
+    const char* names);
+extern template std::string* MakeCheckOpString<unsigned long, unsigned int>(
+    const unsigned long&,
+    const unsigned int&,
+    const char* names);
+extern template std::string* MakeCheckOpString<unsigned int, unsigned long>(
+    const unsigned int&,
+    const unsigned long&,
+    const char* names);
+extern template std::string* MakeCheckOpString<std::string, std::string>(
+    const std::string&,
+    const std::string&,
+    const char* name);
 #endif
 
 // Helper functions for CHECK_OP macro.
 // The (int, int) specialization works around the issue that the compiler
 // will not instantiate the template version of the function on values of
 // unnamed enum type - see comment below.
-#define DEFINE_CHECK_OP_IMPL(name, op) \
-  template <class t1, class t2> \
-  inline std::string* Check##name##Impl(const t1& v1, const t2& v2, \
-                                        const char* names) { \
-    if (v1 op v2) return NULL; \
-    else return MakeCheckOpString(v1, v2, names); \
-  } \
+#define DEFINE_CHECK_OP_IMPL(name, op)                                       \
+  template <class t1, class t2>                                              \
+  inline std::string* Check##name##Impl(const t1& v1, const t2& v2,          \
+                                        const char* names) {                 \
+    if (v1 op v2)                                                            \
+      return NULL;                                                           \
+    else                                                                     \
+      return MakeCheckOpString(v1, v2, names);                               \
+  }                                                                          \
   inline std::string* Check##name##Impl(int v1, int v2, const char* names) { \
-    if (v1 op v2) return NULL; \
-    else return MakeCheckOpString(v1, v2, names); \
+    if (v1 op v2)                                                            \
+      return NULL;                                                           \
+    else                                                                     \
+      return MakeCheckOpString(v1, v2, names);                               \
   }
 DEFINE_CHECK_OP_IMPL(EQ, ==)
 DEFINE_CHECK_OP_IMPL(NE, !=)
 DEFINE_CHECK_OP_IMPL(LE, <=)
-DEFINE_CHECK_OP_IMPL(LT, < )
+DEFINE_CHECK_OP_IMPL(LT, <)
 DEFINE_CHECK_OP_IMPL(GE, >=)
-DEFINE_CHECK_OP_IMPL(GT, > )
+DEFINE_CHECK_OP_IMPL(GT, >)
 #undef DEFINE_CHECK_OP_IMPL
 
 #define CHECK_EQ(val1, val2) CHECK_OP(EQ, ==, val1, val2)
 #define CHECK_NE(val1, val2) CHECK_OP(NE, !=, val1, val2)
 #define CHECK_LE(val1, val2) CHECK_OP(LE, <=, val1, val2)
-#define CHECK_LT(val1, val2) CHECK_OP(LT, < , val1, val2)
+#define CHECK_LT(val1, val2) CHECK_OP(LT, <, val1, val2)
 #define CHECK_GE(val1, val2) CHECK_OP(GE, >=, val1, val2)
-#define CHECK_GT(val1, val2) CHECK_OP(GT, > , val1, val2)
+#define CHECK_GT(val1, val2) CHECK_OP(GT, >, val1, val2)
 
 #if defined(NDEBUG)
 #define ENABLE_DLOG 0
@@ -471,11 +497,9 @@ enum { DEBUG_MODE = ENABLE_DLOG };
 
 #undef ENABLE_DLOG
 
-#define DLOG(severity)                                          \
-  LAZY_STREAM(LOG_STREAM(severity), DLOG_IS_ON(severity))
+#define DLOG(severity) LAZY_STREAM(LOG_STREAM(severity), DLOG_IS_ON(severity))
 
-#define DPLOG(severity)                                         \
-  LAZY_STREAM(PLOG_STREAM(severity), DLOG_IS_ON(severity))
+#define DPLOG(severity) LAZY_STREAM(PLOG_STREAM(severity), DLOG_IS_ON(severity))
 
 #define DVLOG(verboselevel) DVLOG_IF(verboselevel, VLOG_IS_ON(verboselevel))
 
@@ -486,7 +510,7 @@ enum { DEBUG_MODE = ENABLE_DLOG };
 #if DCHECK_IS_ON()
 
 #define COMPACT_GOOGLE_LOG_EX_DCHECK(ClassName, ...) \
-  COMPACT_GOOGLE_LOG_EX_FATAL(ClassName , ##__VA_ARGS__)
+  COMPACT_GOOGLE_LOG_EX_FATAL(ClassName, ##__VA_ARGS__)
 #define COMPACT_GOOGLE_LOG_DCHECK COMPACT_GOOGLE_LOG_FATAL
 const LogSeverity LOG_DCHECK = LOG_FATAL;
 
@@ -494,9 +518,9 @@ const LogSeverity LOG_DCHECK = LOG_FATAL;
 
 // These are just dummy values.
 #define COMPACT_GOOGLE_LOG_EX_DCHECK(ClassName, ...) \
-  COMPACT_GOOGLE_LOG_EX_INFO(ClassName , ##__VA_ARGS__)
-#define COMPACT_GOOGLE_LOG_DCHECK COMPACT_GOOGLE_CEF_LOG_INFO
-const LogSeverity LOG_DCHECK = CEF_LOG_INFO;
+  COMPACT_GOOGLE_LOG_EX_INFO(ClassName, ##__VA_ARGS__)
+#define COMPACT_GOOGLE_LOG_DCHECK COMPACT_GOOGLE_LOG_INFO
+const LogSeverity LOG_DCHECK = LOG_INFO;
 
 #endif  // DCHECK_IS_ON()
 
@@ -505,22 +529,23 @@ const LogSeverity LOG_DCHECK = CEF_LOG_INFO;
 // variable warnings if the only use of a variable is in a DCHECK.
 // This behavior is different from DLOG_IF et al.
 
-#define DCHECK(condition)                                           \
-  LAZY_STREAM(LOG_STREAM(DCHECK), DCHECK_IS_ON() && !(condition))   \
+#define DCHECK(condition)                                         \
+  LAZY_STREAM(LOG_STREAM(DCHECK), DCHECK_IS_ON() && !(condition)) \
       << "Check failed: " #condition ". "
 
-#define DPCHECK(condition)                                          \
-  LAZY_STREAM(PLOG_STREAM(DCHECK), DCHECK_IS_ON() && !(condition))  \
+#define DPCHECK(condition)                                         \
+  LAZY_STREAM(PLOG_STREAM(DCHECK), DCHECK_IS_ON() && !(condition)) \
       << "Check failed: " #condition ". "
 
 // Helper macro for binary operators.
 // Don't use this macro directly in your code, use DCHECK_EQ et al below.
-#define DCHECK_OP(name, op, val1, val2)                                   \
-  if (DCHECK_IS_ON())                                                     \
-    if (std::string* _result = cef::logging::Check##name##Impl(           \
-            (val1), (val2), #val1 " " #op " " #val2))                     \
-  cef::logging::LogMessage(__FILE__, __LINE__,                            \
-      ::cef::logging::LOG_DCHECK, _result).stream()
+#define DCHECK_OP(name, op, val1, val2)                                    \
+  if (DCHECK_IS_ON())                                                      \
+    if (std::string* _result = cef::logging::Check##name##Impl(            \
+            (val1), (val2), #val1 " " #op " " #val2))                      \
+  cef::logging::LogMessage(__FILE__, __LINE__, ::cef::logging::LOG_DCHECK, \
+                           _result)                                        \
+      .stream()
 
 // Equality/Inequality checks - compare two values, and log a
 // LOG_DCHECK message including the two values when the result is not
@@ -544,16 +569,11 @@ const LogSeverity LOG_DCHECK = CEF_LOG_INFO;
 #define DCHECK_EQ(val1, val2) DCHECK_OP(EQ, ==, val1, val2)
 #define DCHECK_NE(val1, val2) DCHECK_OP(NE, !=, val1, val2)
 #define DCHECK_LE(val1, val2) DCHECK_OP(LE, <=, val1, val2)
-#define DCHECK_LT(val1, val2) DCHECK_OP(LT, < , val1, val2)
+#define DCHECK_LT(val1, val2) DCHECK_OP(LT, <, val1, val2)
 #define DCHECK_GE(val1, val2) DCHECK_OP(GE, >=, val1, val2)
-#define DCHECK_GT(val1, val2) DCHECK_OP(GT, > , val1, val2)
+#define DCHECK_GT(val1, val2) DCHECK_OP(GT, >, val1, val2)
 
-#if defined(NDEBUG) && defined(OS_CHROMEOS)
-#define NOTREACHED() CEF_LOG(ERROR) << "NOTREACHED() hit in " << \
-    __FUNCTION__ << ". "
-#else
 #define NOTREACHED() DCHECK(false)
-#endif
 
 // Redefine the standard assert to use our nice log files
 #undef assert
@@ -565,11 +585,11 @@ const LogSeverity LOG_DCHECK = CEF_LOG_INFO;
 // full message gets streamed to the appropriate destination.
 //
 // You shouldn't actually use LogMessage's constructor to log things,
-// though.  You should use the CEF_LOG() macro (and variants thereof)
+// though.  You should use the LOG() macro (and variants thereof)
 // above.
 class LogMessage {
  public:
-  // Used for CEF_LOG(severity).
+  // Used for LOG(severity).
   LogMessage(const char* file, int line, LogSeverity severity);
 
   // Used for CHECK_EQ(), etc. Takes ownership of the given string.
@@ -577,8 +597,13 @@ class LogMessage {
   LogMessage(const char* file, int line, std::string* result);
 
   // Used for DCHECK_EQ(), etc. Takes ownership of the given string.
-  LogMessage(const char* file, int line, LogSeverity severity,
+  LogMessage(const char* file,
+             int line,
+             LogSeverity severity,
              std::string* result);
+
+  LogMessage(const LogMessage&) = delete;
+  LogMessage& operator=(const LogMessage&) = delete;
 
   ~LogMessage();
 
@@ -611,13 +636,11 @@ class LogMessage {
 
   SaveLastError last_error_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(LogMessage);
 };
 
 // A non-macro interface to the log facility; (useful
 // when the logging level is not a compile-time constant).
-inline void LogAtLevel(int const log_level, std::string const &msg) {
+inline void LogAtLevel(int const log_level, std::string const& msg) {
   LogMessage(__FILE__, __LINE__, log_level).stream() << msg;
 }
 
@@ -626,10 +649,10 @@ inline void LogAtLevel(int const log_level, std::string const &msg) {
 // is not used" and "statement has no effect".
 class LogMessageVoidify {
  public:
-  LogMessageVoidify() { }
+  LogMessageVoidify() {}
   // This has to be an operator with a precedence lower than << but
   // higher than ?:
-  void operator&(std::ostream&) { }
+  void operator&(std::ostream&) {}
 };
 
 #if defined(OS_WIN)
@@ -652,6 +675,9 @@ class Win32ErrorLogMessage {
                        LogSeverity severity,
                        SystemErrorCode err);
 
+  Win32ErrorLogMessage(const Win32ErrorLogMessage&) = delete;
+  Win32ErrorLogMessage& operator=(const Win32ErrorLogMessage&) = delete;
+
   // Appends the error message before destructing the encapsulated class.
   ~Win32ErrorLogMessage();
 
@@ -660,8 +686,6 @@ class Win32ErrorLogMessage {
  private:
   SystemErrorCode err_;
   LogMessage log_message_;
-
-  DISALLOW_COPY_AND_ASSIGN(Win32ErrorLogMessage);
 };
 #elif defined(OS_POSIX)
 // Appends a formatted system message of the errno type
@@ -672,6 +696,9 @@ class ErrnoLogMessage {
                   LogSeverity severity,
                   SystemErrorCode err);
 
+  ErrnoLogMessage(const ErrnoLogMessage&) = delete;
+  ErrnoLogMessage& operator=(const ErrnoLogMessage&) = delete;
+
   // Appends the error message before destructing the encapsulated class.
   ~ErrnoLogMessage();
 
@@ -680,8 +707,6 @@ class ErrnoLogMessage {
  private:
   SystemErrorCode err_;
   LogMessage log_message_;
-
-  DISALLOW_COPY_AND_ASSIGN(ErrnoLogMessage);
 };
 #endif  // OS_WIN
 
@@ -698,6 +723,13 @@ std::ostream& operator<<(std::ostream& out, const wchar_t* wstr);
 inline std::ostream& operator<<(std::ostream& out, const std::wstring& wstr) {
   return out << wstr.c_str();
 }
+#if defined(WCHAR_T_IS_32_BIT)
+std::ostream& operator<<(std::ostream& out, const char16_t* wstr);
+#elif defined(WCHAR_T_IS_16_BIT)
+inline std::ostream& operator<<(std::ostream& out, const char16_t* wstr) {
+  return operator<<(out, reinterpret_cast<const wchar_t*>(wstr));
+}
+#endif
 
 // The NOTIMPLEMENTED() macro annotates codepaths which have
 // not been implemented yet.
@@ -707,14 +739,14 @@ inline std::ostream& operator<<(std::ostream& out, const std::wstring& wstr) {
 //   1 -- Warn at compile time
 //   2 -- Fail at compile time
 //   3 -- Fail at runtime (DCHECK)
-//   4 -- [default] CEF_LOG(ERROR) at runtime
-//   5 -- CEF_LOG(ERROR) at runtime, only once per call-site
+//   4 -- [default] LOG(ERROR) at runtime
+//   5 -- LOG(ERROR) at runtime, only once per call-site
 
 #ifndef NOTIMPLEMENTED_POLICY
 #if defined(OS_ANDROID) && defined(OFFICIAL_BUILD)
 #define NOTIMPLEMENTED_POLICY 0
 #else
-// Select default policy: CEF_LOG(ERROR)
+// Select default policy: LOG(ERROR)
 #define NOTIMPLEMENTED_POLICY 4
 #endif
 #endif
@@ -737,14 +769,15 @@ inline std::ostream& operator<<(std::ostream& out, const std::wstring& wstr) {
 #elif NOTIMPLEMENTED_POLICY == 3
 #define NOTIMPLEMENTED() NOTREACHED()
 #elif NOTIMPLEMENTED_POLICY == 4
-#define NOTIMPLEMENTED() CEF_LOG(ERROR) << NOTIMPLEMENTED_MSG
+#define NOTIMPLEMENTED() LOG(ERROR) << NOTIMPLEMENTED_MSG
 #elif NOTIMPLEMENTED_POLICY == 5
-#define NOTIMPLEMENTED() do {\
-  static bool logged_once = false;\
-  LOG_IF(ERROR, !logged_once) << NOTIMPLEMENTED_MSG;\
-  logged_once = true;\
-} while(0);\
-EAT_STREAM_PARAMETERS
+#define NOTIMPLEMENTED()                               \
+  do {                                                 \
+    static bool logged_once = false;                   \
+    LOG_IF(ERROR, !logged_once) << NOTIMPLEMENTED_MSG; \
+    logged_once = true;                                \
+  } while (0);                                         \
+  EAT_STREAM_PARAMETERS
 #endif
 
 #endif  // !USING_CHROMIUM_INCLUDES

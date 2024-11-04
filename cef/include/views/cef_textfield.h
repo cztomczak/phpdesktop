@@ -38,235 +38,231 @@
 #define CEF_INCLUDE_VIEWS_CEF_TEXTFIELD_H_
 #pragma once
 
-#include "include/views/cef_view.h"
 #include "include/views/cef_textfield_delegate.h"
+#include "include/views/cef_view.h"
 
 ///
-// A Textfield supports editing of text. This control is custom rendered with no
-// platform-specific code. Methods must be called on the browser process UI
-// thread unless otherwise indicated.
+/// A Textfield supports editing of text. This control is custom rendered with
+/// no platform-specific code. Methods must be called on the browser process UI
+/// thread unless otherwise indicated.
 ///
 /*--cef(source=library)--*/
 class CefTextfield : public CefView {
  public:
   ///
-  // Create a new Textfield.
+  /// Create a new Textfield.
   ///
   /*--cef(optional_param=delegate)--*/
   static CefRefPtr<CefTextfield> CreateTextfield(
       CefRefPtr<CefTextfieldDelegate> delegate);
 
   ///
-  // Sets whether the text will be displayed as asterisks.
+  /// Sets whether the text will be displayed as asterisks.
   ///
   /*--cef()--*/
-  virtual void SetPasswordInput(bool password_input) =0;
+  virtual void SetPasswordInput(bool password_input) = 0;
 
   ///
-  // Returns true if the text will be displayed as asterisks.
+  /// Returns true if the text will be displayed as asterisks.
   ///
   /*--cef()--*/
-  virtual bool IsPasswordInput() =0;
+  virtual bool IsPasswordInput() = 0;
 
   ///
-  // Sets whether the text will read-only.
+  /// Sets whether the text will read-only.
   ///
   /*--cef()--*/
-  virtual void SetReadOnly(bool read_only) =0;
+  virtual void SetReadOnly(bool read_only) = 0;
 
   ///
-  // Returns true if the text is read-only.
+  /// Returns true if the text is read-only.
   ///
   /*--cef()--*/
-  virtual bool IsReadOnly() =0;
+  virtual bool IsReadOnly() = 0;
 
   ///
-  // Returns the currently displayed text.
+  /// Returns the currently displayed text.
   ///
   /*--cef()--*/
-  virtual CefString GetText() =0;
+  virtual CefString GetText() = 0;
 
   ///
-  // Sets the contents to |text|. The cursor will be moved to end of the text if
-  // the current position is outside of the text range.
+  /// Sets the contents to |text|. The cursor will be moved to end of the text
+  /// if the current position is outside of the text range.
   ///
   /*--cef()--*/
-  virtual void SetText(const CefString& text) =0;
+  virtual void SetText(const CefString& text) = 0;
 
   ///
-  // Appends |text| to the previously-existing text.
+  /// Appends |text| to the previously-existing text.
   ///
   /*--cef()--*/
-  virtual void AppendText(const CefString& text) =0;
+  virtual void AppendText(const CefString& text) = 0;
 
   ///
-  // Inserts |text| at the current cursor position replacing any selected text.
+  /// Inserts |text| at the current cursor position replacing any selected text.
   ///
   /*--cef()--*/
-  virtual void InsertOrReplaceText(const CefString& text) =0;
+  virtual void InsertOrReplaceText(const CefString& text) = 0;
 
   ///
-  // Returns true if there is any selected text.
+  /// Returns true if there is any selected text.
   ///
   /*--cef()--*/
-  virtual bool HasSelection() =0;
+  virtual bool HasSelection() = 0;
 
   ///
-  // Returns the currently selected text.
+  /// Returns the currently selected text.
   ///
   /*--cef()--*/
-  virtual CefString GetSelectedText() =0;
+  virtual CefString GetSelectedText() = 0;
 
   ///
-  // Selects all text. If |reversed| is true the range will end at the logical
-  // beginning of the text; this generally shows the leading portion of text
-  // that overflows its display area.
+  /// Selects all text. If |reversed| is true the range will end at the logical
+  /// beginning of the text; this generally shows the leading portion of text
+  /// that overflows its display area.
   ///
   /*--cef()--*/
-  virtual void SelectAll(bool reversed) =0;
-  
-  ///
-  // Clears the text selection and sets the caret to the end.
-  ///
-  /*--cef()--*/
-  virtual void ClearSelection() =0;
+  virtual void SelectAll(bool reversed) = 0;
 
   ///
-  // Returns the selected logical text range.
+  /// Clears the text selection and sets the caret to the end.
   ///
   /*--cef()--*/
-  virtual CefRange GetSelectedRange() =0;
-  
-  ///
-  // Selects the specified logical text range.
-  ///
-  /*--cef()--*/
-  virtual void SelectRange(const CefRange& range) =0;
-  
-  ///
-  // Returns the current cursor position.
-  ///
-  /*--cef()--*/
-  virtual size_t GetCursorPosition() =0;
+  virtual void ClearSelection() = 0;
 
   ///
-  // Sets the text color.
+  /// Returns the selected logical text range.
   ///
   /*--cef()--*/
-  virtual void SetTextColor(cef_color_t color) =0;
+  virtual CefRange GetSelectedRange() = 0;
 
   ///
-  // Returns the text color.
+  /// Selects the specified logical text range.
   ///
   /*--cef()--*/
-  virtual cef_color_t GetTextColor() =0;
+  virtual void SelectRange(const CefRange& range) = 0;
 
   ///
-  // Sets the selection text color.
+  /// Returns the current cursor position.
   ///
   /*--cef()--*/
-  virtual void SetSelectionTextColor(cef_color_t color) =0;
+  virtual size_t GetCursorPosition() = 0;
 
   ///
-  // Returns the selection text color.
+  /// Sets the text color.
   ///
   /*--cef()--*/
-  virtual cef_color_t GetSelectionTextColor() =0;
+  virtual void SetTextColor(cef_color_t color) = 0;
 
   ///
-  // Sets the selection background color.
+  /// Returns the text color.
   ///
   /*--cef()--*/
-  virtual void SetSelectionBackgroundColor(cef_color_t color) =0;
+  virtual cef_color_t GetTextColor() = 0;
 
   ///
-  // Returns the selection background color.
+  /// Sets the selection text color.
   ///
   /*--cef()--*/
-  virtual cef_color_t GetSelectionBackgroundColor() =0;
+  virtual void SetSelectionTextColor(cef_color_t color) = 0;
 
   ///
-  // Sets the font list. The format is "<FONT_FAMILY_LIST>,[STYLES] <SIZE>",
-  // where:
-  // - FONT_FAMILY_LIST is a comma-separated list of font family names,
-  // - STYLES is an optional space-separated list of style names (case-sensitive
-  //   "Bold" and "Italic" are supported), and
-  // - SIZE is an integer font size in pixels with the suffix "px".
-  //
-  // Here are examples of valid font description strings:
-  // - "Arial, Helvetica, Bold Italic 14px"
-  // - "Arial, 14px"
+  /// Returns the selection text color.
   ///
   /*--cef()--*/
-  virtual void SetFontList(const CefString& font_list) =0;
+  virtual cef_color_t GetSelectionTextColor() = 0;
 
   ///
-  // Applies |color| to the specified |range| without changing the default
-  // color. If |range| is empty the color will be set on the complete text
-  // contents.
+  /// Sets the selection background color.
   ///
   /*--cef()--*/
-  virtual void ApplyTextColor(cef_color_t color,
-                              const CefRange& range) =0;
+  virtual void SetSelectionBackgroundColor(cef_color_t color) = 0;
 
   ///
-  // Applies |style| to the specified |range| without changing the default
-  // style. If |add| is true the style will be added, otherwise the style will
-  // be removed. If |range| is empty the style will be set on the complete text
-  // contents.
+  /// Returns the selection background color.
+  ///
+  /*--cef()--*/
+  virtual cef_color_t GetSelectionBackgroundColor() = 0;
+
+  ///
+  /// Sets the font list. The format is "<FONT_FAMILY_LIST>,[STYLES] <SIZE>",
+  /// where:
+  /// - FONT_FAMILY_LIST is a comma-separated list of font family names,
+  /// - STYLES is an optional space-separated list of style names
+  ///   (case-sensitive "Bold" and "Italic" are supported), and
+  /// - SIZE is an integer font size in pixels with the suffix "px".
+  ///
+  /// Here are examples of valid font description strings:
+  /// - "Arial, Helvetica, Bold Italic 14px"
+  /// - "Arial, 14px"
+  ///
+  /*--cef()--*/
+  virtual void SetFontList(const CefString& font_list) = 0;
+
+  ///
+  /// Applies |color| to the specified |range| without changing the default
+  /// color. If |range| is empty the color will be set on the complete text
+  /// contents.
+  ///
+  /*--cef()--*/
+  virtual void ApplyTextColor(cef_color_t color, const CefRange& range) = 0;
+
+  ///
+  /// Applies |style| to the specified |range| without changing the default
+  /// style. If |add| is true the style will be added, otherwise the style will
+  /// be removed. If |range| is empty the style will be set on the complete text
+  /// contents.
   ///
   /*--cef()--*/
   virtual void ApplyTextStyle(cef_text_style_t style,
                               bool add,
-                              const CefRange& range) =0;
+                              const CefRange& range) = 0;
 
   ///
-  // Returns true if the action associated with the specified command id is
-  // enabled. See additional comments on ExecuteCommand().
+  /// Returns true if the action associated with the specified command id is
+  /// enabled. See additional comments on ExecuteCommand().
   ///
   /*--cef()--*/
-  virtual bool IsCommandEnabled(int command_id) =0;
+  virtual bool IsCommandEnabled(cef_text_field_commands_t command_id) = 0;
 
   ///
-  // Performs the action associated with the specified command id. Valid values
-  // include IDS_APP_UNDO, IDS_APP_REDO, IDS_APP_CUT, IDS_APP_COPY,
-  // IDS_APP_PASTE, IDS_APP_DELETE, IDS_APP_SELECT_ALL, IDS_DELETE_* and
-  // IDS_MOVE_*. See include/cef_pack_strings.h for definitions.
+  /// Performs the action associated with the specified command id.
   ///
   /*--cef()--*/
-  virtual void ExecuteCommand(int command_id) =0;
-  
-  ///
-  // Clears Edit history.
-  ///
-  /*--cef()--*/
-  virtual void ClearEditHistory() =0;
+  virtual void ExecuteCommand(cef_text_field_commands_t command_id) = 0;
 
   ///
-  // Sets the placeholder text that will be displayed when the Textfield is
-  // empty.
+  /// Clears Edit history.
   ///
   /*--cef()--*/
-  virtual void SetPlaceholderText(const CefString& text) =0;
+  virtual void ClearEditHistory() = 0;
 
   ///
-  // Returns the placeholder text that will be displayed when the Textfield is
-  // empty.
+  /// Sets the placeholder text that will be displayed when the Textfield is
+  /// empty.
   ///
   /*--cef()--*/
-  virtual CefString GetPlaceholderText() =0;
+  virtual void SetPlaceholderText(const CefString& text) = 0;
 
   ///
-  // Sets the placeholder text color.
+  /// Returns the placeholder text that will be displayed when the Textfield is
+  /// empty.
   ///
   /*--cef()--*/
-  virtual void SetPlaceholderTextColor(cef_color_t color) =0;
+  virtual CefString GetPlaceholderText() = 0;
 
   ///
-  // Set the accessible name that will be exposed to assistive technology (AT).
+  /// Sets the placeholder text color.
   ///
   /*--cef()--*/
-  virtual void SetAccessibleName(const CefString& name) =0;
+  virtual void SetPlaceholderTextColor(cef_color_t color) = 0;
+
+  ///
+  /// Set the accessible name that will be exposed to assistive technology (AT).
+  ///
+  /*--cef()--*/
+  virtual void SetAccessibleName(const CefString& name) = 0;
 };
 
 #endif  // CEF_INCLUDE_VIEWS_CEF_TEXTFIELD_H_

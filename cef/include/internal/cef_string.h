@@ -44,7 +44,6 @@
 // Build with the wide string type as default.
 // #define CEF_STRING_TYPE_WIDE 1
 
-
 #include "include/internal/cef_string_types.h"
 
 #ifdef __cplusplus
@@ -75,7 +74,7 @@ typedef cef_string_userfree_utf8_t cef_string_userfree_t;
 #define cef_string_to_wide cef_string_utf8_to_wide
 #define cef_string_from_wide cef_string_wide_to_utf8
 #elif defined(CEF_STRING_TYPE_UTF16)
-typedef char16 cef_char_t;
+typedef char16_t cef_char_t;
 typedef cef_string_userfree_utf16_t cef_string_userfree_t;
 typedef cef_string_utf16_t cef_string_t;
 #define cef_string_set cef_string_utf16_set

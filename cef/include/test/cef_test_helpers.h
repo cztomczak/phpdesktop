@@ -1,4 +1,4 @@
-// Copyright (c) 2012 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2017 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -33,63 +33,46 @@
 // support the CEF translator tool. See the translator.README.txt file in the
 // tools directory for more information.
 //
+// THIS FILE IS FOR TESTING PURPOSES ONLY.
+//
+// The APIs defined in this file are for testing purposes only. They should only
+// be included from unit test targets.
+//
 
-#ifndef CEF_INCLUDE_CEF_GEOLOCATION_HANDLER_H_
-#define CEF_INCLUDE_CEF_GEOLOCATION_HANDLER_H_
+#ifndef CEF_INCLUDE_TEST_CEF_TEST_HELPERS_H_
+#define CEF_INCLUDE_TEST_CEF_TEST_HELPERS_H_
 #pragma once
 
-#include "include/cef_base.h"
-#include "include/cef_browser.h"
+#if !defined(BUILDING_CEF_SHARED) && !defined(WRAPPING_CEF_SHARED) && \
+    !defined(UNIT_TEST)
+#error This file can be included for unit tests only
+#endif
+
+#include "include/cef_frame.h"
 
 ///
-// Callback interface used for asynchronous continuation of geolocation
-// permission requests.
+/// Execute JavaScript with a user gesture to trigger functionality like
+/// onbeforeunload handlers that will otherwise be blocked.
 ///
-/*--cef(source=library)--*/
-class CefGeolocationCallback : public virtual CefBaseRefCounted {
- public:
-  ///
-  // Call to allow or deny geolocation access.
-  ///
-  /*--cef(capi_name=cont)--*/
-  virtual void Continue(bool allow) =0;
-};
-
+/*--cef(optional_param=javascript)--*/
+void CefExecuteJavaScriptWithUserGestureForTests(CefRefPtr<CefFrame> frame,
+                                                 const CefString& javascript);
 
 ///
-// Implement this interface to handle events related to geolocation permission
-// requests. The methods of this class will be called on the browser process UI
-// thread.
+/// Set the DIR_SRC_TEST_DATA_ROOT directory used to load test data. Must be
+/// configured when running from a CEF binary distribution. Defaults to the
+/// "chromium/src" directory when running from a local CEF/Chromium build. |dir|
+/// must be an absolute path.
 ///
-/*--cef(source=client)--*/
-class CefGeolocationHandler : public virtual CefBaseRefCounted {
- public:
-  ///
-  // Called when a page requests permission to access geolocation information.
-  // |requesting_url| is the URL requesting permission and |request_id| is the
-  // unique ID for the permission request. Return true and call
-  // CefGeolocationCallback::Continue() either in this method or at a later
-  // time to continue or cancel the request. Return false to cancel the request
-  // immediately.
-  ///
-  /*--cef()--*/
-  virtual bool OnRequestGeolocationPermission(
-      CefRefPtr<CefBrowser> browser,
-      const CefString& requesting_url,
-      int request_id,
-      CefRefPtr<CefGeolocationCallback> callback) {
-    return false;
-  }
+/*--cef()--*/
+void CefSetDataDirectoryForTests(const CefString& dir);
 
-  ///
-  // Called when a geolocation access request is canceled. |request_id| is the
-  // unique ID for the permission request.
-  ///
-  /*--cef()--*/
-  virtual void OnCancelGeolocationPermission(
-      CefRefPtr<CefBrowser> browser,
-      int request_id) {
-  }
-};
+///
+/// Returns true if |feature_name| is enabled by default, command line or field
+/// trial. This supports a short list of curated values that are queried by unit
+/// tests.
+///
+/*--cef()--*/
+bool CefIsFeatureEnabledForTests(const CefString& feature_name);
 
-#endif  // CEF_INCLUDE_CEF_GEOLOCATION_HANDLER_H_
+#endif  // CEF_INCLUDE_TEST_CEF_TEST_HELPERS_H_

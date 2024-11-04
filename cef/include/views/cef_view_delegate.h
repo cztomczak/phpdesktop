@@ -43,15 +43,17 @@
 class CefView;
 
 ///
-// Implement this interface to handle view events. The methods of this class
-// will be called on the browser process UI thread unless otherwise indicated.
+/// Implement this interface to handle view events. All size and position values
+/// are in density independent pixels (DIP) unless otherwise indicated. The
+/// methods of this class will be called on the browser process UI thread unless
+/// otherwise indicated.
 ///
 /*--cef(source=client)--*/
 class CefViewDelegate : public virtual CefBaseRefCounted {
  public:
   ///
-  // Return the preferred size for |view|. The Layout will use this information
-  // to determine the display size.
+  /// Return the preferred size for |view|. The Layout will use this information
+  /// to determine the display size.
   ///
   /*--cef()--*/
   virtual CefSize GetPreferredSize(CefRefPtr<CefView> view) {
@@ -59,26 +61,22 @@ class CefViewDelegate : public virtual CefBaseRefCounted {
   }
 
   ///
-  // Return the minimum size for |view|.
+  /// Return the minimum size for |view|.
   ///
   /*--cef()--*/
-  virtual CefSize GetMinimumSize(CefRefPtr<CefView> view) {
-    return CefSize();
-  }
+  virtual CefSize GetMinimumSize(CefRefPtr<CefView> view) { return CefSize(); }
 
   ///
-  // Return the maximum size for |view|.
+  /// Return the maximum size for |view|.
   ///
   /*--cef()--*/
-  virtual CefSize GetMaximumSize(CefRefPtr<CefView> view) {
-    return CefSize();
-  }
+  virtual CefSize GetMaximumSize(CefRefPtr<CefView> view) { return CefSize(); }
 
   ///
-  // Return the height necessary to display |view| with the provided |width|.
-  // If not specified the result of GetPreferredSize().height will be used by
-  // default. Override if |view|'s preferred height depends upon the width
-  // (for example, with Labels).
+  /// Return the height necessary to display |view| with the provided |width|.
+  /// If not specified the result of GetPreferredSize().height will be used by
+  /// default. Override if |view|'s preferred height depends upon the width
+  /// (for example, with Labels).
   ///
   /*--cef()--*/
   virtual int GetHeightForWidth(CefRefPtr<CefView> view, int width) {
@@ -86,11 +84,11 @@ class CefViewDelegate : public virtual CefBaseRefCounted {
   }
 
   ///
-  // Called when the parent of |view| has changed. If |view| is being added to
-  // |parent| then |added| will be true. If |view| is being removed from
-  // |parent| then |added| will be false. If |view| is being reparented the
-  // remove notification will be sent before the add notification. Do not modify
-  // the view hierarchy in this callback.
+  /// Called when the parent of |view| has changed. If |view| is being added to
+  /// |parent| then |added| will be true. If |view| is being removed from
+  /// |parent| then |added| will be false. If |view| is being reparented the
+  /// remove notification will be sent before the add notification. Do not
+  /// modify the view hierarchy in this callback.
   ///
   /*--cef()--*/
   virtual void OnParentViewChanged(CefRefPtr<CefView> view,
@@ -98,11 +96,11 @@ class CefViewDelegate : public virtual CefBaseRefCounted {
                                    CefRefPtr<CefView> parent) {}
 
   ///
-  // Called when a child of |view| has changed. If |child| is being added to
-  // |view| then |added| will be true. If |child| is being removed from |view|
-  // then |added| will be false. If |child| is being reparented the remove
-  // notification will be sent to the old parent before the add notification is
-  // sent to the new parent. Do not modify the view hierarchy in this callback.
+  /// Called when a child of |view| has changed. If |child| is being added to
+  /// |view| then |added| will be true. If |child| is being removed from |view|
+  /// then |added| will be false. If |child| is being reparented the remove
+  /// notification will be sent to the old parent before the add notification is
+  /// sent to the new parent. Do not modify the view hierarchy in this callback.
   ///
   /*--cef()--*/
   virtual void OnChildViewChanged(CefRefPtr<CefView> view,
@@ -110,16 +108,50 @@ class CefViewDelegate : public virtual CefBaseRefCounted {
                                   CefRefPtr<CefView> child) {}
 
   ///
-  // Called when |view| gains focus.
+  /// Called when |view| is added or removed from the CefWindow.
+  ///
+  /*--cef()--*/
+  virtual void OnWindowChanged(CefRefPtr<CefView> view, bool added) {}
+
+  ///
+  /// Called when the layout of |view| has changed.
+  ///
+  /*--cef()--*/
+  virtual void OnLayoutChanged(CefRefPtr<CefView> view,
+                               const CefRect& new_bounds) {}
+
+  ///
+  /// Called when |view| gains focus.
   ///
   /*--cef()--*/
   virtual void OnFocus(CefRefPtr<CefView> view) {}
 
   ///
-  // Called when |view| loses focus.
+  /// Called when |view| loses focus.
   ///
   /*--cef()--*/
   virtual void OnBlur(CefRefPtr<CefView> view) {}
+
+  ///
+  /// Called when the theme for |view| has changed, after the new theme colors
+  /// have already been applied. Views are notified via the component hierarchy
+  /// in depth-first reverse order (children before parents).
+  ///
+  /// This will be called in the following cases:
+  ///
+  /// 1. When |view|, or a parent of |view|, is added to a Window.
+  /// 2. When the native/OS or Chrome theme changes for the Window that contains
+  ///    |view|. See CefWindowDelegate::OnThemeColorsChanged documentation.
+  /// 3. When the client explicitly calls CefWindow::ThemeChanged on the Window
+  ///    that contains |view|.
+  ///
+  /// Optionally use this callback to override the new per-View theme colors by
+  /// calling CefView::SetBackgroundColor or the appropriate component-specific
+  /// method. See CefWindow::SetThemeColor documentation for how to customize
+  /// additional Window theme colors.
+  ///
+  /*--cef()--*/
+  virtual void OnThemeChanged(CefRefPtr<CefView> view) {}
 };
 
 #endif  // CEF_INCLUDE_VIEWS_CEF_WINDOW_DELEGATE_H_

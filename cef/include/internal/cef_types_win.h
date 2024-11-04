@@ -27,7 +27,6 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
 #ifndef CEF_INCLUDE_INTERNAL_CEF_TYPES_WIN_H_
 #define CEF_INCLUDE_INTERNAL_CEF_TYPES_WIN_H_
 #pragma once
@@ -36,12 +35,17 @@
 
 #if defined(OS_WIN)
 #include <windows.h>
+
 #include "include/internal/cef_string.h"
+#include "include/internal/cef_types_color.h"
+#include "include/internal/cef_types_geometry.h"
+#include "include/internal/cef_types_runtime.h"
 
 // Handle types.
 #define cef_cursor_handle_t HCURSOR
 #define cef_event_handle_t MSG*
 #define cef_window_handle_t HWND
+#define cef_shared_texture_handle_t HANDLE
 
 #define kNullCursorHandle NULL
 #define kNullEventHandle NULL
@@ -52,52 +56,81 @@ extern "C" {
 #endif
 
 ///
-// Structure representing CefExecuteProcess arguments.
+/// Structure representing CefExecuteProcess arguments.
 ///
 typedef struct _cef_main_args_t {
   HINSTANCE instance;
 } cef_main_args_t;
 
 ///
-// Structure representing window information.
+/// Structure representing window information.
 ///
 typedef struct _cef_window_info_t {
   // Standard parameters required by CreateWindowEx()
   DWORD ex_style;
   cef_string_t window_name;
   DWORD style;
-  int x;
-  int y;
-  int width;
-  int height;
+  cef_rect_t bounds;
   cef_window_handle_t parent_window;
   HMENU menu;
 
   ///
-  // Set to true (1) to create the browser using windowless (off-screen)
-  // rendering. No window will be created for the browser and all rendering will
-  // occur via the CefRenderHandler interface. The |parent_window| value will be
-  // used to identify monitor info and to act as the parent window for dialogs,
-  // context menus, etc. If |parent_window| is not provided then the main screen
-  // monitor will be used and some functionality that requires a parent window
-  // may not function correctly. In order to create windowless browsers the
-  // CefSettings.windowless_rendering_enabled value must be set to true.
+  /// Set to true (1) to create the browser using windowless (off-screen)
+  /// rendering. No window will be created for the browser and all rendering
+  /// will occur via the CefRenderHandler interface. The |parent_window| value
+  /// will be used to identify monitor info and to act as the parent window for
+  /// dialogs, context menus, etc. If |parent_window| is not provided then the
+  /// main screen monitor will be used and some functionality that requires a
+  /// parent window may not function correctly. In order to create windowless
+  /// browsers the CefSettings.windowless_rendering_enabled value must be set to
+  /// true. Transparent painting is enabled by default but can be disabled by
+  /// setting CefBrowserSettings.background_color to an opaque value.
   ///
   int windowless_rendering_enabled;
 
   ///
-  // Set to true (1) to enable transparent painting in combination with
-  // windowless rendering. When this value is true a transparent background
-  // color will be used (RGBA=0x00000000). When this value is false the
-  // background will be white and opaque.
+  /// Set to true (1) to enable shared textures for windowless rendering. Only
+  /// valid if windowless_rendering_enabled above is also set to true. Currently
+  /// only supported on Windows (D3D11).
   ///
-  int transparent_painting_enabled;
+  int shared_texture_enabled;
 
   ///
-  // Handle for the new browser window. Only used with windowed rendering.
+  /// Set to true (1) to enable the ability to issue BeginFrame requests from
+  /// the client application by calling CefBrowserHost::SendExternalBeginFrame.
+  ///
+  int external_begin_frame_enabled;
+
+  ///
+  /// Handle for the new browser window. Only used with windowed rendering.
   ///
   cef_window_handle_t window;
+
+  ///
+  /// Optionally change the runtime style. Alloy style will always be used if
+  /// |windowless_rendering_enabled| is true. See cef_runtime_style_t
+  /// documentation for details.
+  ///
+  cef_runtime_style_t runtime_style;
 } cef_window_info_t;
+
+///
+/// Structure containing shared texture information for the OnAcceleratedPaint
+/// callback. Resources will be released to the underlying pool for reuse when
+/// the callback returns from client code.
+///
+typedef struct _cef_accelerated_paint_info_t {
+  ///
+  /// Handle for the shared texture. The shared texture is instantiated
+  /// without a keyed mutex.
+  ///
+  cef_shared_texture_handle_t shared_texture_handle;
+
+  ///
+  /// The pixel format of the texture.
+  ///
+  cef_color_type_t format;
+} cef_accelerated_paint_info_t;
 
 #ifdef __cplusplus
 }

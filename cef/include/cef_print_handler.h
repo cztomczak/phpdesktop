@@ -43,94 +43,98 @@
 #include "include/cef_print_settings.h"
 
 ///
-// Callback interface for asynchronous continuation of print dialog requests.
+/// Callback interface for asynchronous continuation of print dialog requests.
 ///
 /*--cef(source=library)--*/
 class CefPrintDialogCallback : public virtual CefBaseRefCounted {
  public:
   ///
-  // Continue printing with the specified |settings|.
+  /// Continue printing with the specified |settings|.
   ///
   /*--cef(capi_name=cont)--*/
-  virtual void Continue(CefRefPtr<CefPrintSettings> settings) =0;
+  virtual void Continue(CefRefPtr<CefPrintSettings> settings) = 0;
 
   ///
-  // Cancel the printing.
+  /// Cancel the printing.
   ///
   /*--cef()--*/
-  virtual void Cancel() =0;
+  virtual void Cancel() = 0;
 };
 
 ///
-// Callback interface for asynchronous continuation of print job requests.
+/// Callback interface for asynchronous continuation of print job requests.
 ///
 /*--cef(source=library)--*/
 class CefPrintJobCallback : public virtual CefBaseRefCounted {
  public:
   ///
-  // Indicate completion of the print job.
+  /// Indicate completion of the print job.
   ///
   /*--cef(capi_name=cont)--*/
-  virtual void Continue() =0;
+  virtual void Continue() = 0;
 };
 
-
 ///
-// Implement this interface to handle printing on Linux. The methods of this
-// class will be called on the browser process UI thread.
+/// Implement this interface to handle printing on Linux. Each browser will have
+/// only one print job in progress at a time. The methods of this class will be
+/// called on the browser process UI thread.
 ///
 /*--cef(source=client)--*/
 class CefPrintHandler : public virtual CefBaseRefCounted {
  public:
   ///
-  // Called when printing has started for the specified |browser|. This method
-  // will be called before the other OnPrint*() methods and irrespective of how
-  // printing was initiated (e.g. CefBrowserHost::Print(), JavaScript
-  // window.print() or PDF extension print button).
+  /// Called when printing has started for the specified |browser|. This method
+  /// will be called before the other OnPrint*() methods and irrespective of how
+  /// printing was initiated (e.g. CefBrowserHost::Print(), JavaScript
+  /// window.print() or PDF extension print button).
   ///
   /*--cef()--*/
-  virtual void OnPrintStart(CefRefPtr<CefBrowser> browser) =0;
+  virtual void OnPrintStart(CefRefPtr<CefBrowser> browser) = 0;
 
   ///
-  // Synchronize |settings| with client state. If |get_defaults| is true then
-  // populate |settings| with the default print settings. Do not keep a
-  // reference to |settings| outside of this callback.
+  /// Synchronize |settings| with client state. If |get_defaults| is true then
+  /// populate |settings| with the default print settings. Do not keep a
+  /// reference to |settings| outside of this callback.
   ///
   /*--cef()--*/
-  virtual void OnPrintSettings(CefRefPtr<CefPrintSettings> settings,
-                               bool get_defaults) =0;
+  virtual void OnPrintSettings(CefRefPtr<CefBrowser> browser,
+                               CefRefPtr<CefPrintSettings> settings,
+                               bool get_defaults) = 0;
 
   ///
-  // Show the print dialog. Execute |callback| once the dialog is dismissed.
-  // Return true if the dialog will be displayed or false to cancel the
-  // printing immediately.
+  /// Show the print dialog. Execute |callback| once the dialog is dismissed.
+  /// Return true if the dialog will be displayed or false to cancel the
+  /// printing immediately.
   ///
   /*--cef()--*/
-  virtual bool OnPrintDialog(bool has_selection,
-                             CefRefPtr<CefPrintDialogCallback> callback) =0;
+  virtual bool OnPrintDialog(CefRefPtr<CefBrowser> browser,
+                             bool has_selection,
+                             CefRefPtr<CefPrintDialogCallback> callback) = 0;
 
   ///
-  // Send the print job to the printer. Execute |callback| once the job is
-  // completed. Return true if the job will proceed or false to cancel the job
-  // immediately.
+  /// Send the print job to the printer. Execute |callback| once the job is
+  /// completed. Return true if the job will proceed or false to cancel the job
+  /// immediately.
   ///
   /*--cef()--*/
-  virtual bool OnPrintJob(const CefString& document_name,
+  virtual bool OnPrintJob(CefRefPtr<CefBrowser> browser,
+                          const CefString& document_name,
                           const CefString& pdf_file_path,
-                          CefRefPtr<CefPrintJobCallback> callback) =0;
+                          CefRefPtr<CefPrintJobCallback> callback) = 0;
 
   ///
-  // Reset client state related to printing.
+  /// Reset client state related to printing.
   ///
   /*--cef()--*/
-  virtual void OnPrintReset() =0;
+  virtual void OnPrintReset(CefRefPtr<CefBrowser> browser) = 0;
 
   ///
-  // Return the PDF paper size in device units. Used in combination with
-  // CefBrowserHost::PrintToPDF().
+  /// Return the PDF paper size in device units. Used in combination with
+  /// CefBrowserHost::PrintToPDF().
   ///
   /*--cef()--*/
-  virtual CefSize GetPdfPaperSize(int device_units_per_inch) {
+  virtual CefSize GetPdfPaperSize(CefRefPtr<CefBrowser> browser,
+                                  int device_units_per_inch) {
     return CefSize();
   }
 };
