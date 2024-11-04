@@ -378,7 +378,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     }
 
     // Sandbox support
-    cef_settings.no_sandbox = true;
+    // cef_settings.no_sandbox = true;
 
     CefInitialize(main_args, cef_settings, app.get(), NULL);
     CreateMainWindow(hInstance, nCmdShow, main_window_title);
