@@ -18,4 +18,9 @@ php/*.phar
 php/*.gif
 php/*.txt
 php/*.manifest
+php/php.ini-*
+php/README.md
+php/extras/
 !php/!README.txt
+.vs/
+phpdeskt.*
