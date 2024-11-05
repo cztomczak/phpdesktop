@@ -10,7 +10,7 @@
 
 #include "executable.h"
 #include "file_utils.h"
-#include "log.h"
+#include "logger.h"
 #include "mongoose.h"
 #include "settings.h"
 #include "string_utils.h"
@@ -29,7 +29,7 @@ extern std::string g_cgiEnvironmentFromArgv;
 // Called when mongoose is about to log a message. If callback returns
 // non-zero, mongoose does not log anything.
 static int log_message(const struct mg_connection* conn, const char *message) {
-    LOG_WARNING << message;
+    LOGGER_WARNING << message;
     return 0;
 }
 
@@ -46,11 +46,11 @@ static void end_request(const struct mg_connection* conn, int reply_status_code)
         message.append("?");
         message.append(request->query_string);
     }
-    LOG_INFO << message;
+    LOGGER_INFO << message;
 }
 
 bool StartWebServer() {
-    LOG_INFO << "Starting Mongoose " << mg_version() << " web server";
+    LOGGER_INFO << "Starting Mongoose " << mg_version() << " web server";
     json_value* appSettings = GetApplicationSettings();
 
     // 404_handler
@@ -76,7 +76,7 @@ bool StartWebServer() {
         wwwDirectory = "www";
     }
     wwwDirectory = GetAbsolutePath(wwwDirectory);
-    LOG_INFO << "WWW directory: " << wwwDirectory;
+    LOGGER_INFO << "WWW directory: " << wwwDirectory;
 
     // Index files from settings.
     const json_value indexFilesArray = (*appSettings)["web_server"]["index_files"];
@@ -91,7 +91,7 @@ bool StartWebServer() {
     }
     if (indexFiles.empty())
         indexFiles = "index.html,index.php";
-    LOG_INFO << "Index files: " << indexFiles;
+    LOGGER_INFO << "Index files: " << indexFiles;
 
     // CGI interpreter from settings.
     std::string cgiInterpreter = (*appSettings)["web_server"]["cgi_interpreter"];
@@ -99,7 +99,7 @@ bool StartWebServer() {
         cgiInterpreter = "php\\php-cgi.exe";
     }
     cgiInterpreter = GetAbsolutePath(cgiInterpreter);
-    LOG_INFO << "CGI interpreter: " << cgiInterpreter;
+    LOGGER_INFO << "CGI interpreter: " << cgiInterpreter;
 
     // CGI extensions from settings.
     const json_value cgiExtensions =
@@ -115,7 +115,7 @@ bool StartWebServer() {
     }
     if (cgiPattern.empty())
         cgiPattern = "**.php$";
-    LOG_INFO << "CGI pattern: " << cgiPattern;
+    LOGGER_INFO << "CGI pattern: " << cgiPattern;
 
     // Hide files patterns.
     const json_value hide_files = (*appSettings)["web_server"]["hide_files"];
@@ -128,14 +128,14 @@ bool StartWebServer() {
             hide_files_patterns.append("**/").append(pattern).append("$");
         }
     }
-    LOG_INFO << "Hide files patterns: " << hide_files_patterns;
+    LOGGER_INFO << "Hide files patterns: " << hide_files_patterns;
 
     // Temp directory.
     std::string cgi_temp_dir = (*appSettings)["web_server"]["cgi_temp_dir"];
     cgi_temp_dir = GetAbsolutePath(cgi_temp_dir);
     if (!cgi_temp_dir.length() || !DirectoryExists(cgi_temp_dir)) {
         if (cgi_temp_dir.length()) {
-            LOG_WARNING << "cgi_temp_dir directory does not exist: "
+            LOGGER_WARNING << "cgi_temp_dir directory does not exist: "
                         << cgi_temp_dir;
         }
         cgi_temp_dir.assign(GetAnsiTempDirectory());
@@ -161,7 +161,7 @@ bool StartWebServer() {
     if (g_cgiEnvironmentFromArgv.length()) {
         cgiEnvironment.append(",").append(g_cgiEnvironmentFromArgv);
     }
-    LOG_INFO << "CGI environment variables set: " << cgiEnvironment;
+    LOGGER_INFO << "CGI environment variables set: " << cgiEnvironment;
 
     // Mongoose web server.
     std::string listening_ports;
@@ -202,14 +202,14 @@ bool StartWebServer() {
         g_webServerIpAddress = ipAddress;
         g_webServerUrl = "http://" + ipAddress + ":" + IntToString(g_webServerPort) + "/";
     }
-    LOG_INFO << "Web server url: " << g_webServerUrl;
+    LOGGER_INFO << "Web server url: " << g_webServerUrl;
 
     return true;
 }
 
 void StopWebServer() {
     if (g_mongooseContext) {
-        LOG_INFO << "Stopping Mongoose web server";
+        LOGGER_INFO << "Stopping Mongoose web server";
         /*
         Stoppping Mongoose webserver freezes for about 30 seconds
         on Win7/MSIE if we call mg_stop(). Introduced new function
@@ -222,7 +222,7 @@ void StopWebServer() {
         happening in the future when used with the Chrome browser.
         */
         mg_stop_immediately(g_mongooseContext);
-        LOG_DEBUG << "Mongoose webserver stopped immediately";
+        LOGGER_DEBUG << "Mongoose webserver stopped immediately";
     }
 }
 

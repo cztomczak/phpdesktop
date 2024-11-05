@@ -5,7 +5,7 @@
 #include "fullscreen.h"
 #include <Windows.h>
 #include "browser_window.h"
-#include "../log.h"
+#include "../logger.h"
 
 void Fullscreen::ToggleFullscreen() {
     // Original code in chromium > fullscreen_handler.cc > FullscreenHandler::SetFullscreenImpl:
@@ -13,7 +13,7 @@ void Fullscreen::ToggleFullscreen() {
     BrowserWindow* browserWindow = GetBrowserWindow(
             cefBrowser_->GetHost()->GetWindowHandle());
     if (!browserWindow) {
-        LOG_ERROR << "GetBrowserWindow() failed in ToggleFullscreen()";
+        LOGGER_ERROR << "GetBrowserWindow() failed in ToggleFullscreen()";
         return;
     }
     HWND hwnd = browserWindow->GetWindowHandle();

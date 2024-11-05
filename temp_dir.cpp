@@ -6,7 +6,7 @@
 #include <Windows.h>
 #include "string_utils.h"
 #include "file_utils.h"
-#include "log.h"
+#include "logger.h"
 #include <vector>
 #include "executable.h"
 
@@ -35,8 +35,8 @@ std::string GetAnsiTempDirectory() {
     if (isShortPath || !AnsiDirectoryExists(WideToUtf8(tempPath))) {
         // This code will also run if the dir returned by
         // GetTempPathW was invalid.
-        LOG_DEBUG << "The temp directory returned by OS contains "
-                "unicode characters: " << WideToUtf8(tempPath).c_str();
+        LOGGER_DEBUG << "The temp directory returned by OS contains "
+                        "unicode characters: " << WideToUtf8(tempPath).c_str();
         // Fallback 1: C:\\Windows\\Temp
         // -----------------------------
         TCHAR winDir[MAX_PATH];

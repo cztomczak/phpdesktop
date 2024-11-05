@@ -16,7 +16,7 @@ bool JavascriptApi::Execute(const CefString& name,
     } else if (name == "ToggleFullscreen") {
         CefRefPtr<CefProcessMessage> message = \
                 CefProcessMessage::Create("ToggleFullscreen");
-        cefBrowser_->SendProcessMessage(PID_BROWSER, message);
+        cefBrowser_->GetMainFrame()->SendProcessMessage(PID_BROWSER, message);
         isFullscreen_ = !(isFullscreen_);
         return true;
     } else if (name == "IsFullscreen") {

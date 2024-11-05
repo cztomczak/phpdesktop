@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include <stdio.h>
+#include <sysinfoapi.h>
 
 inline std::string NowTime();
 
@@ -30,7 +31,6 @@ protected:
     std::ostringstream os;
 private:
     Log(const Log&);
-    Log& operator =(const Log&);
 };
 
 template <typename T>
@@ -138,15 +138,15 @@ class FILELOG_DECLSPEC FILELog : public Log<Output2FILE> {};
 #define FILELOG_MAX_LEVEL logDEBUG4
 #endif
 
-#define LOG_BASE(level) \
+#define LOGGER(level) \
     if (level > FILELOG_MAX_LEVEL) ;\
     else if (level > FILELog::ReportingLevel() || !Output2FILE::Stream()) ; \
     else FILELog().Get(level)
 
-#define LOG_ERROR LOG_BASE(logERROR)
-#define LOG_WARNING LOG_BASE(logWARNING)
-#define LOG_INFO LOG_BASE(logINFO)
-#define LOG_DEBUG LOG_BASE(logDEBUG)
+#define LOGGER_ERROR LOGGER(logERROR)
+#define LOGGER_WARNING LOGGER(logWARNING)
+#define LOGGER_INFO LOGGER(logINFO)
+#define LOGGER_DEBUG LOGGER(logDEBUG)
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
 
@@ -163,7 +163,7 @@ inline std::string NowTime()
     char result[100] = {0};
     static DWORD first = GetTickCount();
     #pragma warning(suppress: 4996)
-    sprintf(result, "%s.%03ld", buffer, (long)(GetTickCount() - first) % 1000); 
+    sprintf(result, "%s.%03ld", buffer, (long)(GetTickCount64() - first) % 1000);
     return result;
 }
 

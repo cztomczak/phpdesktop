@@ -24,3 +24,4 @@ php/extras/
 !php/!README.txt
 .vs/
 phpdeskt.*
+.vscode/

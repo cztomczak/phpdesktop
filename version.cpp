@@ -4,7 +4,7 @@
 
 #include "version.h"
 #include <Windows.h>
-#include "log.h"
+#include "logger.h"
 #include <assert.h>
 #include "string_utils.h"
 

@@ -50,6 +50,7 @@ class ClientHandler : public CefClient,
     return this;
   }
   virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+                                        CefRefPtr<CefFrame> frame,
                                         CefProcessId source_process,
                                         CefRefPtr<CefProcessMessage> message) 
                                         override;
@@ -72,6 +73,7 @@ class ClientHandler : public CefClient,
                              CefWindowInfo& windowInfo,
                              CefRefPtr<CefClient>& client,
                              CefBrowserSettings& settings,
+                             CefRefPtr<CefDictionaryValue>& extra_info,
                              bool* no_javascript_access) override;
 
   // CefLoadHandler methods:
@@ -107,6 +109,7 @@ class ClientHandler : public CefClient,
   virtual bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
                               CefRefPtr<CefFrame> frame,
                               CefRefPtr<CefRequest> request,
+                              bool user_gesture,
                               bool is_redirect) override;
 
   // CefKeyboardHandler methods:
@@ -115,11 +118,10 @@ class ClientHandler : public CefClient,
                           CefEventHandle os_event) override;
 
   // CefDownloadHandler methods:
-  virtual void OnBeforeDownload(
-      CefRefPtr<CefBrowser> browser,
-      CefRefPtr<CefDownloadItem> download_item,
-      const CefString& suggested_name,
-      CefRefPtr<CefBeforeDownloadCallback> callback) override;
+  virtual bool OnBeforeDownload(CefRefPtr<CefBrowser> browser,
+                                CefRefPtr<CefDownloadItem> download_item,
+                                const CefString& suggested_name,
+                                CefRefPtr<CefBeforeDownloadCallback> callback) override;
   virtual void OnDownloadUpdated(
       CefRefPtr<CefBrowser> browser,
       CefRefPtr<CefDownloadItem> download_item,
@@ -138,6 +140,6 @@ public:
     virtual void Visit(const CefString& string) override;
 private:
     CefRefPtr<CefBrowser> cefBrowser_;
-    IMPLEMENT_REFCOUNTING(ApplicationStartupContentVisitor)
+    IMPLEMENT_REFCOUNTING(ApplicationStartupContentVisitor);
 };
 

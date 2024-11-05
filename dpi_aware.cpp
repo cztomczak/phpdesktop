@@ -4,7 +4,7 @@
 
 #include "dpi_aware.h"
 #include "settings.h"
-#include "log.h"
+#include "logger.h"
 
 // Note that VC project file includes DeclareDPIAware.manifest,
 // so application is always set to be DPI aware even if "dpi_aware"
@@ -49,8 +49,8 @@ void SetBrowserDpiSettings(CefRefPtr<CefBrowser> cefBrowser) {
         cefBrowser->GetHost()->SetZoomLevel(newZoomLevel);
         if (cefBrowser->GetHost()->GetZoomLevel() != oldZoomLevel) {
             // Succes.
-            LOG_INFO << "DPI, ppix = " << ppix << ", ppiy = " << ppiy;
-            LOG_INFO << "DPI, browser zoom level = "
+            LOGGER_INFO << "DPI, ppix = " << ppix << ", ppiy = " << ppiy;
+            LOGGER_INFO << "DPI, browser zoom level = "
                       << cefBrowser->GetHost()->GetZoomLevel();
         }
     } else {
@@ -64,8 +64,8 @@ void SetBrowserDpiSettings(CefRefPtr<CefBrowser> cefBrowser) {
         if (!already_logged) {
             already_logged = true;
             // Success.
-            LOG_INFO << "DPI, ppix = " << ppix << ", ppiy = " << ppiy;
-            LOG_INFO << "DPI, browser zoom level = "
+            LOGGER_INFO << "DPI, ppix = " << ppix << ", ppiy = " << ppiy;
+            LOGGER_INFO << "DPI, browser zoom level = "
                       << cefBrowser->GetHost()->GetZoomLevel();
         }
     }
@@ -96,8 +96,8 @@ void GetDpiAwareWindowSize(int* width, int* height) {
     if (newZoomLevel > 0.0) {
         *width = *width + (int)ceil(newZoomLevel * 0.25 * (*width));
         *height = *height + (int)ceil(newZoomLevel * 0.25 * (*height));
-        LOG_INFO << "DPI, window enlarged by "
-                  << ceil(newZoomLevel * 0.25 * 100) << "%"
-                  << " new width/height = " << *width << "/" << *height;
+        LOGGER_INFO << "DPI, window enlarged by "
+                    << ceil(newZoomLevel * 0.25 * 100) << "%"
+                    << " new width/height = " << *width << "/" << *height;
     }
 }

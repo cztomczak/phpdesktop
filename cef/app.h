@@ -8,13 +8,13 @@
 #include "include/cef_app.h"
 #include <map>
 #include "javascript_api.h"
-#include "../log.h"
+#include "../logger.h"
 
 class App : public CefApp,
             public CefBrowserProcessHandler,
             public CefRenderProcessHandler {
 public:
-    App(){}
+    App() noexcept {}
 
     // CefApp methods:
     virtual void OnBeforeCommandLineProcessing(
@@ -32,13 +32,15 @@ public:
 
     // CefRenderProcessHandler methods:
     virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+                                        CefRefPtr<CefFrame> frame,
                                         CefProcessId source_process,
                                         CefRefPtr<CefProcessMessage> message)
                                         override;
     virtual void OnContextCreated(CefRefPtr<CefBrowser> browser,
             CefRefPtr<CefFrame> frame,
             CefRefPtr<CefV8Context> context) override;
-    virtual void OnBrowserCreated(CefRefPtr<CefBrowser> browser) override;
+    virtual void OnBrowserCreated(CefRefPtr<CefBrowser> browser,
+                                  CefRefPtr<CefDictionaryValue> extra_info) override;
     virtual void OnBrowserDestroyed(CefRefPtr<CefBrowser> browser) override;
 
 protected:
@@ -50,8 +52,8 @@ protected:
         if (it != javascriptApiMap_.end()) {
             return it->second;
         }
-        LOG_ERROR << "GetJavascriptApi() failed, api not found";
-        return NULL;
+        LOGGER_ERROR << "GetJavascriptApi() failed, api not found";
+        return nullptr;
     }
     void StoreJavascriptApi(CefRefPtr<CefBrowser> browser, 
             CefRefPtr<JavascriptApi> javascriptApi) {
@@ -60,7 +62,7 @@ protected:
         if (it == javascriptApiMap_.end()) {
             javascriptApiMap_[browser->GetIdentifier()] = javascriptApi;
         } else {
-            LOG_ERROR << "StoreJavascriptApi() failed, api already exists";
+            LOGGER_ERROR << "StoreJavascriptApi() failed, api already exists";
         }
     }
     void RemoveJavascriptApi(CefRefPtr<CefBrowser> browser) {
@@ -69,7 +71,7 @@ protected:
         if (it != javascriptApiMap_.end()) {
             javascriptApiMap_.erase(it);
         } else {
-            LOG_ERROR << "RemoveJavascriptApi() failed, api not found";
+            LOGGER_ERROR << "RemoveJavascriptApi() failed, api not found";
         }
     }
 

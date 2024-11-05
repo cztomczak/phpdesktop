@@ -4,7 +4,7 @@
 
 #include "defines.h"
 #include <windows.h>
-#include "log.h"
+#include "logger.h"
 
 void CenterWindow(HWND wnd) {
    RECT r,r1;
@@ -51,7 +51,7 @@ bool CenterWindowRelativeToParent(HWND window, HWND parent) {
 void GetCorrectWindowSize(int* width, int* height) {
     int max_width = GetSystemMetrics(SM_CXMAXIMIZED) - 96;
     int max_height = GetSystemMetrics(SM_CYMAXIMIZED) - 64;
-    LOG_DEBUG << "Window max width/height = " << max_width << "/" << max_height;
+    LOGGER_DEBUG << "Window max width/height = " << max_width << "/" << max_height;
     bool max_size_exceeded = (*width > max_width \
             || *height > max_height);
     if (*width > max_width) {
@@ -61,7 +61,7 @@ void GetCorrectWindowSize(int* width, int* height) {
         *height = max_height;
     }
     if (max_size_exceeded) {
-        LOG_DEBUG << "Window max size exceeded, new width/height = "
-                    << *width << "/" << *height;
+        LOGGER_DEBUG << "Window max size exceeded, new width/height = "
+                     << *width << "/" << *height;
     }
 }

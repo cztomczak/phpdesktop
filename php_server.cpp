@@ -6,7 +6,7 @@
 #include <windows.h>
 #include <Shellapi.h>
 #include "settings.h"
-#include "log.h"
+#include "logger.h"
 #include "executable.h"
 #include "file_utils.h"
 
@@ -14,7 +14,7 @@ SHELLEXECUTEINFO g_phpShell;
 std::string g_webServerUrl;
 
 bool StartWebServer() {
-    LOG_INFO << "Starting PHP built-in web server";
+    LOGGER_INFO << "Starting PHP built-in web server";
     json_value* settings = GetApplicationSettings();
 
     // Web server url from settings.
@@ -29,7 +29,7 @@ bool StartWebServer() {
         port = "54007";
     }
     g_webServerUrl = "http://" + ipAddress + ":" + port + "/";
-    LOG_INFO << "Web server url: " << g_webServerUrl;
+    LOGGER_INFO << "Web server url: " << g_webServerUrl;
 
     // WWW directory from settings.
     std::string wwwDirectory = (*settings)["web_server"]["www_directory"];
@@ -38,7 +38,7 @@ bool StartWebServer() {
     wwwDirectory = GetExecutableDirectory().append("\\").append(wwwDirectory);
     // Mongoose won't accept "..\\" in a path, need a real path.
     wwwDirectory = GetRealPath(wwwDirectory);
-    LOG_INFO << "WWW directory: " << wwwDirectory;
+    LOGGER_INFO << "WWW directory: " << wwwDirectory;
 
     // PHP executable from settings.
     std::string phpExecutable = (*settings)["web_server"]["php_executable"];
@@ -46,7 +46,7 @@ bool StartWebServer() {
         phpExecutable = "php\\php.exe";
     phpExecutable.insert(0, GetExecutableDirectory() + "\\");
     phpExecutable = GetRealPath(phpExecutable);
-    LOG_INFO << "PHP executable: " << phpExecutable;
+    LOGGER_INFO << "PHP executable: " << phpExecutable;
 
     // PHP shell parameters.
     std::string shellParams;
@@ -56,7 +56,7 @@ bool StartWebServer() {
     shellParams.append(port);
     shellParams.append(" -t ");
     shellParams.append(wwwDirectory);
-    LOG_DEBUG << "PHP shell parameters: " << shellParams;
+    LOGGER_DEBUG << "PHP shell parameters: " << shellParams;
 
     memset(&g_phpShell, 0, sizeof(g_phpShell));
     g_phpShell.cbSize = sizeof(g_phpShell);
@@ -80,6 +80,6 @@ bool StartWebServer() {
     return false;
 }
 void StopWebServer() {
-    LOG_INFO << "Stopping PHP built-in web server";
+    LOGGER_INFO << "Stopping PHP built-in web server";
     TerminateProcess(g_phpShell.hProcess, EXIT_SUCCESS);
 }

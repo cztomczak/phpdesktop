@@ -8,7 +8,7 @@
 #include <string>
 
 #include "../executable.h"
-#include "../log.h"
+#include "../logger.h"
 #include "../settings.h"
 #include "../string_utils.h"
 #include "../fatal_error.h"
@@ -55,24 +55,24 @@ BrowserWindow* GetBrowserWindow(HWND hwnd) {
     }
     // GetBrowserWindow() may fail during window creation, so log
     // severity is only DEBUG.
-    LOG_DEBUG << "GetBrowserWindow(): not found, hwnd = " << (int)hwnd;
+    LOGGER_DEBUG << "GetBrowserWindow(): not found, hwnd = " << (char*)hwnd;
     return NULL;
 }
 void StoreBrowserWindow(HWND hwnd, BrowserWindow* browser) {
-    LOG_DEBUG << "StoreBrowserWindow(): hwnd = " << (int)hwnd;
+    LOGGER_DEBUG << "StoreBrowserWindow(): hwnd = " << (char*)hwnd;
     std::map<HWND, BrowserWindow*>::iterator it;
     it = g_browserWindows.find(hwnd);
     if (it == g_browserWindows.end()) {
         g_browserWindows[hwnd] = browser;
     } else {
-        LOG_WARNING << "StoreBrowserWindow() failed: already stored";
+        LOGGER_WARNING << "StoreBrowserWindow() failed: already stored";
     }
 }
 void RemoveBrowserWindow(HWND hwnd) {
-    LOG_DEBUG << "RemoveBrowserWindow(): hwnd = " << (int)hwnd;
+    LOGGER_DEBUG << "RemoveBrowserWindow(): hwnd = " << (char*)hwnd;
     BrowserWindow* browser = GetBrowserWindow(hwnd);
     if (!browser) {
-        LOG_WARNING << "RemoveBrowserWindow() failed: "
+        LOGGER_WARNING << "RemoveBrowserWindow() failed: "
                     << "GetBrowserWindow() failed";
         return;
     }
@@ -83,11 +83,11 @@ void RemoveBrowserWindow(HWND hwnd) {
         g_browserWindows.erase(it);
         delete browser;
     } else {
-        LOG_WARNING << "RemoveBrowserWindow() failed: not found";
+        LOGGER_WARNING << "RemoveBrowserWindow() failed: not found";
     }
 }
 
-int CountBrowserWindows()
+size_t CountBrowserWindows()
 {
     return g_browserWindows.size();
 }
@@ -95,8 +95,8 @@ int CountBrowserWindows()
 BrowserWindow::BrowserWindow(HWND inWindowHandle, bool isPopup)
         : windowHandle_(inWindowHandle),
             isPopup_(isPopup),
-            cefBrowser_(NULL),
-            fullscreen_(NULL)
+            cefBrowser_(nullptr),
+            fullscreen_(nullptr)
 {
     _ASSERT(windowHandle_);
 
@@ -104,7 +104,7 @@ BrowserWindow::BrowserWindow(HWND inWindowHandle, bool isPopup)
     SetIconFromSettings();
 
     if (IsPopup()) {
-        LOG_DEBUG << "BrowserWindow::BrowserWindow() created for Popup";
+        LOGGER_DEBUG << "BrowserWindow::BrowserWindow() created for Popup";
     } else {
         if (!CreateBrowserControl(Utf8ToWide(GetWebServerUrl()).c_str())) {
             FatalError(windowHandle_, "Could not create Browser control.\n"
@@ -124,7 +124,7 @@ void BrowserWindow::SetCefBrowser(CefRefPtr<CefBrowser> cefBrowser) {
     // Called from ClientHandler::OnAfterCreated().
     _ASSERT(!cefBrowser_);
     if (cefBrowser_) {
-        LOG_ERROR << "BrowserWindow::SetCefBrowser() called, "
+        LOGGER_ERROR << "BrowserWindow::SetCefBrowser() called, "
                   << "but it is already set";
         return;
     }
@@ -138,7 +138,7 @@ void BrowserWindow::SetCefBrowser(CefRefPtr<CefBrowser> cefBrowser) {
             CefRefPtr<CefProcessMessage> message = \
                     CefProcessMessage::Create("SetIsFullscreen");
             message->GetArgumentList()->SetBool(0, fullscreen_->IsFullscreen());
-            cefBrowser->SendProcessMessage(PID_RENDERER, message);
+            cefBrowser->GetMainFrame()->SendProcessMessage(PID_RENDERER, message);
         }
     }
 
@@ -147,20 +147,23 @@ void BrowserWindow::SetCefBrowser(CefRefPtr<CefBrowser> cefBrowser) {
     this->OnSize();
 }
 bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
-    LOG_DEBUG << "BrowserWindow::CreateBrowserControl()";
+    LOGGER_DEBUG << "BrowserWindow::CreateBrowserControl()";
     // This is called only for the main window.
     // Popup cef browsers are created internally by CEF,
     // see OnBeforePopup, OnAfterCreated.
     RECT rect;
     BOOL b = GetWindowRect(windowHandle_, &rect);
     if (!b) {
-        LOG_ERROR << "GetWindowRect() failed in "
+        LOGGER_ERROR << "GetWindowRect() failed in "
                      "BrowserWindow::CreateBrowserControl()";
     }
 
     // Information used when creating the native window.
     CefWindowInfo window_info;
-    window_info.SetAsChild(windowHandle_, rect);
+    int width = rect.right - rect.left;
+    int height = rect.bottom - rect.top;
+    CefRect cef_rect(rect.left, rect.top, width, height);
+    window_info.SetAsChild(windowHandle_, cef_rect);
     // SimpleHandler implements browser-level callbacks.
     CefRefPtr<ClientHandler> handler(new ClientHandler());
     // Specify CEF browser settings here.
@@ -168,7 +171,7 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     // Create the first browser window.
     CefBrowserHost::CreateBrowser(
             window_info, handler.get(),
-            GetWebServerUrl(), browser_settings, NULL);
+            GetWebServerUrl(), browser_settings, nullptr, nullptr);
 
     return true;
 }
@@ -227,7 +230,7 @@ void BrowserWindow::OnSize() {
                 SWP_NOZORDER);
         EndDeferWindowPos(hdwp);
     } else {
-        LOG_DEBUG << "BrowserWindow::OnSize(): "
+        LOGGER_DEBUG << "BrowserWindow::OnSize(): "
                        "CefBrowser object not yet created";
     }
 }
@@ -260,7 +263,7 @@ void BrowserWindow::SetIconFromSettings() {
         if (bigIcon) {
             SendMessage(windowHandle_, WM_SETICON, ICON_BIG, (LPARAM)bigIcon);
         } else {
-            LOG_WARNING << "Setting icon from settings file failed "
+            LOGGER_WARNING << "Setting icon from settings file failed "
                            "(ICON_BIG)";
         }
         int smallX = GetSystemMetrics(SM_CXSMICON);
@@ -270,7 +273,7 @@ void BrowserWindow::SetIconFromSettings() {
         if (smallIcon) {
             SendMessage(windowHandle_, WM_SETICON, ICON_SMALL, (LPARAM)smallIcon);
         } else {
-            LOG_WARNING << "Setting icon from settings file failed "
+            LOGGER_WARNING << "Setting icon from settings file failed "
                            "(ICON_SMALL)";
         }
     } else if (IsPopup()) {
@@ -280,7 +283,7 @@ void BrowserWindow::SetIconFromSettings() {
         if (smallIcon) {
             SendMessage(windowHandle_, WM_SETICON, ICON_SMALL, (LPARAM)smallIcon);
         } else {
-            LOG_WARNING << "LoadIcon(IDR_MAINWINDOW) failed "
+            LOGGER_WARNING << "LoadIcon(IDR_MAINWINDOW) failed "
                         << "in BrowserWindow::SetIconFromSettings()";
         }
     }

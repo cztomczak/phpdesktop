@@ -18,7 +18,7 @@
 #include "executable.h"
 #include "fatal_error.h"
 #include "file_utils.h"
-#include "log.h"
+#include "logger.h"
 #include "cef/browser_window.h"
 #include "settings.h"
 #include "single_instance_application.h"
@@ -88,7 +88,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             if (browser && browser->GetCefBrowser()) {
                 browser->OnSize();
             } else if (!browser) {
-                LOG_WARNING << "WindowProc() WM_SIZE: could not fetch BrowserWindow";
+                LOGGER_WARNING << "WindowProc() WM_SIZE: could not fetch BrowserWindow";
             }
             break;
         case WM_MOVE:
@@ -98,7 +98,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             if (browser && browser->GetCefBrowser()) {
                 browser->GetCefBrowser()->GetHost()->NotifyMoveOrResizeStarted();
             } else if (!browser) {
-                LOG_WARNING << "WindowProc() WM_MOVE: could not fetch BrowserWindow";
+                LOGGER_WARNING << "WindowProc() WM_MOVE: could not fetch BrowserWindow";
             }
             return 0;
         case WM_CREATE:
@@ -110,7 +110,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             StoreBrowserWindow(hwnd, browser);
             return 0;
         case WM_DESTROY:
-            LOG_DEBUG << "WM_DESTROY";
+            LOGGER_DEBUG << "WM_DESTROY";
             RemoveBrowserWindow(hwnd);
             if (g_browserWindows.empty()) {
                 StopWebServer();
@@ -141,7 +141,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             } else {
                 // GetMinMaxInfo may fail during window creation, so
                 // log severity is only DEBUG.
-                LOG_DEBUG << "WindowProc(): event WM_GETMINMAXINFO: "
+                LOGGER_DEBUG << "WindowProc(): event WM_GETMINMAXINFO: "
                              "could not fetch BrowserWindow";
             }
             break;
@@ -151,7 +151,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                 browser->SetFocus();
                 return 0;
             } else {
-                LOG_DEBUG << "WindowProc(): event WM_SETFOCUS: "
+                LOGGER_DEBUG << "WindowProc(): event WM_SETFOCUS: "
                              "could not fetch BrowserWindow";
             }
             break;
@@ -171,7 +171,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             return 0;
         case WM_SYSCOMMAND:
             if (wParam == SC_MINIMIZE && minimize_to_tray) {
-                LOG_DEBUG << "Minimize to tray";
+                LOGGER_DEBUG << "Minimize to tray";
                 ShowWindow(hwnd, SW_MINIMIZE);
                 Sleep(200);
                 ShowWindow(hwnd, SW_HIDE);
@@ -181,7 +181,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             break;
         case WM_TRAY_MESSAGE:
             if (lParam == WM_LBUTTONDOWN || lParam == WM_RBUTTONDOWN) {
-                LOG_DEBUG << "Restore from tray";
+                LOGGER_DEBUG << "Restore from tray";
                 ShowWindow(hwnd, SW_SHOW);
                 ShowWindow(hwnd, SW_RESTORE);
                 SetForegroundWindow(hwnd);
@@ -268,7 +268,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
             }
         }
     } else {
-        LOG_WARNING << "CommandLineToArgvW() failed";
+        LOGGER_WARNING << "CommandLineToArgvW() failed";
     }
 
     // CEF subprocesses.
@@ -280,14 +280,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         return exit_code;
     }
 
-    LOG_INFO << "--------------------------------------------------------";
-    LOG_INFO << "Started application";
+    LOGGER_INFO << "--------------------------------------------------------";
+    LOGGER_INFO << "Started application";
 
     if (log_file.length())
-        LOG_INFO << "Logging to: " << log_file;
+        LOGGER_INFO << "Logging to: " << log_file;
     else
-        LOG_INFO << "No logging file set";
-    LOG_INFO << "Log level = "
+        LOGGER_INFO << "No logging file set";
+    LOGGER_INFO << "Log level = "
              << FILELog::ToString(FILELog::ReportingLevel());
 
     // Main window title option.
@@ -299,10 +299,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     const char* single_instance_guid =
             (*appSettings)["application"]["single_instance_guid"];
     if (single_instance_guid && single_instance_guid[0] != 0) {
-        int guidSize = strlen(single_instance_guid) + 1;
+        size_t guidSize = strlen(single_instance_guid) + 1;
         g_singleInstanceApplicationGuid = new wchar_t[guidSize];
         Utf8ToWide(single_instance_guid, g_singleInstanceApplicationGuid,
-                   guidSize);
+                   (int)guidSize);
     }
     if (g_singleInstanceApplicationGuid
             && g_singleInstanceApplicationGuid[0] != 0) {
@@ -373,7 +373,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         }
     }
     if (remote_debugging_port > 0) {
-        LOG_INFO << "remote_debugging_port = " << remote_debugging_port;
+        LOGGER_INFO << "remote_debugging_port = " << remote_debugging_port;
         cef_settings.remote_debugging_port = remote_debugging_port;
     }
 
@@ -385,8 +385,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     CefRunMessageLoop();
     CefShutdown();
 
-    LOG_INFO << "Ended application";
-    LOG_INFO << "--------------------------------------------------------";
+    LOGGER_INFO << "Ended application";
+    LOGGER_INFO << "--------------------------------------------------------";
 
     ShutdownLogging();
 

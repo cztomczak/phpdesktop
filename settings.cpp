@@ -6,7 +6,7 @@
 #include "executable.h"
 #include "file_utils.h"
 #include "json.h"
-#include "log.h"
+#include "logger.h"
 
 std::string g_applicationSettingsError = "";
 
@@ -16,12 +16,12 @@ json_value* GetApplicationSettings() {
     if (settings_fetched)
         return ret;
     settings_fetched = true;
-    LOG_DEBUG << "Fetching settings from settings.json file";
+    LOGGER_DEBUG << "Fetching settings from settings.json file";
 
     std::string settingsFile = GetExecutableDirectory() + "\\settings.json";
     std::string contents = GetFileContents(settingsFile);
     if (contents.empty()) {
-        LOG_WARNING << "Error while opening the settings.json file";
+        LOGGER_WARNING << "Error while opening the settings.json file";
         g_applicationSettingsError = "Error while opening the Settings file. ";
         return ret;
     }
@@ -32,7 +32,7 @@ json_value* GetApplicationSettings() {
     json_value* json_parsed = json_parse_ex(&settings, contents.c_str(),
                                             &error[0]);
     if (json_parsed == 0) {
-        LOG_WARNING << "Error while parsing settings.json file: " << error;
+        LOGGER_WARNING << "Error while parsing settings.json file: " << error;
         g_applicationSettingsError = "Error while parsing the Settings file. ";
         return ret;
     }

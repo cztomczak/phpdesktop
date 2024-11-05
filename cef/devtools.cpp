@@ -5,7 +5,7 @@
 #include "devtools.h"
 #include "browser_window.h"
 
-#include "../log.h"
+#include "../logger.h"
 #include "../string_utils.h"
 #include "../popup_window.h"
 
@@ -31,9 +31,9 @@ bool ShowDevTools(CefRefPtr<CefBrowser> cefBrowser) {
     // Let's replace "localhost" with "127.0.0.1", using the ip address
     // is more reliable.
     devtools_url = ReplaceString(devtools_url, "localhost:", "127.0.0.1:");
-    LOG_INFO << "DevTools url: " << devtools_url;
+    LOGGER_INFO << "DevTools url: " << devtools_url;
     if (devtools_url.empty()) {
-        LOG_WARNING << "GetDevToolsURL() returned an empty string. "
+        LOGGER_WARNING << "GetDevToolsURL() returned an empty string. "
                         "Make sure you've set the remote-debugging-port switch";
         return false;
     }
@@ -41,12 +41,12 @@ bool ShowDevTools(CefRefPtr<CefBrowser> cefBrowser) {
     CefBrowserSettings browser_settings;
     BrowserWindow* phpBrowser = GetBrowserWindow(cefBrowser->GetHost()->GetWindowHandle());
     if (!phpBrowser) {
-        LOG_ERROR << "GetBrowserWindow() failed in ClientHandler::OnKeyEvent";
+        LOGGER_ERROR << "GetBrowserWindow() failed in ClientHandler::OnKeyEvent";
         return false;
     }
     HWND popupHandle = CreatePopupWindow(phpBrowser->GetWindowHandle());
     if (!popupHandle) {
-        LOG_ERROR << "CreatePopupWindow() failed in ClientHandler::OnKeyEvent";
+        LOGGER_ERROR << "CreatePopupWindow() failed in ClientHandler::OnKeyEvent";
         return false;
     }
     RECT rect;
@@ -56,7 +56,7 @@ bool ShowDevTools(CefRefPtr<CefBrowser> cefBrowser) {
             windowInfo, cefBrowser->GetHost()->GetClient(), devtools_url,
             browser_settings, NULL);
     if (!created) {
-        LOG_ERROR << "CreateBrowser() failed in ClientHandler::OnKeyEvent";
+        LOGGER_ERROR << "CreateBrowser() failed in ClientHandler::OnKeyEvent";
         return false;
     }
     return true;

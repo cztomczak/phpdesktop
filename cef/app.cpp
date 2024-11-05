@@ -13,7 +13,7 @@
 #include "include/cef_browser.h"
 #include "include/cef_command_line.h"
 #include "app.h"
-#include "../log.h"
+#include "../logger.h"
 #include "client_handler.h"
 #include "../settings.h"
 #include "javascript_api.h"
@@ -29,9 +29,10 @@
 ///
 /*--cef()--*/
 bool App::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+                                    CefRefPtr<CefFrame> frame,
                                     CefProcessId source_process,
                                     CefRefPtr<CefProcessMessage> message) {
-    LOG_DEBUG << "renderer[" << browser->GetIdentifier() << "] "
+    LOGGER_DEBUG << "renderer[" << browser->GetIdentifier() << "] "
               << "OnProcessMessageReceived: " << message->GetName().ToString();
     if (message->GetName() == "SetIsFullscreen") {
         CefRefPtr<CefListValue> args = message->GetArgumentList();
@@ -42,7 +43,7 @@ bool App::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
         }
         return true;
     }
-    LOG_ERROR << "Unhandled message in OnProcessMessageReceived";
+    LOGGER_ERROR << "Unhandled message in OnProcessMessageReceived";
     return false;
 }
 
@@ -58,16 +59,16 @@ void App::OnContextCreated(CefRefPtr<CefBrowser> browser,
                             CefRefPtr<CefFrame> frame,
                             CefRefPtr<CefV8Context> context) {
     // RENDERER PROCESS.
-    LOG_DEBUG << "OnContextCreated()";
+    LOGGER_DEBUG << "OnContextCreated()";
     CefRefPtr<CefV8Value> window = context->GetGlobal();
     CefRefPtr<CefV8Handler> handler = GetJavascriptApi(browser);
     if (!handler.get()) {
-        LOG_ERROR << "GetJavascriptApi() failed in OnContextCreated()";
+        LOGGER_ERROR << "GetJavascriptApi() failed in OnContextCreated()";
         return;
     }
     // Javascipt bindings.
     // The phpdesktop object.
-    CefRefPtr<CefV8Value> phpdesktop = CefV8Value::CreateObject(NULL, NULL);
+    CefRefPtr<CefV8Value> phpdesktop = CefV8Value::CreateObject(nullptr, nullptr);
     window->SetValue("phpdesktop", phpdesktop, V8_PROPERTY_ATTRIBUTE_READONLY);
     // Methods.
     const char* methods[] = {
@@ -90,8 +91,8 @@ void App::OnContextCreated(CefRefPtr<CefBrowser> browser,
 // destroyed.
 ///
 /*--cef()--*/
-void App::OnBrowserCreated(CefRefPtr<CefBrowser> browser) {
-    LOG_DEBUG << "OnBrowserCreated()";
+void App::OnBrowserCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDictionaryValue> extra_info) {
+    LOGGER_DEBUG << "OnBrowserCreated()";
     StoreJavascriptApi(browser, new JavascriptApi(browser));
 }
 
@@ -100,7 +101,7 @@ void App::OnBrowserCreated(CefRefPtr<CefBrowser> browser) {
 ///
 /*--cef()--*/
 void App::OnBrowserDestroyed(CefRefPtr<CefBrowser> browser) {
-    LOG_DEBUG << "OnBrowserDestroyed()";
+    LOGGER_DEBUG << "OnBrowserDestroyed()";
     RemoveJavascriptApi(browser);
 }
 
@@ -134,7 +135,7 @@ void App::OnBeforeCommandLineProcessing(
                 std::string name = switches.u.object.values[i].name;
                 std::string value = static_cast<const char*>(*switches.u.object.values[i].value);
                 if (name.find("-") == 0) {
-                    LOG_WARNING << "Invalid command line switch: " << name;
+                    LOGGER_WARNING << "Invalid command line switch: " << name;
                     continue;
                 }
                 if (command_line->HasSwitch(name)) {
@@ -161,8 +162,8 @@ void App::OnBeforeCommandLineProcessing(
     if (!process_type.empty()) {
         process_name = process_type;
     }
-    LOG_DEBUG << "Command line string for the " << process_name << " process: "
-              << command_line->GetCommandLineString().ToString();
+    LOGGER_DEBUG << "Command line string for the " << process_name << " process: "
+                 << command_line->GetCommandLineString().ToString();
 }
 
 // ----------------------------------------------------------------------------
@@ -175,6 +176,6 @@ void App::OnBeforeCommandLineProcessing(
 ///
 void App::OnContextInitialized() {
   REQUIRE_UI_THREAD();
-  LOG_DEBUG << "App::OnContextInitialized()";
+  LOGGER_DEBUG << "App::OnContextInitialized()";
 }
 
