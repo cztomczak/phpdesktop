@@ -56,7 +56,7 @@ bool StartWebServer() {
     shellParams.append(port);
     shellParams.append(" -t ");
     shellParams.append(wwwDirectory);
-    LOG(logDEBUG) << "PHP shell parameters: " << shellParams;
+    LOG_DEBUG << "PHP shell parameters: " << shellParams;
 
     memset(&g_phpShell, 0, sizeof(g_phpShell));
     g_phpShell.cbSize = sizeof(g_phpShell);
