@@ -25,13 +25,13 @@ class ClientHandler : public CefClient,
   static ClientHandler* GetInstance();
 
   // CefClient methods:
-  virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() OVERRIDE {
+  virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() override {
     return this;
   }
-  virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() OVERRIDE {
+  virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override {
     return this;
   }
-  virtual CefRefPtr<CefLoadHandler> GetLoadHandler() OVERRIDE {
+  virtual CefRefPtr<CefLoadHandler> GetLoadHandler() override {
     return this;
   }
   virtual CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() {
@@ -52,15 +52,15 @@ class ClientHandler : public CefClient,
   virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                                         CefProcessId source_process,
                                         CefRefPtr<CefProcessMessage> message) 
-                                        OVERRIDE;
+                                        override;
 
   // CefDisplayHandler methods:
   virtual void OnTitleChange(CefRefPtr<CefBrowser> browser,
-                             const CefString& title) OVERRIDE;
+                             const CefString& title) override;
 
   // CefLifeSpanHandler methods:
-  virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
-  virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
+  virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
+  virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
   typedef cef_window_open_disposition_t WindowOpenDisposition;
   virtual bool OnBeforePopup(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefFrame> frame,
@@ -72,58 +72,58 @@ class ClientHandler : public CefClient,
                              CefWindowInfo& windowInfo,
                              CefRefPtr<CefClient>& client,
                              CefBrowserSettings& settings,
-                             bool* no_javascript_access) OVERRIDE;
+                             bool* no_javascript_access) override;
 
   // CefLoadHandler methods:
   virtual void OnLoadError(CefRefPtr<CefBrowser> browser,
                            CefRefPtr<CefFrame> frame,
                            ErrorCode errorCode,
                            const CefString& errorText,
-                           const CefString& failedUrl) OVERRIDE;
+                           const CefString& failedUrl) override;
   virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
                                     bool isLoading,
                                     bool canGoBack,
-                                    bool canGoForward) OVERRIDE;
+                                    bool canGoForward) override;
 
   // CefContextMenuHandler methods:
   virtual void OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
                                    CefRefPtr<CefFrame> frame,
                                    CefRefPtr<CefContextMenuParams> params,
-                                   CefRefPtr<CefMenuModel> model) OVERRIDE;
+                                   CefRefPtr<CefMenuModel> model) override;
   virtual bool OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
                                     CefRefPtr<CefFrame> frame,
                                     CefRefPtr<CefContextMenuParams> params,
                                     int command_id,
-                                    EventFlags event_flags) OVERRIDE;
+                                    EventFlags event_flags) override;
   virtual void OnContextMenuDismissed(CefRefPtr<CefBrowser> browser,
-                                      CefRefPtr<CefFrame> frame) OVERRIDE;
+                                      CefRefPtr<CefFrame> frame) override;
 
   // CefDragHandler methods:
   virtual bool OnDragEnter(CefRefPtr<CefBrowser> browser,
                            CefRefPtr<CefDragData> dragData,
-                           DragOperationsMask mask) OVERRIDE;
+                           DragOperationsMask mask) override;
 
   // CefRequestHandler methods:
   virtual bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
                               CefRefPtr<CefFrame> frame,
                               CefRefPtr<CefRequest> request,
-                              bool is_redirect) OVERRIDE;
+                              bool is_redirect) override;
 
   // CefKeyboardHandler methods:
   virtual bool OnKeyEvent(CefRefPtr<CefBrowser> browser,
                           const CefKeyEvent& event,
-                          CefEventHandle os_event) OVERRIDE;
+                          CefEventHandle os_event) override;
 
   // CefDownloadHandler methods:
   virtual void OnBeforeDownload(
       CefRefPtr<CefBrowser> browser,
       CefRefPtr<CefDownloadItem> download_item,
       const CefString& suggested_name,
-      CefRefPtr<CefBeforeDownloadCallback> callback) OVERRIDE;
+      CefRefPtr<CefBeforeDownloadCallback> callback) override;
   virtual void OnDownloadUpdated(
       CefRefPtr<CefBrowser> browser,
       CefRefPtr<CefDownloadItem> download_item,
-      CefRefPtr<CefDownloadItemCallback> callback) OVERRIDE;
+      CefRefPtr<CefDownloadItemCallback> callback) override;
 
  private:
   // Include the default reference counting implementation.
@@ -135,7 +135,7 @@ public:
     ApplicationStartupContentVisitor(CefRefPtr<CefBrowser> cefBrowser)
         : cefBrowser_(cefBrowser) {
     }
-    virtual void Visit(const CefString& string) OVERRIDE;
+    virtual void Visit(const CefString& string) override;
 private:
     CefRefPtr<CefBrowser> cefBrowser_;
     IMPLEMENT_REFCOUNTING(ApplicationStartupContentVisitor)

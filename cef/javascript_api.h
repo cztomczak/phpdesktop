@@ -21,7 +21,7 @@ public:
                         CefRefPtr<CefV8Value> object,
                         const CefV8ValueList& arguments,
                         CefRefPtr<CefV8Value>& retval,
-                        CefString& exception) OVERRIDE;
+                        CefString& exception) override;
 
     void SetIsFullscreen(bool isFullscreen) {
         isFullscreen_ = isFullscreen;

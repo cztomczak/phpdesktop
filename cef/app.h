@@ -19,27 +19,27 @@ public:
     // CefApp methods:
     virtual void OnBeforeCommandLineProcessing(
             const CefString& process_type,
-            CefRefPtr<CefCommandLine> command_line) OVERRIDE;
+            CefRefPtr<CefCommandLine> command_line) override;
   
     virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler()
-            OVERRIDE { return this; }
+            override { return this; }
   
     virtual CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler()
-            OVERRIDE { return this; }
+            override { return this; }
 
     // CefBrowserProcessHandler methods:
-    virtual void OnContextInitialized() OVERRIDE;
+    virtual void OnContextInitialized() override;
 
     // CefRenderProcessHandler methods:
     virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                                         CefProcessId source_process,
                                         CefRefPtr<CefProcessMessage> message)
-                                        OVERRIDE;
+                                        override;
     virtual void OnContextCreated(CefRefPtr<CefBrowser> browser,
             CefRefPtr<CefFrame> frame,
-            CefRefPtr<CefV8Context> context) OVERRIDE;
-    virtual void OnBrowserCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
-    virtual void OnBrowserDestroyed(CefRefPtr<CefBrowser> browser) OVERRIDE;
+            CefRefPtr<CefV8Context> context) override;
+    virtual void OnBrowserCreated(CefRefPtr<CefBrowser> browser) override;
+    virtual void OnBrowserDestroyed(CefRefPtr<CefBrowser> browser) override;
 
 protected:
     // There is one instance of JavascriptApi for each browser.
