@@ -11,6 +11,7 @@ ipch/
 *.opensdf
 *.dll
 *.exe
+*.pdb
 debug.log
 *.lib
 php/*.bat
