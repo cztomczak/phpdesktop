@@ -55,11 +55,11 @@ BrowserWindow* GetBrowserWindow(HWND hwnd) {
     }
     // GetBrowserWindow() may fail during window creation, so log
     // severity is only DEBUG.
-    LOGGER_DEBUG << "GetBrowserWindow(): not found, hwnd = " << (char*)hwnd;
+    LOGGER_DEBUG << "GetBrowserWindow(): not found, hwnd = " << (uintptr_t) hwnd;
     return NULL;
 }
 void StoreBrowserWindow(HWND hwnd, BrowserWindow* browser) {
-    LOGGER_DEBUG << "StoreBrowserWindow(): hwnd = " << (char*)hwnd;
+    LOGGER_DEBUG << "StoreBrowserWindow(): hwnd = " << (uintptr_t) hwnd;
     std::map<HWND, BrowserWindow*>::iterator it;
     it = g_browserWindows.find(hwnd);
     if (it == g_browserWindows.end()) {
@@ -69,7 +69,7 @@ void StoreBrowserWindow(HWND hwnd, BrowserWindow* browser) {
     }
 }
 void RemoveBrowserWindow(HWND hwnd) {
-    LOGGER_DEBUG << "RemoveBrowserWindow(): hwnd = " << (char*)hwnd;
+    LOGGER_DEBUG << "RemoveBrowserWindow(): hwnd = " << (uintptr_t) hwnd;
     BrowserWindow* browser = GetBrowserWindow(hwnd);
     if (!browser) {
         LOGGER_WARNING << "RemoveBrowserWindow() failed: "
