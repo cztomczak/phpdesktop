@@ -160,6 +160,7 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
 
     // Information used when creating the native window.
     CefWindowInfo window_info;
+    window_info.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
     int width = rect.right - rect.left;
     int height = rect.bottom - rect.top;
     CefRect cef_rect(rect.left, rect.top, width, height);
