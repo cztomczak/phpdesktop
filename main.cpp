@@ -5,13 +5,14 @@
 #include "defines.h"
 #include <Windows.h>
 
-#pragma comment(linker, "/manifestdependency:\"type='win32' "\
-    "name='Microsoft.Windows.Common-Controls' version='6.0.0.0' "\
-    "processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' "\
-    "language='*'\"")
+#if defined(CEF_USE_SANDBOX)
+#pragma comment(lib, "cef_sandbox.lib")
+#endif
 
 #include <crtdbg.h> // _ASSERT() macro
 #include "resource.h"
+
+#include "include/cef_sandbox_win.h"
 
 #include "main_window.h"
 #include "logging.h"
@@ -271,10 +272,17 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         LOGGER_WARNING << "CommandLineToArgvW() failed";
     }
 
+    // Sandbox support
+    void* sandbox_info = nullptr;
+#ifdef CEF_USE_SANDBOX
+    CefScopedSandboxInfo scoped_sandbox;
+    sandbox_info = scoped_sandbox.sandbox_info();
+#endif
+
     // CEF subprocesses.
     CefMainArgs main_args(hInstance);
     CefRefPtr<App> app(new App);
-    int exit_code = CefExecuteProcess(main_args, app.get(), NULL);
+    int exit_code = CefExecuteProcess(main_args, app.get(), sandbox_info);
     if (exit_code >= 0) {
         ShutdownLogging();
         return exit_code;
@@ -377,10 +385,15 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         cef_settings.remote_debugging_port = remote_debugging_port;
     }
 
-    // Sandbox support
-    // cef_settings.no_sandbox = true;
+#if defined(CEF_USE_SANDBOX)
+    LOGGER_INFO << "Sandbox is enabled";
+    cef_settings.no_sandbox = false;
+#else
+    LOGGER_INFO << "Sandbox is disabled";
+    cef_settings.no_sandbox = true;
+#endif
 
-    CefInitialize(main_args, cef_settings, app.get(), NULL);
+    CefInitialize(main_args, cef_settings, app.get(), sandbox_info);
     CreateMainWindow(hInstance, nCmdShow, main_window_title);
     CefRunMessageLoop();
     CefShutdown();

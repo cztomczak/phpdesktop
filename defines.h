@@ -4,10 +4,12 @@
 
 #pragma once
 
+// #define CEF_USE_SANDBOX 1
+// Currently sandbox disabled due to issue. Reported:
+// https://magpcss.org/ceforum/viewtopic.php?f=6&t=20037
+
 #define WINVER          _WIN32_WINNT_WIN10
 #define _WIN32_WINNT    _WIN32_WINNT_WIN10
-#define _WIN32_IE       _WIN32_IE_IE60SP2
-#define _RICHEDIT_VER   0x0200
 
 #define _AMD64_ 1
 

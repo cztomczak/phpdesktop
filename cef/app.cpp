@@ -4,7 +4,6 @@
 
 #pragma comment(lib, "libcef.lib")
 #pragma comment(lib, "libcef_dll_wrapper.lib")
-#pragma comment(lib, "cef_sandbox.lib")
 
 #include "app.h"
 #include <string>
