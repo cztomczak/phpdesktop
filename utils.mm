@@ -1,6 +1,4 @@
-// Copyright (c) 2018 PHP Desktop, see the Authors file.
-// All rights reserved. Licensed under BSD 3-clause license.
-// Project website: https://github.com/cztomczak/phpdesktop
+// Copyright (c) 2024 Czarek Tomczak, PHP Desktop.
 
 #include "utils.h"
 #include <limits.h>
@@ -8,7 +6,30 @@
 #include <fstream>
 #include <iostream>
 
-std::string get_executable_dir() {
+#import <Foundation/Foundation.h>
+#include <mach-o/dyld.h>
+
+bool GetResourcesDir(std::string& dir)
+{
+    static bool am_i_bundled = [[[NSBundle mainBundle] bundlePath] hasSuffix:@".app"];
+    uint32_t path_size = 0;
+    _NSGetExecutablePath(nullptr, &path_size);
+    if (path_size > 0) {
+        dir.resize(path_size);
+        _NSGetExecutablePath(const_cast<char*>(dir.c_str()), &path_size);
+    }
+    if (am_i_bundled) {
+        std::string::size_type last_sep = dir.find_last_of("/");
+        dir.resize(last_sep);
+        dir.append("/../Resources");
+        return true;
+    }
+    dir.append("/Resources");
+    return true;
+}
+
+std::string GetExecutableDir()
+{
     // Directory in which executable resides.
     char app_path[PATH_MAX] = {};
     ssize_t pplen = readlink("/proc/self/exe", app_path, sizeof(app_path)-1);
@@ -26,7 +47,8 @@ std::string get_executable_dir() {
     return app_path;
 }
 
-std::string get_file_contents(std::string file) {
+std::string GetFileContents(std::string file)
+{
     std::ifstream in_file;
     in_file.open(file.c_str(), std::ios::in);
     if (!in_file)
@@ -40,17 +62,19 @@ std::string get_file_contents(std::string file) {
     return contents;
 }
 
-std::string get_full_path(std::string path) {
+std::string GetFullPath(std::string path)
+{
     if (path.at(0) == '/') {
         return path;
     }
-    std::string new_path = get_executable_dir();
+    std::string new_path = GetExecutableDir();
     new_path.append("/");
     new_path.append(path);
     return new_path;
 }
 
-unsigned long mix(unsigned long a, unsigned long b, unsigned long c) {
+unsigned long Mix(unsigned long a, unsigned long b, unsigned long c)
+{
     a=a-b;  a=a-c;  a=a^(c >> 13);
     b=b-c;  b=b-a;  b=b^(a << 8);
     c=c-a;  c=c-b;  c=c^(b >> 13);
@@ -63,12 +87,13 @@ unsigned long mix(unsigned long a, unsigned long b, unsigned long c) {
     return c;
 }
 
-int random(unsigned int min, unsigned int max, int recursion_level) {
+int Random(unsigned int min, unsigned int max, int recursion_level)
+{
     /* Returns a semi-open interval [min, max) */
     static bool srand_initialized = false;
     if (!srand_initialized) {
         srand_initialized = true;
-        unsigned long seed = mix(clock(), time(NULL), getpid());
+        unsigned long seed = Mix(clock(), time(NULL), getpid());
         srand(seed);
     }
     if (recursion_level > 100) {
@@ -77,8 +102,9 @@ int random(unsigned int min, unsigned int max, int recursion_level) {
         return ret;
     }
     int base_random = rand(); /* in [0, RAND_MAX] */
-    if (RAND_MAX == base_random)
-        return random(min, max, recursion_level + 1);
+    if (RAND_MAX == base_random) {
+        return Random(min, max, recursion_level + 1);
+    }
     /* now guaranteed to be in [0, RAND_MAX) */
     int range     = max - min,
         remainder = RAND_MAX % range,
@@ -88,6 +114,6 @@ int random(unsigned int min, unsigned int max, int recursion_level) {
     if (base_random < RAND_MAX - remainder) {
         return min + base_random/bucket;
     } else {
-        return random(min, max, recursion_level + 1);
+        return Random(min, max, recursion_level + 1);
     }
 }

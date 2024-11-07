@@ -4,11 +4,7 @@ set(CEF_VERSION "127.3.2+gf1af617+chromium-127.0.6533.100")
 cmake_minimum_required(VERSION 3.21)
 
 # Project and general options
-set(supported_languages C CXX OBJC OBJCXX)
-project(phpdesktop
-        VERSION "${PHPDESKTOP_VERSION}"
-        LANGUAGES ${supported_languages}
-)
+project(phpdesktop)
 set(DOWNLOADS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/downloads")
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
 add_definitions(-DPHPDESKTOP_VERSION="${PHPDESKTOP_VERSION}")
@@ -40,12 +36,14 @@ PRINT_CEF_CONFIG()
 
 # Target phpdesktop
 set(PHPDESKTOP_SOURCES
+    app.cpp
+    client.cpp
     json.c
-    main.cpp
+    main.mm
     mongoose_server.cpp
     mongoose.c
     settings.cpp
-    utils.cpp
+    utils.mm
 )
 set(HELPER_SOURCES
     helper.cpp

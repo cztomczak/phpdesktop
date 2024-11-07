@@ -53,7 +53,7 @@ static void mongoose_end_request(const struct mg_connection* conn,
 
 bool mongoose_start() {
     LOG(INFO) << "Start Mongoose server";
-    json_value* app_settings = get_app_settings();
+    json_value* app_settings = Settings();
 
     // ip_address, port_str
     std::string ip_address((*app_settings)["web_server"]["listen_on"][0]);
@@ -80,7 +80,7 @@ bool mongoose_start() {
 
     // www_directory
     std::string www_directory((*app_settings)["web_server"]["www_directory"]);
-    www_directory = get_full_path(www_directory);
+    www_directory = GetFullPath(www_directory);
     LOG(INFO) << "www_directory=" << www_directory;
 
     // index_files
@@ -104,7 +104,7 @@ bool mongoose_start() {
     // cgi_interpreter
     std::string cgi_interpreter(
             (*app_settings)["web_server"]["cgi_interpreter"]);
-    cgi_interpreter = get_full_path(cgi_interpreter);
+    cgi_interpreter = GetFullPath(cgi_interpreter);
     LOG(INFO) << "cgi_interpreter=" << cgi_interpreter;
 
     // cgi_pattern (from cgi_extensions)
@@ -145,7 +145,7 @@ bool mongoose_start() {
     //         }
     //     }
     // } else {
-    //     cgi_temp_dir = get_full_path(cgi_temp_dir);
+    //     cgi_temp_dir = GetFullPath(cgi_temp_dir);
     // }
     // DIR* temp_dir = opendir(cgi_temp_dir.c_str());
     // if (temp_dir) {

@@ -1,7 +1,8 @@
 SCRIPT=$(realpath "$0")
 ROOTDIR=$(dirname "$SCRIPT")
+clear && printf '\e[3J'
+set -o xtrace
 cd $ROOTDIR/build
-clear
 ninja -j 8 phpdesktop
 retval=$?
 if [ $retval -ne 0 ]; then

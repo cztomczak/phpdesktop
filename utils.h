@@ -4,7 +4,8 @@
 
 #include <string>
 
-std::string get_executable_dir();
-std::string get_file_contents(std::string file);
-std::string get_full_path(std::string path);
-int random(unsigned int min, unsigned int max, int recursion_level=0);
+bool GetResourcesDir(std::string& dir);
+std::string GetExecutableDir();
+std::string GetFileContents(std::string file);
+std::string GetFullPath(std::string path);
+int Random(unsigned int min, unsigned int max, int recursion_level=0);
