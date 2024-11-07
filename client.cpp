@@ -95,7 +95,7 @@ bool Client::OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
         CefWindowInfo window_info;
         CefBrowserSettings settings;
         CefPoint inspect;
-        browser->GetHost()->ShowDevTools(window_info, NULL, settings, inspect);
+        browser->GetHost()->ShowDevTools(window_info, nullptr, settings, inspect);
         return true;
     }
     return false;
