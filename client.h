@@ -13,7 +13,7 @@ class Client : public CefClient,
                 public CefDragHandler,
                 public CefLifeSpanHandler,
                 public CefLoadHandler,
-                public CefRequestHandler
+                public CefPermissionHandler
 {
 public:
     Client();
@@ -41,7 +41,7 @@ public:
     CefRefPtr<CefLoadHandler> GetLoadHandler() override {
         return this;
     }
-    CefRefPtr<CefRequestHandler> GetRequestHandler() override {
+    CefRefPtr<CefPermissionHandler> GetPermissionHandler() override {
         return this;
     }
 
@@ -72,11 +72,12 @@ public:
     virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
     virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
 
-    // CefRequestHandler.
-    virtual bool OnQuotaRequest(CefRefPtr<CefBrowser> browser,
-                                const CefString& origin_url,
-                                int64 new_size,
-                                CefRefPtr<CefRequestCallback> callback) override;
+    // CefPermissionHandler.
+    virtual bool OnShowPermissionPrompt(CefRefPtr<CefBrowser> browser,
+                                        uint64_t prompt_id,
+                                        const CefString& requesting_origin,
+                                        uint32_t requested_permissions,
+                                        CefRefPtr<CefPermissionPromptCallback> callback) override;
 
 private:
     // List of existing browser windows. Only accessed on the CEF UI thread.

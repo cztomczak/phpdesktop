@@ -161,15 +161,19 @@ void Client::OnBeforeClose(CefRefPtr<CefBrowser> browser)
     }
 }
 
-// CefRequestHandler.
+// CefPermissionHandler.
 
-bool Client::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
-                            const CefString& origin_url,
-                            int64 new_size,
-                            CefRefPtr<CefRequestCallback> callback)
+bool Client::OnShowPermissionPrompt(CefRefPtr<CefBrowser> browser,
+                                    uint64_t prompt_id,
+                                    const CefString& requesting_origin,
+                                    uint32_t requested_permissions,
+                                    CefRefPtr<CefPermissionPromptCallback> callback)
 {
-    CEF_REQUIRE_IO_THREAD();
-    // Allow all requests
-    callback->Continue(true);
-    return true;
+    if (requested_permissions == CEF_PERMISSION_TYPE_DISK_QUOTA) {
+        LOG(INFO) << "Permission request accepted: CEF_PERMISSION_TYPE_DISK_QUOTA";
+        callback->Continue(CEF_PERMISSION_RESULT_ACCEPT);
+        return true;
+    }
+    LOG(INFO) << "Permission request ignored: " << requested_permissions << " (cef_permission_request_types_t)";
+    return false;
 }
