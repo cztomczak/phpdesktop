@@ -61,17 +61,15 @@ Lots of other useful information can be found on the
 ## Downloads
 
   * Windows
-    - [PHP Desktop v57.0 for Windows
-](https://github.com/cztomczak/phpdesktop/releases/tag/chrome-v57.0-rc)
+    - [PHP Desktop Chrome 130.0 for Windows](https://github.com/cztomczak/phpdesktop/releases/tag/chrome-v130.0)
       release
-    - [PHP Desktop MSIE v1.14](https://github.com/cztomczak/phpdesktop/wiki/PHP-Desktop-MSIE-v1.14)
+    - [PHP Desktop MSIE 1.14](https://github.com/cztomczak/phpdesktop/wiki/PHP-Desktop-MSIE-v1.14)
       wiki page
   * Linux
-    - [PHP Desktop v72.1 for Linux](https://github.com/cztomczak/phpdesktop/releases/tag/linux-v72.0)
+    - [PHP Desktop Chrome 72.1 for Linux](https://github.com/cztomczak/phpdesktop/releases/tag/linux-v72.0)
     release
   * Mac
-    - No release yet, see the ongoing funding in
-      [Issue #208](https://github.com/cztomczak/phpdesktop/issues/208)
+    - In progress, release soon.
 
 There are two ways to be notified about new releases:
 - Watch the project with the "Releases only" option checked
@@ -95,8 +93,8 @@ Here is a list of ongoing fundings for new features in PHP Desktop:
 
 Feature | Funds gathered | Issue | Status
 --- | --- | --- | ---
-Chrome v100 release for Windows | $1000 of $2,000 | [Issue #227](https://github.com/cztomczak/phpdesktop/issues/227) | Ongoing funding
-Initial Mac release | $2,000 of $2,000 | [Issue #208](https://github.com/cztomczak/phpdesktop/issues/208) | Work started
+Chrome v130 release for Windows | $2000 of $2,000 | [Issue #227](https://github.com/cztomczak/phpdesktop/issues/227) | Testing release
+Initial Mac release | $2,000 of $2,000 | [Issue #208](https://github.com/cztomczak/phpdesktop/issues/208) | In progress, release soon
 
 Below is a list of completed fundings with features already implemented:
 
