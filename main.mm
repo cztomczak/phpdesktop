@@ -12,6 +12,7 @@
 
 #include "include/base/cef_logging.h"
 #include "include/wrapper/cef_helpers.h"
+#import "include/wrapper/cef_library_loader.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -56,6 +57,13 @@ void create_browser()
 }
 
 int main(int argc, char **argv) {
+    // Load the CEF framework library at runtime instead of linking directly
+    // as required by the macOS sandbox implementation.
+    CefScopedLibraryLoader library_loader;
+    if (!library_loader.LoadInMain()) {
+        return 1;
+    }
+
     // Passing ENV variables to PHP using the --cgi-environment
     // command line arg passed to app.
     if (argv) {
@@ -71,11 +79,6 @@ int main(int argc, char **argv) {
             }
         }
     }
-
-    // Create a copy of |argv| on Linux because Chromium mangles the value
-    // internally (see CEF issue #620).
-    CefScopedArgArray scoped_arg_array(argc, argv);
-    char** argv_copy = scoped_arg_array.array();
 
     // Provide CEF with command-line arguments.
     CefMainArgs main_args(argc, argv);
