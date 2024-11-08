@@ -2,6 +2,8 @@
 // All rights reserved. Licensed under BSD 3-clause license.
 // Project website: https://github.com/cztomczak/phpdesktop
 
+#import <Cocoa/Cocoa.h>
+
 #include "app.h"
 #include "client.h"
 #include "utils.h"
@@ -92,17 +94,13 @@ int main(int argc, char **argv) {
         std::string error = SettingsError();
         error.append(".\nApplication will terminate immediately.");
         LOG(ERROR) << error.c_str();
-        gtk_init(&argc, &argv_copy);
-        GtkWidget *dialog;
-        dialog = gtk_message_dialog_new(NULL,
-                    GTK_DIALOG_DESTROY_WITH_PARENT,
-                    GTK_MESSAGE_ERROR,
-                    GTK_BUTTONS_OK,
-                    "%s",
-                    error.c_str());
-        gtk_window_set_title(GTK_WINDOW(dialog), "Error");
-        gtk_dialog_run(GTK_DIALOG(dialog));
-        gtk_widget_destroy(dialog);
+        NSString* error_message = [NSString stringWithUTF8String:error.c_str()];
+        NSAlert* alert = [[NSAlert alloc] init];
+        [alert setMessageText:error_message];
+        [alert setInformativeText:@""];
+        [alert setAlertStyle:NSAlertStyleCritical];
+        [alert addButtonWithTitle:@"OK"];
+        [alert runModal];
         return 1;
     }
 
@@ -122,17 +120,13 @@ int main(int argc, char **argv) {
             char message[PATH_MAX];
             snprintf(message, PATH_MAX, message_tmpl, title);
             LOG(INFO) << message;
-            gtk_init(&argc, &argv_copy);
-            GtkWidget *dialog;
-            dialog = gtk_message_dialog_new(NULL,
-                        GTK_DIALOG_DESTROY_WITH_PARENT,
-                        GTK_MESSAGE_INFO,
-                        GTK_BUTTONS_OK,
-                        "%s",
-                        message);
-            gtk_window_set_title(GTK_WINDOW(dialog), title);
-            gtk_dialog_run(GTK_DIALOG(dialog));
-            gtk_widget_destroy(dialog);
+            NSString* error_message = [NSString stringWithUTF8String:message];
+            NSAlert* alert = [[NSAlert alloc] init];
+            [alert setMessageText:error_message];
+            [alert setInformativeText:@""];
+            [alert setAlertStyle:NSAlertStyleInformational];
+            [alert addButtonWithTitle:@"OK"];
+            [alert runModal];
             return 1;
         }
     }
