@@ -168,11 +168,11 @@ int main(int argc, char **argv) {
     int remote_debugging_port(
             (*app_settings)["chrome"]["remote_debugging_port"]);
     if (remote_debugging_port == 0) {
-        remote_debugging_port = random(49152, 65535+1);
+        remote_debugging_port = Random(49152, 65535+1);
         int i = 100;
         while (((i--) > 0)
                 && remote_debugging_port == mongoose_get_port_int()) {
-            remote_debugging_port = random(49152, 65535+1);
+            remote_debugging_port = Random(49152, 65535+1);
         }
     }
     if (remote_debugging_port > 0) {
