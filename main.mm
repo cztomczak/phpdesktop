@@ -23,9 +23,36 @@
 // Globals
 std::string g_cgi_env_from_argv = "";
 
-void app_terminate_signal(int signatl) {
-    LOG(INFO) << "App terminate signal";
-    CefQuitMessageLoop();
+void create_browser()
+{
+    // The call to CreateBrowserSync cannot be in the same block scope
+    // as the call to CefShutdown otherwise it results in segmentation
+    // fault with the stack trace as seen below. Making a call to
+    // browser->Release() did not help.
+    // ----
+    // #0  MaybeSendDestroyedNotification () at
+    //     ./../../chrome/browser/profiles/profile.cc:294
+    // #1  0x00007ffff34c74b5 in Shutdown () at
+    //     ../../cef/libcef/browser/browser_context.cc:81
+    // ----
+    json_value* app_settings = Settings();
+    CefBrowserSettings browser_settings;
+    CefWindowInfo window_info;
+    window_info.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
+    int default_width = static_cast<int>(
+            (*app_settings)["main_window"]["default_size"][0]);
+    int default_height = static_cast<int>(
+            (*app_settings)["main_window"]["default_size"][1]);
+    CefRect browser_rect(0, 0, default_width, default_height);
+    window_info.SetAsChild(nullptr, browser_rect);
+    CefRefPtr<CefBrowser> browser = CefBrowserHost::CreateBrowserSync(
+        window_info,
+        Client::GetInstance(),
+        mongoose_get_url(),
+        browser_settings,
+        nullptr,
+        nullptr);
+    LOG(INFO) << "Browser window handle=" << browser->GetHost()->GetWindowHandle();
 }
 
 int main(int argc, char **argv) {
@@ -184,47 +211,27 @@ int main(int argc, char **argv) {
     // process.
     CefRefPtr<App> app(new App);
 
-    // Initialize GDK threads before CEF.
-    gdk_threads_init();
-
-    scoped_ptr<MainMessageLoop> message_loop;
-    message_loop.reset(new MainMessageLoopStd);
-
     // Log messages created by LOG() macro will be written to debug.log
     // file only after CEF was initialized. Before CEF is initialized
     // all logs are only printed to console.
     LOG(INFO) << "Initialize CEF";
-    CefInitialize(main_args, cef_settings, app.get(), NULL);
+    CefInitialize(main_args, cef_settings, app.get(), nullptr);
 
-    // The Chromium sandbox requires that there only be a single thread during
-    // initialization. Therefore initialize GTK after CEF.
-    gtk_init(&argc, &argv_copy);
-
-    // Install a signal handler so we clean up after ourselves.
-    signal(SIGINT, app_terminate_signal);
-    signal(SIGTERM, app_terminate_signal);
-
-    // Create Gtk window
+    // Create window TODO
     std::string app_icon_path((*app_settings)["main_window"]["icon"]);
-    app_icon_path = get_full_path(app_icon_path);
+    app_icon_path = GetFullPath(app_icon_path);
     bool center_on_screen = (*app_settings)["main_window"]["center_on_screen"];
-    int default_width = static_cast<long>(
+    int default_width = static_cast<int>(
             (*app_settings)["main_window"]["default_size"][0]);
-    int default_height = static_cast<long>(
+    int default_height = static_cast<int>(
             (*app_settings)["main_window"]["default_size"][1]);
-    GtkWidget* gtk_window = create_gtk_window(
-            (*app_settings)["main_window"]["title"],
-            app_icon_path.c_str(),
-            center_on_screen,
-            default_width, default_height);
 
     // Create browser
-    ::Window xid = get_window_xid(gtk_window);
-    LOG(INFO) << "Top window xid=" << xid;
-    create_browser(xid);
+    LOG(INFO) << "Create browser";
+    create_browser();
 
-    // Run the message loop. This will block until Quit() is called.
-    int result = message_loop->Run();
+    LOG(INFO) << "Run CEF message loop";
+    CefRunMessageLoop();
 
     LOG(INFO) << "Stop Mongoose server";
     mongoose_stop();
@@ -232,38 +239,5 @@ int main(int argc, char **argv) {
     LOG(INFO) << "Shutdown CEF";
     CefShutdown();
 
-    // Release objects in reverse order of creation.
-    message_loop.reset();
-
-    return result;
-}
-
-void create_browser(::Window xid) {
-    // The call to CreateBrowserSync cannot be in the same block scope
-    // as the call to CefShutdown otherwise it results in segmentation
-    // fault with the stack trace as seen below. Making a call to
-    // browser->Release() did not help.
-    // ----
-    // #0  MaybeSendDestroyedNotification () at
-    //     ./../../chrome/browser/profiles/profile.cc:294
-    // #1  0x00007ffff34c74b5 in Shutdown () at
-    //     ../../cef/libcef/browser/browser_context.cc:81
-    // ----
-    json_value* app_settings = get_app_settings();
-    CefBrowserSettings browser_settings;
-    CefWindowInfo window_info;
-    window_info.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
-    int default_width = static_cast<long>(
-            (*app_settings)["main_window"]["default_size"][0]);
-    int default_height = static_cast<long>(
-            (*app_settings)["main_window"]["default_size"][1]);
-    CefRect browser_rect(0, 0, default_width, default_height);
-    window_info.SetAsChild(xid, browser_rect);
-    CefRefPtr<CefBrowser> browser = CefBrowserHost::CreateBrowserSync(
-        window_info,
-        ClientHandler::GetInstance(),
-        mongoose_get_url(),
-        browser_settings,
-        NULL);
-    LOG(INFO) << "Browser xid=" << browser->GetHost()->GetWindowHandle();
+    return 0;
 }
