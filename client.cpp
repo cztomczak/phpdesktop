@@ -143,8 +143,8 @@ void Client::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 
     // Cookies are not flushed to disk when closing app immediately.
     // Need to call FlushStore manually when browser is closing.
-    browser->GetHost()->GetRequestContext()->GetDefaultCookieManager(NULL)
-            ->FlushStore(NULL);
+    browser->GetHost()->GetRequestContext()->GetCookieManager(nullptr)
+            ->FlushStore(nullptr);
 
     // Remove from the list of existing browsers.
     BrowserList::iterator bit = browser_list_.begin();
