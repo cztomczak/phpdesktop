@@ -21,21 +21,6 @@
 // Globals
 std::string g_cgi_env_from_argv = "";
 
-int x11_error_handler(Display* display, XErrorEvent* event) {
-    LOG(WARNING) << "X error received: "
-                 << "type " << event->type << ", "
-                 << "serial " << event->serial << ", "
-                 << "error_code " << static_cast<int>(event->error_code) << ", "
-                 << "request_code " << static_cast<int>(event->request_code)
-                 << ", "
-                 << "minor_code " << static_cast<int>(event->minor_code);
-    return 0;
-}
-
-int x11_io_error_handler(Display* display) {
-    return 0;
-}
-
 void app_terminate_signal(int signatl) {
     LOG(INFO) << "App terminate signal";
     CefQuitMessageLoop();
@@ -220,12 +205,6 @@ int main(int argc, char **argv) {
     // The Chromium sandbox requires that there only be a single thread during
     // initialization. Therefore initialize GTK after CEF.
     gtk_init(&argc, &argv_copy);
-
-    // Install xlib error handlers so that the application won't be terminated
-    // on non-fatal errors. X11 errors appearing in debug logs usually can be
-    // ignored.
-    XSetErrorHandler(x11_error_handler);
-    XSetIOErrorHandler(x11_io_error_handler);
 
     // Install a signal handler so we clean up after ourselves.
     signal(SIGINT, app_terminate_signal);
