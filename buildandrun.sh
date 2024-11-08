@@ -10,4 +10,3 @@ if [ $retval -ne 0 ]; then
     exit $retval
 fi
 open -W --stdout $(tty) --stderr $(tty) "./Debug/PHP Desktop.app"
-#./Debug/PHP\ Desktop.app/Contents/MacOS/PHP\ Desktop

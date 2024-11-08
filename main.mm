@@ -117,6 +117,7 @@ int main(int argc, char **argv) {
     }
 
     LOG(INFO) << "Executable directory: " << GetExecutableDir();
+    LOG(INFO) << "Resources directory: " << GetResourcesDir();
 
     // If reading settings.json fails exit app immediately
     json_value* app_settings = Settings();

@@ -4,7 +4,7 @@
 
 #include <string>
 
-bool GetResourcesDir(std::string& dir);
+std::string GetResourcesDir();
 std::string GetExecutableDir();
 std::string GetFileContents(std::string file);
 std::string GetFullPath(std::string path);

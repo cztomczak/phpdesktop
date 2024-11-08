@@ -14,11 +14,10 @@ json_value* Settings()
         return ret;
     }
     settings_fetched = true;
-    LOG(INFO) << "Fetching settings from settings.json file";
 
-    std::string settings_file;
-    GetResourcesDir(settings_file);
-    settings_file.append("/settings.json");
+    std::string settings_file = GetResourcesDir().append("/settings.json");
+    LOG(INFO) << "Fetching settings from file: " << settings_file;
+
     std::string contents = GetFileContents(settings_file);
     if (contents.empty()) {
         g_SettingsError = "Error while reading settings.json file";

@@ -1,6 +1,7 @@
 // Copyright (c) 2024 Czarek Tomczak, PHP Desktop.
 
 #include "utils.h"
+#include <filesystem>
 #include <limits.h>
 #include <unistd.h>
 #include <fstream>
@@ -9,42 +10,38 @@
 #import <Foundation/Foundation.h>
 #include <mach-o/dyld.h>
 
-bool GetResourcesDir(std::string& dir)
+std::string RealPath(std::string path)
+{
+    char buffer[PATH_MAX];
+    char* result = realpath(path.c_str(), buffer);
+    if (result) {
+        return buffer;
+    } else {
+        return path;
+    }
+}
+
+std::string GetResourcesDir()
 {
     static bool am_i_bundled = [[[NSBundle mainBundle] bundlePath] hasSuffix:@".app"];
-    uint32_t path_size = 0;
-    _NSGetExecutablePath(nullptr, &path_size);
-    if (path_size > 0) {
-        dir.resize(path_size);
-        _NSGetExecutablePath(const_cast<char*>(dir.c_str()), &path_size);
-    }
+    std::string dir = GetExecutableDir();
     if (am_i_bundled) {
-        std::string::size_type last_sep = dir.find_last_of("/");
-        dir.resize(last_sep);
         dir.append("/../Resources");
-        return true;
+        return RealPath(dir);
     }
     dir.append("/Resources");
-    return true;
+    return dir;
 }
 
 std::string GetExecutableDir()
 {
     // Directory in which executable resides.
     char app_path[PATH_MAX] = {};
-    ssize_t pplen = readlink("/proc/self/exe", app_path, sizeof(app_path)-1);
-    if (pplen != -1) {
-        app_path[pplen] = '\0';
+    uint32_t bufsize = PATH_MAX;
+    if (_NSGetExecutablePath(app_path, &bufsize) != 0) {
+        return "";
     }
-    do {
-        pplen -= 1;
-        app_path[pplen+1] = '\0';
-    } while (app_path[pplen] != '/' && pplen > 0);
-    // No slash at the end.
-    if (pplen > 0 && app_path[pplen] == '/') {
-        app_path[pplen] = '\0';
-    }
-    return app_path;
+    return RealPath(std::filesystem::path{app_path}.parent_path());
 }
 
 std::string GetFileContents(std::string file)

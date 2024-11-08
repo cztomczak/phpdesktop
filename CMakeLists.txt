@@ -50,6 +50,27 @@ set(HELPER_SOURCES
 )
 set(RESOURCES
     icon.icns
+    settings.json
+    www/_pdo.php
+    www/cookies.php
+    www/dialogs.php
+    www/download.php
+    www/env-variables.php
+    www/forms.php
+    www/google.php
+    www/html5-video.php
+    www/index.php
+    www/loading-error.php
+    www/php-error.php
+    www/phpinfo.php
+    www/popup.php
+    www/pretty-urls.php
+    www/request-quota.php
+    www/session.php
+    www/sqlite.php
+    www/style.css
+    www/upload.php
+    www/window-close.php
 )
 set(PHPDESKTOP_OUT_DIR "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
 set(PHPDESKTOP_APP "${PHPDESKTOP_OUT_DIR}/PHP Desktop.app")
