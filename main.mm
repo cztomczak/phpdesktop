@@ -140,7 +140,7 @@ int main(int argc, char **argv) {
 
     // log_file
     std::string log_file((*app_settings)["chrome"]["log_file"]);
-    log_file = get_full_path(log_file);
+    log_file = GetFullPath(log_file);
     CefString(&cef_settings.log_file) = log_file;
 
     // log_severity
@@ -161,7 +161,7 @@ int main(int argc, char **argv) {
 
     // cache_path
     std::string cache_path((*app_settings)["chrome"]["cache_path"]);
-    cache_path = get_full_path(cache_path);
+    cache_path = GetFullPath(cache_path);
     CefString(&cef_settings.cache_path) = cache_path;
 
     // remote_debugging_port
