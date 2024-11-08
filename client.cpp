@@ -103,10 +103,10 @@ bool Client::OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
 
 // CefDownloadHandler.
 
-void Client::OnBeforeDownload(  CefRefPtr<CefBrowser> browser,
-                                CefRefPtr<CefDownloadItem> download_item,
-                                const CefString& suggested_name,
-                                CefRefPtr<CefBeforeDownloadCallback> callback)
+bool Client::OnBeforeDownload(CefRefPtr<CefBrowser> browser,
+                              CefRefPtr<CefDownloadItem> download_item,
+                              const CefString& suggested_name,
+                              CefRefPtr<CefBeforeDownloadCallback> callback)
 {
     bool enable_downloads = (*Settings())["chrome"]["enable_downloads"];
     if (enable_downloads) {
