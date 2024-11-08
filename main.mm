@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
         return exit_code;
     }
 
-    LOG(INFO) << "Executable directory: " << get_executable_dir();
+    LOG(INFO) << "Executable directory: " << GetExecutableDir();
 
     // If reading settings.json fails exit app immediately
     json_value* app_settings = Settings();
