@@ -154,4 +154,14 @@ foreach(_suffix_list ${CEF_HELPER_APP_SUFFIXES})
         )
 endforeach()
 
+# Copy php binary
+add_custom_command(
+    TARGET phpdesktop
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_CURRENT_SOURCE_DIR}/php/php-cgi"
+            "${PHPDESKTOP_APP}/Contents/MacOS/php-cgi"
+    VERBATIM
+)
+
 COPY_MAC_RESOURCES("${RESOURCES}" "" "phpdesktop" "${CMAKE_CURRENT_SOURCE_DIR}" "${PHPDESKTOP_APP}")
