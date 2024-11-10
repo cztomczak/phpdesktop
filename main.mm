@@ -39,7 +39,17 @@ void create_browser()
     json_value* app_settings = Settings();
     CefBrowserSettings browser_settings;
     CefWindowInfo window_info;
-    window_info.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
+    std::string runtime_style((*app_settings)["chrome"]["runtime_style"]);
+    if (runtime_style == "alloy") {
+        window_info.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
+        LOG(INFO) << "Runtime style: Alloy";
+    } else if (runtime_style == "chrome") {
+        window_info.runtime_style = CEF_RUNTIME_STYLE_CHROME;
+        LOG(INFO) << "Runtime style: Chrome";
+    } else {
+        LOG(WARNING) << "Invalid runtime style in settings.json: " << runtime_style;
+        window_info.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
+    }
     int default_width = static_cast<int>(
             (*app_settings)["main_window"]["default_size"][0]);
     int default_height = static_cast<int>(
