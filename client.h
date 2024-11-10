@@ -21,6 +21,8 @@ public:
 
     // Provide access to the single global instance of this object.
     static Client* GetInstance();
+    bool IsClosing();
+    void CloseAllBrowsers(bool force_close);
 
     // CefClient.
     CefRefPtr<CefContextMenuHandler> GetContextMenuHandler() override {
@@ -83,6 +85,8 @@ private:
     // List of existing browser windows. Only accessed on the CEF UI thread.
     typedef std::list<CefRefPtr<CefBrowser>> BrowserList;
     BrowserList browser_list_;
+
+    bool is_closing = false;
 
     // Include the default reference counting implementation.
     IMPLEMENT_REFCOUNTING(Client);

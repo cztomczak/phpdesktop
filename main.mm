@@ -10,6 +10,7 @@
 #include "mongoose_server.h"
 #include "settings.h"
 
+#include "include/cef_application_mac.h"
 #include "include/base/cef_logging.h"
 #include "include/wrapper/cef_helpers.h"
 #import "include/wrapper/cef_library_loader.h"
@@ -24,47 +25,58 @@
 // Globals
 std::string g_cgi_env_from_argv = "";
 
-void create_browser()
-{
-    // The call to CreateBrowserSync cannot be in the same block scope
-    // as the call to CefShutdown otherwise it results in segmentation
-    // fault with the stack trace as seen below. Making a call to
-    // browser->Release() did not help.
-    // ----
-    // #0  MaybeSendDestroyedNotification () at
-    //     ./../../chrome/browser/profiles/profile.cc:294
-    // #1  0x00007ffff34c74b5 in Shutdown () at
-    //     ../../cef/libcef/browser/browser_context.cc:81
-    // ----
-    json_value* app_settings = Settings();
-    CefBrowserSettings browser_settings;
-    CefWindowInfo window_info;
-    std::string runtime_style((*app_settings)["chrome"]["runtime_style"]);
-    if (runtime_style == "alloy") {
-        window_info.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
-        LOG(INFO) << "Runtime style: Alloy";
-    } else if (runtime_style == "chrome") {
-        window_info.runtime_style = CEF_RUNTIME_STYLE_CHROME;
-        LOG(INFO) << "Runtime style: Chrome";
-    } else {
-        LOG(WARNING) << "Invalid runtime style in settings.json: " << runtime_style;
-        window_info.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
-    }
-    int default_width = static_cast<int>(
-            (*app_settings)["main_window"]["default_size"][0]);
-    int default_height = static_cast<int>(
-            (*app_settings)["main_window"]["default_size"][1]);
-    CefRect browser_rect(0, 0, default_width, default_height);
-    window_info.SetAsChild(nullptr, browser_rect);
-    CefRefPtr<CefBrowser> browser = CefBrowserHost::CreateBrowserSync(
-        window_info,
-        Client::GetInstance(),
-        mongoose_get_url(),
-        browser_settings,
-        nullptr,
-        nullptr);
-    LOG(INFO) << "Browser window handle=" << browser->GetHost()->GetWindowHandle();
+@interface SharedAppDelegate : NSObject <NSApplicationDelegate>
+    - (void)createApplication:(id)object;
+    - (void)tryToTerminateApplication:(NSApplication*)app;
+@end
+
+@interface SharedApplication : NSApplication <CefAppProtocol> {
+    @private
+    BOOL handlingSendEvent_;
 }
+@end
+
+@implementation SharedApplication
+    - (BOOL)isHandlingSendEvent {
+        return handlingSendEvent_;
+    }
+
+    - (void)setHandlingSendEvent:(BOOL)handlingSendEvent {
+        handlingSendEvent_ = handlingSendEvent;
+    }
+
+    - (void)sendEvent:(NSEvent*)event {
+        CefScopedSendingEvent sendingEventScoper;
+        [super sendEvent:event];
+    }
+
+    - (void)terminate:(id)sender {
+        SharedAppDelegate* delegate = static_cast<SharedAppDelegate*>([NSApp delegate]);
+        [delegate tryToTerminateApplication:self];
+    }
+@end
+
+@implementation SharedAppDelegate
+    - (void)createApplication:(id)object {
+        [NSApplication sharedApplication];
+        [[NSBundle mainBundle] loadNibNamed:@"MainMenu"
+                                    owner:NSApp
+                            topLevelObjects:nil];
+        [[NSApplication sharedApplication] setDelegate:self];
+    }
+
+    - (void)tryToTerminateApplication:(NSApplication*)app {
+        Client* client = Client::GetInstance();
+        if (client && !client->IsClosing()) {
+            client->CloseAllBrowsers(false);
+        }
+    }
+
+    - (NSApplicationTerminateReply)applicationShouldTerminate:
+        (NSApplication*)sender {
+            return NSTerminateNow;
+    }
+@end
 
 int main(int argc, char **argv) {
     // Load the CEF framework library at runtime instead of linking directly
@@ -73,6 +85,8 @@ int main(int argc, char **argv) {
     if (!library_loader.LoadInMain()) {
         return 1;
     }
+
+    @autoreleasepool {
 
     // Passing ENV variables to PHP using the --cgi-environment
     // command line arg passed to app.
@@ -221,28 +235,25 @@ int main(int argc, char **argv) {
         cef_settings.remote_debugging_port = remote_debugging_port;
     }
 
-    // App implements application-level callbacks for the browser
-    // process.
+    // App implements application-level callbacks for the browser process.
     CefRefPtr<App> app(new App);
+
+    [SharedApplication sharedApplication];
 
     // Log messages created by LOG() macro will be written to debug.log
     // file only after CEF was initialized. Before CEF is initialized
     // all logs are only printed to console.
     LOG(INFO) << "Initialize CEF";
-    CefInitialize(main_args, cef_settings, app.get(), nullptr);
+    if (!CefInitialize(main_args, cef_settings, app.get(), nullptr)) {
+        LOG(ERROR) << "Failed to initialize CEF";
+        return 1;
+    }
 
-    // Create window TODO
-    std::string app_icon_path((*app_settings)["main_window"]["icon"]);
-    app_icon_path = GetFullPath(app_icon_path);
-    bool center_on_screen = (*app_settings)["main_window"]["center_on_screen"];
-    int default_width = static_cast<int>(
-            (*app_settings)["main_window"]["default_size"][0]);
-    int default_height = static_cast<int>(
-            (*app_settings)["main_window"]["default_size"][1]);
-
-    // Create browser
-    LOG(INFO) << "Create browser";
-    create_browser();
+    // Create the application delegate.
+    NSObject* delegate = [[SharedAppDelegate alloc] init];
+    [delegate performSelectorOnMainThread:@selector(createApplication:)
+                               withObject:nil
+                            waitUntilDone:NO];
 
     LOG(INFO) << "Run CEF message loop";
     CefRunMessageLoop();
@@ -252,6 +263,8 @@ int main(int argc, char **argv) {
 
     LOG(INFO) << "Shutdown CEF";
     CefShutdown();
+
+    } // end @autoreleasepool
 
     return 0;
 }

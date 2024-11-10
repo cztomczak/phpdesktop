@@ -33,7 +33,7 @@
             "enable_menu": true,
             "navigation": true,
             "print": true,
-            "view_source": true,
+            "view_source": false,
             "devtools": true
         }
     }

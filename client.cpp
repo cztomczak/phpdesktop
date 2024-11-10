@@ -32,6 +32,26 @@ Client* Client::GetInstance() {
     }
 }
 
+bool Client::IsClosing()
+{
+    return is_closing;
+}
+
+void Client::CloseAllBrowsers(bool force_close)
+{
+    CEF_REQUIRE_UI_THREAD();
+    LOG(INFO) << "Close all browsers";
+
+    if (browser_list_.empty()) {
+        return;
+    }
+
+    BrowserList::const_iterator it = browser_list_.begin();
+    for (; it != browser_list_.end(); ++it) {
+        (*it)->GetHost()->CloseBrowser(force_close);
+    }
+}
+
 // CefContextMenuHandler.
 
 #define _MENU_ID_DEVTOOLS                         MENU_ID_USER_FIRST + 1
@@ -143,8 +163,7 @@ void Client::OnBeforeClose(CefRefPtr<CefBrowser> browser)
 
     // Cookies are not flushed to disk when closing app immediately.
     // Need to call FlushStore manually when browser is closing.
-    browser->GetHost()->GetRequestContext()->GetCookieManager(nullptr)
-            ->FlushStore(nullptr);
+    browser->GetHost()->GetRequestContext()->GetCookieManager(nullptr)->FlushStore(nullptr);
 
     // Remove from the list of existing browsers.
     BrowserList::iterator bit = browser_list_.begin();
