@@ -1,6 +1,6 @@
 # Versions
-set(PHPDESKTOP_VERSION "127.0")
-set(CEF_VERSION "127.3.2+gf1af617+chromium-127.0.6533.100")
+set(PHPDESKTOP_VERSION "130.0")
+set(CEF_VERSION "130.1.16+g5a7e5ed+chromium-130.0.6723.117")
 cmake_minimum_required(VERSION 3.21)
 
 # Project and general options
@@ -11,6 +11,7 @@ add_definitions(-DPHPDESKTOP_VERSION="${PHPDESKTOP_VERSION}")
 set(CMAKE_CXX_FLAGS "-std=c++20 -Wfatal-errors")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -DDEBUG_CONFIGURATION")
+set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
 

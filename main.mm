@@ -11,6 +11,7 @@
 #include "settings.h"
 
 #include "include/cef_application_mac.h"
+#include "include/cef_version.h"
 #include "include/base/cef_logging.h"
 #include "include/wrapper/cef_helpers.h"
 #import "include/wrapper/cef_library_loader.h"
@@ -76,6 +77,7 @@ std::string g_cgi_env_from_argv = "";
         (NSApplication*)sender {
             return NSTerminateNow;
     }
+    // applicationShouldHandleReopen TODO?
 @end
 
 int main(int argc, char **argv) {
@@ -87,6 +89,9 @@ int main(int argc, char **argv) {
     }
 
     @autoreleasepool {
+
+    [SharedApplication sharedApplication];
+    CHECK([NSApp isKindOfClass:[SharedApplication class]]);
 
     // Passing ENV variables to PHP using the --cgi-environment
     // command line arg passed to app.
@@ -112,6 +117,8 @@ int main(int argc, char **argv) {
     // Log what process type is launching
     if (!cmdline->HasSwitch("type")) {
         // If there is no --type flag then this is main process
+        LOG(INFO) << "PHP Desktop version: " << PHPDESKTOP_VERSION;
+        LOG(INFO) << "Chrome version: " << CEF_VERSION;
         LOG(INFO) << "Launching Browser process (main process)\n";
     } else {
         const std::string& process_type = cmdline->GetSwitchValue("type");
@@ -238,19 +245,20 @@ int main(int argc, char **argv) {
     // App implements application-level callbacks for the browser process.
     CefRefPtr<App> app(new App);
 
-    [SharedApplication sharedApplication];
-
     // Log messages created by LOG() macro will be written to debug.log
     // file only after CEF was initialized. Before CEF is initialized
     // all logs are only printed to console.
     LOG(INFO) << "Initialize CEF";
+    LOG(INFO) << "Note that logging to terminal doesn't work from this point on, "
+              << "unless you add --enable-logging=stderr switch to settings.json";
     if (!CefInitialize(main_args, cef_settings, app.get(), nullptr)) {
         LOG(ERROR) << "Failed to initialize CEF";
-        return 1;
+        return CefGetExitCode();;
     }
 
     // Create the application delegate.
-    NSObject* delegate = [[SharedAppDelegate alloc] init];
+    SharedAppDelegate* delegate = [[SharedAppDelegate alloc] init];
+    NSApp.delegate = delegate;
     [delegate performSelectorOnMainThread:@selector(createApplication:)
                                withObject:nil
                             waitUntilDone:NO];
@@ -263,6 +271,12 @@ int main(int argc, char **argv) {
 
     LOG(INFO) << "Shutdown CEF";
     CefShutdown();
+
+    // Release the delegate.
+#if !__has_feature(objc_arc)
+    [delegate release];
+#endif  // !__has_feature(objc_arc)
+    delegate = nil;
 
     } // end @autoreleasepool
 

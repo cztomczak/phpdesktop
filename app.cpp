@@ -2,6 +2,8 @@
 // All rights reserved. Licensed under BSD 3-clause license.
 // Project website: https://github.com/cztomczak/phpdesktop
 
+#include <stdlib.h>
+
 #include "app.h"
 #include "client.h"
 #include "mongoose_server.h"
@@ -63,6 +65,9 @@ void App::OnBeforeCommandLineProcessing(const CefString& process_type,
     if (process_type.empty())
     {
         // Browser process type is an empty string
+        if (getenv("PHPDESKTOP_ENABLE_LOGGING_STDERR")) {
+            command_line->AppendSwitchWithValue("enable-logging", "stderr");
+        }
         json_value* app_settings = Settings();
         json_value switches =(*app_settings)["chrome"]["command_line_switches"];
         if (switches.type == json_object) {

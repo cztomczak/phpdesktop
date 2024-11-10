@@ -1,4 +1,4 @@
-# PHP Desktop Chrome v127 for Mac
+# PHP Desktop Chrome 130 for Mac
 
 ## Build instructions
 

@@ -12,5 +12,5 @@ if [[ $(uname -m) == "arm64" ]]; then
 elif [[ $(uname -m) == "x86_64" ]]; then
     PHPDESKTOP_ARCH="x86_64"
 fi
-cmake -G "Ninja" -DPROJECT_ARCH="$PHPDESKTOP_ARCH" -DCMAKE_BUILD_TYPE=Debug $ROOTDIR
+cmake -G "Ninja" -DPROJECT_ARCH="$PHPDESKTOP_ARCH" -DCMAKE_BUILD_TYPE=Release $ROOTDIR
 ninja -j 8 phpdesktop
