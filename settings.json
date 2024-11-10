@@ -24,7 +24,8 @@
         "remote_debugging_port": 0,
         "command_line_switches": {
             "enable-media-stream": "",
-            "enable-system-flash": ""
+            "enable-system-flash": "",
+            "use-mock-keychain": "",
         },
         "enable_downloads": true,
         "context_menu": {
