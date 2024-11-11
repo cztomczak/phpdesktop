@@ -104,7 +104,7 @@ BrowserWindow::BrowserWindow(HWND inWindowHandle, bool isPopup)
     SetIconFromSettings();
 
     if (IsPopup()) {
-        LOGGER_DEBUG << "BrowserWindow::BrowserWindow() created for Popup";
+        LOGGER_DEBUG << "Create browser window for popup, hwnd=" << (uintptr_t) inWindowHandle;
     } else {
         if (!CreateBrowserControl(Utf8ToWide(GetWebServerUrl()).c_str())) {
             FatalError(windowHandle_, "Could not create Browser control.\n"

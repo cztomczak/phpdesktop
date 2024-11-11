@@ -213,7 +213,7 @@ bool ClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser,
                             CefBrowserSettings& settings,
                             CefRefPtr<CefDictionaryValue>& extra_info,
                             bool* no_javascript_access) {
-    LOGGER_DEBUG << "ClientHandler::OnBeforePopup()";
+    LOGGER_DEBUG << "Before popup is created";
     // OnBeforePopup does not get called for the DevTools popup window.
     // The devtools window is created using CreatePopupWindow
     // ----

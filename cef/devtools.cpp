@@ -8,17 +8,44 @@
 #include "../logger.h"
 #include "../string_utils.h"
 #include "../popup_window.h"
+#include "../settings.h"
 
-bool ShowDevTools(CefRefPtr<CefBrowser> browser) {
-    CefWindowInfo windowInfo;
-    CefBrowserSettings settings;
+bool ShowDevTools(CefRefPtr<CefBrowser> browser)
+{
+    LOGGER_DEBUG << "Show DevTools";
 
-    #if defined(OS_WIN)
-    windowInfo.SetAsPopup(browser->GetHost()->GetWindowHandle(), "DevTools");
-    #endif
+    json_value* settings = GetApplicationSettings();
+    std::string runtime_style = (*settings)["chrome"]["runtime_style"];
 
-    browser->GetHost()->ShowDevTools(windowInfo, browser->GetHost()->GetClient(),
-                                     settings, CefPoint());
+    CefWindowInfo window_info;
+    CefBrowserSettings browser_settings;
+
+    if (runtime_style == "alloy") {
+        LOGGER_INFO << "Runtime style: alloy";
+        window_info.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
+    } else if (runtime_style == "chrome") {
+        LOGGER_INFO << "Runtime style: chrome";
+        window_info.runtime_style = CEF_RUNTIME_STYLE_CHROME;
+    } else {
+        LOGGER_INFO << "Invalid runtime style in settings.json: " << runtime_style;
+        window_info.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
+    }
+
+    HWND popup_handle = CreatePopupWindow(browser->GetHost()->GetWindowHandle());
+    if (!popup_handle) {
+        LOGGER_ERROR << "Failed to create popup window";
+        return false;
+    }
+    window_info.SetAsPopup(popup_handle, "DevTools");
+
+    browser->GetHost()->ShowDevTools(window_info, nullptr,
+                                     browser_settings, CefPoint());
+
+    BrowserWindow* browser_window = GetBrowserWindow(popup_handle);
+    if (browser_window) {
+        browser_window->SetTitle(L"DevTools");
+    }
+
     return true;
 }
 
