@@ -303,6 +303,7 @@ void BrowserWindow::SetIconFromSettings() {
 bool BrowserWindow::SetFocus() {
     // Calling SetFocus() on shellBrowser handle does not work.
     if (cefBrowser_) {
+        LOGGER_INFO << "Focus browser, id=" << cefBrowser_->GetIdentifier();
         cefBrowser_->GetHost()->SetFocus(true);
     }
     return true;

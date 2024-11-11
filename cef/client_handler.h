@@ -16,7 +16,8 @@ class ClientHandler : public CefClient,
                       public CefDragHandler,
                       public CefRequestHandler,
                       public CefKeyboardHandler,
-                      public CefDownloadHandler {
+                      public CefDownloadHandler,
+                      public CefJSDialogHandler {
  public:
   ClientHandler();
   ~ClientHandler();
@@ -49,6 +50,9 @@ class ClientHandler : public CefClient,
   virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() {
     return this;
   }
+  virtual CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() {
+    return this;
+  }
   virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                                         CefRefPtr<CefFrame> frame,
                                         CefProcessId source_process,
@@ -58,6 +62,11 @@ class ClientHandler : public CefClient,
   // CefDisplayHandler methods:
   virtual void OnTitleChange(CefRefPtr<CefBrowser> browser,
                              const CefString& title) override;
+  virtual bool OnConsoleMessage(CefRefPtr<CefBrowser> browser,
+                                cef_log_severity_t level,
+                                const CefString& message,
+                                const CefString& source,
+                                int line) override;
 
   // CefLifeSpanHandler methods:
   virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
@@ -126,6 +135,15 @@ class ClientHandler : public CefClient,
       CefRefPtr<CefBrowser> browser,
       CefRefPtr<CefDownloadItem> download_item,
       CefRefPtr<CefDownloadItemCallback> callback) override;
+  
+  // CefJSDialogHandler methods:
+  virtual bool OnJSDialog(CefRefPtr<CefBrowser> browser,
+                          const CefString& origin_url,
+                          JSDialogType dialog_type,
+                          const CefString& message_text,
+                          const CefString& default_prompt_text,
+                          CefRefPtr<CefJSDialogCallback> callback,
+                          bool& suppress_message) override;
 
  private:
   // Include the default reference counting implementation.

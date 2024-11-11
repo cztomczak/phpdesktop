@@ -117,6 +117,34 @@ void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> cefBrowser,
     }
 }
 
+bool ClientHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
+                                    cef_log_severity_t level,
+                                    const CefString& message,
+                                    const CefString& source,
+                                    int line)
+{
+    std::string level_string = "UNKNOWN";
+    switch (level) {
+        case LOGSEVERITY_DEBUG:
+            level_string = "Debug";
+            break;
+        case LOGSEVERITY_INFO:
+            level_string = "Info";
+            break;
+        case LOGSEVERITY_WARNING:
+            level_string = "Warning";
+            break;
+        case LOGSEVERITY_ERROR:
+            level_string = "Error";
+            break;
+        case LOGSEVERITY_FATAL:
+            level_string = "Fatal";
+            break;
+    }
+    LOGGER_INFO << "JS Console: [" << level_string << "] " << message << "(" << source << ":" << line << ")";
+    return true;
+}
+
 // ----------------------------------------------------------------------------
 // CefLifeSpanHandler methods
 // ----------------------------------------------------------------------------
@@ -669,4 +697,22 @@ void ClientHandler::OnDownloadUpdated(
     } else if (download_item->IsCanceled()) {
         LOGGER_INFO << "Download was cancelled";
     }
+}
+
+// ----------------------------------------------------------------------------
+// CefDownloadHandler methods
+// ----------------------------------------------------------------------------
+
+bool ClientHandler::OnJSDialog(CefRefPtr<CefBrowser> browser,
+                              const CefString& origin_url,
+                              JSDialogType dialog_type,
+                              const CefString& message_text,
+                              const CefString& default_prompt_text,
+                              CefRefPtr<CefJSDialogCallback> callback,
+                              bool& suppress_message)
+{
+    // Use default implementation.
+    LOGGER_DEBUG << "JS dialog: " << message_text;
+    suppress_message = false;
+    return false;
 }
