@@ -16,6 +16,10 @@
 #include "client_handler.h"
 #include "../settings.h"
 #include "javascript_api.h"
+#include "../main_window.h"
+#include "../executable.h"
+
+extern HINSTANCE g_hInstance; // main.cpp
 
 // ----------------------------------------------------------------------------
 // CefRenderProcessHandler methods
@@ -58,7 +62,7 @@ void App::OnContextCreated(CefRefPtr<CefBrowser> browser,
                             CefRefPtr<CefFrame> frame,
                             CefRefPtr<CefV8Context> context) {
     // RENDERER PROCESS.
-    LOGGER_DEBUG << "OnContextCreated()";
+    LOGGER_DEBUG << "V8 context created";
     CefRefPtr<CefV8Value> window = context->GetGlobal();
     CefRefPtr<CefV8Handler> handler = GetJavascriptApi(browser);
     if (!handler.get()) {
@@ -174,7 +178,14 @@ void App::OnBeforeCommandLineProcessing(
 // has been initialized.
 ///
 void App::OnContextInitialized() {
-  REQUIRE_UI_THREAD();
-  LOGGER_DEBUG << "App::OnContextInitialized()";
-}
+    REQUIRE_UI_THREAD();
+    LOGGER_DEBUG << "App context initialized";
 
+    // Create main window
+    json_value* appSettings = GetApplicationSettings();
+    std::string main_window_title = (*appSettings)["main_window"]["title"];
+    if (main_window_title.empty()) {
+        main_window_title = GetExecutableName();
+    }
+    CreateMainWindow(g_hInstance, SW_SHOWDEFAULT, main_window_title);
+}

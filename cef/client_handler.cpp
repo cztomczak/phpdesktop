@@ -126,7 +126,7 @@ void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> cefBrowser,
 ///
 void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> cefBrowser) {
     REQUIRE_UI_THREAD();
-    LOGGER_DEBUG << "ClientHandler::OnAfterCreated()";
+    LOGGER_DEBUG << "Browser was created";
     json_value* appSettings = GetApplicationSettings();
     bool center_relative_to_parent = \
             (*appSettings)["popup_window"]["center_relative_to_parent"];
@@ -136,8 +136,7 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> cefBrowser) {
         // This block of code gets called for Main window & Devtools window.
         ASSERT(!phpBrowser->GetCefBrowser().get());
         if (!phpBrowser->GetCefBrowser().get()) {
-            LOGGER_DEBUG << "SetCefBrowser() called in "
-                            "ClientHandler::OnAfterCreated()";
+            LOGGER_DEBUG << "Set browser for window";
             phpBrowser->SetCefBrowser(cefBrowser);
         }
     } else {

@@ -55,17 +55,17 @@ BrowserWindow* GetBrowserWindow(HWND hwnd) {
     }
     // GetBrowserWindow() may fail during window creation, so log
     // severity is only DEBUG.
-    LOGGER_DEBUG << "GetBrowserWindow(): not found, hwnd = " << (uintptr_t) hwnd;
+    LOGGER_DEBUG << "Browser window not found, hwnd = " << (uintptr_t) hwnd;
     return NULL;
 }
 void StoreBrowserWindow(HWND hwnd, BrowserWindow* browser) {
-    LOGGER_DEBUG << "StoreBrowserWindow(): hwnd = " << (uintptr_t) hwnd;
+    LOGGER_DEBUG << "Store browser window, hwnd = " << (uintptr_t) hwnd;
     std::map<HWND, BrowserWindow*>::iterator it;
     it = g_browserWindows.find(hwnd);
     if (it == g_browserWindows.end()) {
         g_browserWindows[hwnd] = browser;
     } else {
-        LOGGER_WARNING << "StoreBrowserWindow() failed: already stored";
+        LOGGER_WARNING << "Storing browser window failed: already stored";
     }
 }
 void RemoveBrowserWindow(HWND hwnd) {
@@ -147,20 +147,30 @@ void BrowserWindow::SetCefBrowser(CefRefPtr<CefBrowser> cefBrowser) {
     this->OnSize();
 }
 bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
-    LOGGER_DEBUG << "BrowserWindow::CreateBrowserControl()";
+    LOGGER_DEBUG << "Create main browser";
     // This is called only for the main window.
     // Popup cef browsers are created internally by CEF,
     // see OnBeforePopup, OnAfterCreated.
     RECT rect;
     BOOL b = GetWindowRect(windowHandle_, &rect);
     if (!b) {
-        LOGGER_ERROR << "GetWindowRect() failed in "
-                     "BrowserWindow::CreateBrowserControl()";
+        LOGGER_ERROR << "GetWindowRect() failed while creating browser";
     }
 
     // Information used when creating the native window.
+    json_value* settings = GetApplicationSettings();
+    std::string runtime_style = (*settings)["chrome"]["runtime_style"];
     CefWindowInfo window_info;
-    window_info.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
+    if (runtime_style == "alloy") {
+        LOGGER_INFO << "Runtime style: alloy";
+        window_info.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
+    } else if (runtime_style == "chrome") {
+        LOGGER_INFO << "Runtime style: chrome";
+        window_info.runtime_style = CEF_RUNTIME_STYLE_CHROME;
+    } else {
+        LOGGER_INFO << "Invalid runtime style in settings.json: " << runtime_style;
+        window_info.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
+    }
     int width = rect.right - rect.left;
     int height = rect.bottom - rect.top;
     CefRect cef_rect(rect.left, rect.top, width, height);
@@ -169,7 +179,7 @@ bool BrowserWindow::CreateBrowserControl(const wchar_t* navigateUrl) {
     CefRefPtr<ClientHandler> handler(new ClientHandler());
     // Specify CEF browser settings here.
     CefBrowserSettings browser_settings;
-    // Create the first browser window.
+    // Create the first browser.
     CefBrowserHost::CreateBrowser(
             window_info, handler.get(),
             GetWebServerUrl(), browser_settings, nullptr, nullptr);

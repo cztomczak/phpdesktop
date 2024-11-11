@@ -2,6 +2,7 @@
 // License: New BSD License.
 // Website: http://code.google.com/p/phpdesktop/
 
+#include "logger.h"
 #include "main_window.h"
 #include "settings.h"
 #include "dpi_aware.h"
@@ -11,7 +12,9 @@
 
 extern wchar_t g_windowClassName[256]; // main.cpp
 
-HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title) {
+HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title)
+{
+    LOGGER_INFO << "Create main window";
     json_value* appSettings = GetApplicationSettings();
     int default_width = static_cast<long>((*appSettings)["main_window"]["default_size"][0]);
     int default_height = static_cast<long>((*appSettings)["main_window"]["default_size"][1]);
@@ -66,5 +69,6 @@ HWND CreateMainWindow(HINSTANCE hInstance, int nCmdShow, std::string title) {
         ShowWindow(hwnd, nCmdShow);
     }
     UpdateWindow(hwnd);
+    LOGGER_INFO << "Main window was created, hwnd=" << (uintptr_t) hwnd;
     return hwnd;
 }

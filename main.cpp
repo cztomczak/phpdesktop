@@ -89,7 +89,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             if (browser && browser->GetCefBrowser()) {
                 browser->OnSize();
             } else if (!browser) {
-                LOGGER_WARNING << "WindowProc() WM_SIZE: could not fetch BrowserWindow";
+                LOGGER_WARNING << "Event WM_SIZE: could not fetch browser window";
             }
             break;
         case WM_MOVE:
@@ -99,7 +99,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             if (browser && browser->GetCefBrowser()) {
                 browser->GetCefBrowser()->GetHost()->NotifyMoveOrResizeStarted();
             } else if (!browser) {
-                LOGGER_WARNING << "WindowProc() WM_MOVE: could not fetch BrowserWindow";
+                LOGGER_WARNING << "Event WM_MOVE: could not fetch browser window";
             }
             return 0;
         case WM_CREATE:
@@ -142,8 +142,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
             } else {
                 // GetMinMaxInfo may fail during window creation, so
                 // log severity is only DEBUG.
-                LOGGER_DEBUG << "WindowProc(): event WM_GETMINMAXINFO: "
-                             "could not fetch BrowserWindow";
+                LOGGER_DEBUG << "Event WM_GETMINMAXINFO: could not fetch browser window";
             }
             break;
         case WM_SETFOCUS:
@@ -152,8 +151,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
                 browser->SetFocus();
                 return 0;
             } else {
-                LOGGER_DEBUG << "WindowProc(): event WM_SETFOCUS: "
-                             "could not fetch BrowserWindow";
+                LOGGER_DEBUG << "Event WM_SETFOCUS: could not fetch browser window";
             }
             break;
         case WM_ERASEBKGND:
@@ -298,11 +296,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     LOGGER_INFO << "Log level = "
              << FILELog::ToString(FILELog::ReportingLevel());
 
-    // Main window title option.
-    std::string main_window_title = (*appSettings)["main_window"]["title"];
-    if (main_window_title.empty())
-        main_window_title = GetExecutableName();
-
     // Single instance guid option.
     const char* single_instance_guid =
             (*appSettings)["application"]["single_instance_guid"];
@@ -394,7 +387,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #endif
 
     CefInitialize(main_args, cef_settings, app.get(), sandbox_info);
-    CreateMainWindow(hInstance, nCmdShow, main_window_title);
+    LOGGER_DEBUG << "nCmdShow=" << nCmdShow;
     CefRunMessageLoop();
     CefShutdown();
 
