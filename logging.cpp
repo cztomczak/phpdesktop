@@ -11,7 +11,7 @@
 #include "executable.h"
 #include "string_utils.h"
 
-HANDLE g_logFileHandle = NULL;
+HANDLE g_logFileHandle = nullptr;
 
 void InitializeLogging(bool show_console, std::string log_level,
                  std::string log_file) {
@@ -51,7 +51,7 @@ void InitializeLogging(bool show_console, std::string log_level,
                     FILE_ATTRIBUTE_NORMAL,
                     NULL);
         if (g_logFileHandle == INVALID_HANDLE_VALUE) {
-            g_logFileHandle = NULL;
+            g_logFileHandle = nullptr;
             LOGGER_ERROR << "Opening log file for appending failed";
             return;
         }
@@ -74,6 +74,8 @@ void InitializeLogging(bool show_console, std::string log_level,
 }
 void ShutdownLogging() {
     if (g_logFileHandle) {
-        CloseHandle(g_logFileHandle);
+        // Throws exception. CEF also has access to that file and it does something with the handle.
+        // CloseHandle(g_logFileHandle);
+        g_logFileHandle = nullptr;
     }
 }
