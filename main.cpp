@@ -13,6 +13,7 @@
 #include "resource.h"
 
 #include "include/cef_sandbox_win.h"
+#include "include/cef_version.h"
 
 #include "main_window.h"
 #include "logging.h"
@@ -28,6 +29,7 @@
 // #include "php_server.h"
 #include "cef/app.h"
 #include "random.h"
+#include "version.h"
 
 SingleInstanceApplication g_singleInstanceApplication;
 wchar_t* g_singleInstanceApplicationGuid = 0;
@@ -287,7 +289,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     }
 
     LOGGER_INFO << "--------------------------------------------------------";
-    LOGGER_INFO << "Started application";
+    LOGGER_INFO << "Starting application";
+    LOGGER_INFO << "PHP Desktop version: " << GetPhpDesktopVersion();
+    LOGGER_INFO << "Chromium version: CEF " << CEF_VERSION;
 
     if (log_file.length())
         LOGGER_INFO << "Logging to: " << log_file;
