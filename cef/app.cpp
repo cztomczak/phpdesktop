@@ -35,8 +35,8 @@ bool App::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                                     CefRefPtr<CefFrame> frame,
                                     CefProcessId source_process,
                                     CefRefPtr<CefProcessMessage> message) {
-    LOGGER_DEBUG << "renderer[" << browser->GetIdentifier() << "] "
-              << "OnProcessMessageReceived: " << message->GetName().ToString();
+    LOGGER_DEBUG << "V8 renderer[" << browser->GetIdentifier() << "] "
+              << "received process message: " << message->GetName().ToString();
     if (message->GetName() == "SetIsFullscreen") {
         CefRefPtr<CefListValue> args = message->GetArgumentList();
         bool isFullscreen = args->GetBool(0);
@@ -62,7 +62,7 @@ void App::OnContextCreated(CefRefPtr<CefBrowser> browser,
                             CefRefPtr<CefFrame> frame,
                             CefRefPtr<CefV8Context> context) {
     // RENDERER PROCESS.
-    LOGGER_DEBUG << "V8 context created";
+    LOGGER_DEBUG << "V8 context created, in context: " << CefV8Context::InContext();
     CefRefPtr<CefV8Value> window = context->GetGlobal();
     CefRefPtr<CefV8Handler> handler = GetJavascriptApi(browser);
     if (!handler.get()) {
@@ -95,8 +95,8 @@ void App::OnContextCreated(CefRefPtr<CefBrowser> browser,
 ///
 /*--cef()--*/
 void App::OnBrowserCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDictionaryValue> extra_info) {
-    LOGGER_DEBUG << "OnBrowserCreated()";
-    StoreJavascriptApi(browser, new JavascriptApi(browser));
+    LOGGER_DEBUG << "V8 browser was created";
+    StoreJavascriptApi(browser, new JavascriptApi());
 }
 
 ///
@@ -104,7 +104,7 @@ void App::OnBrowserCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDictionar
 ///
 /*--cef()--*/
 void App::OnBrowserDestroyed(CefRefPtr<CefBrowser> browser) {
-    LOGGER_DEBUG << "OnBrowserDestroyed()";
+    LOGGER_DEBUG << "V8 browser was destroyed";
     RemoveJavascriptApi(browser);
 }
 

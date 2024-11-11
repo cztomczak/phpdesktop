@@ -11,9 +11,8 @@
 class JavascriptApi : public CefV8Handler
 {
 public:
-    JavascriptApi(CefRefPtr<CefBrowser> cefBrowser)
-        : cefBrowser_(cefBrowser),
-            isFullscreen_(false) 
+    JavascriptApi()
+        : isFullscreen_(false)
     {
     }
 
@@ -28,7 +27,9 @@ public:
     }
 
 protected:
-    CefRefPtr<CefBrowser> cefBrowser_;
+    // Can't store CefBrowser object in CefV8Handler as it won't work properly when sending process message.
+    // Issue reported here: https://magpcss.org/ceforum/viewtopic.php?f=6&t=20040
+
     bool isFullscreen_;
 
 private:

@@ -18,6 +18,7 @@ void Fullscreen::ToggleFullscreen() {
     }
     HWND hwnd = browserWindow->GetWindowHandle();
     if (!isFullscreen_) {
+        LOGGER_DEBUG << "Toggle fullscreen On";
         isMaximized_ = (IsZoomed(hwnd) != 0);
         if (isMaximized_) {
             SendMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE, 0);
@@ -49,6 +50,7 @@ void Fullscreen::ToggleFullscreen() {
                 left, top, right-left, bottom-top,
                 SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
     } else {
+        LOGGER_DEBUG << "Toggle fullscreen Off";
         SetWindowLong(hwnd, GWL_STYLE, gwlStyle_);
         SetWindowLong(hwnd, GWL_EXSTYLE, gwlExStyle_);
         RECT rect = windowRect_;

@@ -69,7 +69,7 @@ void StoreBrowserWindow(HWND hwnd, BrowserWindow* browser) {
     }
 }
 void RemoveBrowserWindow(HWND hwnd) {
-    LOGGER_DEBUG << "RemoveBrowserWindow(): hwnd = " << (uintptr_t) hwnd;
+    LOGGER_DEBUG << "Remove browser window, hwnd = " << (uintptr_t) hwnd;
     BrowserWindow* browser = GetBrowserWindow(hwnd);
     if (!browser) {
         LOGGER_WARNING << "RemoveBrowserWindow() failed: "
@@ -138,6 +138,7 @@ void BrowserWindow::SetCefBrowser(CefRefPtr<CefBrowser> cefBrowser) {
             CefRefPtr<CefProcessMessage> message = \
                     CefProcessMessage::Create("SetIsFullscreen");
             message->GetArgumentList()->SetBool(0, fullscreen_->IsFullscreen());
+            LOGGER_DEBUG << "Send process message to V8: SetIsFullscreen";
             cefBrowser->GetMainFrame()->SendProcessMessage(PID_RENDERER, message);
         }
     }

@@ -391,7 +391,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #endif
 
     CefInitialize(main_args, cef_settings, app.get(), sandbox_info);
-    LOGGER_DEBUG << "nCmdShow=" << nCmdShow;
     CefRunMessageLoop();
     CefShutdown();
 

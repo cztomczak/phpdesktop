@@ -72,7 +72,7 @@ bool ClientHandler::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                                             CefProcessId source_process,
                                             CefRefPtr<CefProcessMessage> message) {
     LOGGER_DEBUG << "browser[" << browser->GetIdentifier() << "] "
-              << "OnProcessMessageReceived: " << message->GetName().ToString();
+              << "received process message: " << message->GetName().ToString();
     if (message->GetName() == "ToggleFullscreen") {
         BrowserWindow* browserWindow = GetBrowserWindow(\
                 browser->GetHost()->GetWindowHandle());
@@ -174,11 +174,11 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> cefBrowser) {
 ///
 void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     REQUIRE_UI_THREAD();
-    LOGGER_DEBUG << "OnBeforeClose() hwnd="
+    LOGGER_DEBUG << "Before browser is closed, hwnd="
                  << (uintptr_t) browser->GetHost()->GetWindowHandle();
     RemoveBrowserWindow(browser->GetHost()->GetWindowHandle());
     if (g_browserWindows.empty()) {
-        LOGGER_DEBUG << "Calling CefQuitMessageLoop()";
+        LOGGER_DEBUG << "Quit CEF message loop";
         CefQuitMessageLoop();
     }
 }
