@@ -48,8 +48,8 @@ IDR_MAINWINDOW          ICON                    "icon.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 130,0,0,0
- PRODUCTVERSION 130,0,0,0
+ FILEVERSION 130,1,0,0
+ PRODUCTVERSION 130,1,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -66,12 +66,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "PHP Desktop"
             VALUE "FileDescription", "PHP Desktop Chrome"
-            VALUE "FileVersion", "130.0.0.0"
+            VALUE "FileVersion", "130.1.0.0"
             VALUE "InternalName", "phpdesktop"
             VALUE "LegalCopyright", "(c) Czarek Tomczak 2012"
             VALUE "OriginalFilename", "phpdesktop-chrome.exe"
             VALUE "ProductName", "PHP Desktop Chrome"
-            VALUE "ProductVersion", "130.0.0.0"
+            VALUE "ProductVersion", "130.1.0.0"
         END
     END
     BLOCK "VarFileInfo"
