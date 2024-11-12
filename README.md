@@ -61,7 +61,7 @@ Lots of other useful information can be found on the
 ## Downloads
 
   * Windows
-    - [PHP Desktop Chrome 130.0 for Windows](https://github.com/cztomczak/phpdesktop/releases/tag/chrome-v130.0) release
+    - [PHP Desktop Chrome 130.1 for Windows](https://github.com/cztomczak/phpdesktop/releases/tag/chrome-v130.1) release
     - [PHP Desktop MSIE 1.14](https://github.com/cztomczak/phpdesktop/wiki/PHP-Desktop-MSIE-v1.14) wiki page
   * Mac
     - [PHP Desktop Chrome 130.0 for Mac](https://github.com/cztomczak/phpdesktop/releases/tag/mac-v130.0) release
