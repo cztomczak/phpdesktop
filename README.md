@@ -54,8 +54,9 @@ web server and serving pages through CGI. So when PHP script execution
 ends, PHP-CGI process is killed and all memory is always freed.
 
 Lots of other useful information can be found on the
-[Knowledge Base](../../wiki/Knowledge-Base) wiki page and on the
-[PHP Desktop Forum](https://groups.google.com/d/forum/phpdesktop).
+[Knowledge Base](../../wiki/Knowledge-Base) wiki page,
+[Discussions page](../../discussions) and on the
+[Old Forum](https://groups.google.com/d/forum/phpdesktop).
 
 
 ## Downloads
@@ -79,7 +80,7 @@ There are two ways to be notified about new releases:
   [Knowledge Base](../../wiki/Knowledge-Base), [Settings](../../wiki/Settings)
   and [Chrome settings](../../wiki/Chrome-settings) wiki pages.
 * Ask questions and report problems on the
-  [PHP Desktop Forum](https://groups.google.com/d/forum/phpdesktop)
+  [Discussions page](../../discussions)
 * See also this externally maintained tutorial:
   [Create your first Desktop Application with PHP and PHP Desktop](https://lancecourse.com/en/howto/create-your-first-desktop-application-with-php-and-php-desktop)
 
