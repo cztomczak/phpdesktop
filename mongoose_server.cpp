@@ -80,7 +80,9 @@ bool mongoose_start() {
 
     // www_directory
     std::string www_directory((*app_settings)["web_server"]["www_directory"]);
-    www_directory = GetResourcesDir().append("/").append(www_directory);
+    if (www_directory.at(0) != '/') {
+        www_directory = GetResourcesDir().append("/").append(www_directory);
+    }
     LOG(INFO) << "www_directory=" << www_directory;
 
     // index_files
@@ -103,7 +105,7 @@ bool mongoose_start() {
 
     // cgi_interpreter
     std::string cgi_interpreter((*app_settings)["web_server"]["cgi_interpreter"]);
-    cgi_interpreter = GetExecutableDir().append("/").append(cgi_interpreter);
+    cgi_interpreter = GetFullPath(cgi_interpreter);
     LOG(INFO) << "cgi_interpreter=" << cgi_interpreter;
 
     // cgi_pattern (from cgi_extensions)
