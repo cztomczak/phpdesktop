@@ -166,7 +166,7 @@ add_custom_command(
             "${PHPDESKTOP_APP}/Contents/MacOS/php-cgi"
     COMMAND ${CMAKE_COMMAND} -E copy
             "${CMAKE_CURRENT_SOURCE_DIR}/php/php.ini"
-            "${PHPDESKTOP_APP}/Contents/MacOS/pho.ini"
+            "${PHPDESKTOP_APP}/Contents/MacOS/php.ini"
     COMMAND ${CMAKE_COMMAND} -E copy
             "${CMAKE_CURRENT_SOURCE_DIR}/php/libssl.3.dylib"
             "${PHPDESKTOP_APP}/Contents/MacOS/libssl.3.dylib"

@@ -195,6 +195,11 @@ bool mongoose_start() {
     // User may uverwrite it using --cgi-environment command line arg passed to app.
     cgi_env.append("OPENSSL_CONF=").append(GetExecutableDir().append("/openssl.cnf")).append(",");
 
+    // PHPRC env variable to help PHP find php.ini configuration file.
+    // Ref: https://www.php.net/configuration.file
+    // It is found automatically when put next to php-cgi executable, so not needed currently.
+    // cgi_env.append("PHPRC=").append(GetExecutableDir().append("/php.ini")).append(",");
+
     cgi_env.append("PHPDESKTOP_VERSION=").append(PHPDESKTOP_VERSION);
     if (g_cgi_env_from_argv.length()) {
         cgi_env.append(",").append(g_cgi_env_from_argv);
