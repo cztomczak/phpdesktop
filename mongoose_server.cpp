@@ -186,6 +186,15 @@ bool mongoose_start() {
         cgi_env.append("SERVER_ADDR=").append(ip_address)
                .append(",");
     }
+
+    // Set DYLD_LIBRARY_PATH, so that php-cgi dylib libraries are loaded properly on Mac.
+    // Alternatively you could change name to "@rpath/libssl.3.dylib" using install_name_tool.
+    cgi_env.append("DYLD_LIBRARY_PATH=").append(GetExecutableDir()).append(",");
+
+    // Set openssl config, otherwise it uses homebrew config which may be missing.
+    // User may uverwrite it using --cgi-environment command line arg passed to app.
+    cgi_env.append("OPENSSL_CONF=").append(GetExecutableDir().append("/openssl.cnf")).append(",");
+
     cgi_env.append("PHPDESKTOP_VERSION=").append(PHPDESKTOP_VERSION);
     if (g_cgi_env_from_argv.length()) {
         cgi_env.append(",").append(g_cgi_env_from_argv);

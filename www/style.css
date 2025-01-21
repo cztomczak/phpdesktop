@@ -6,3 +6,9 @@ pre {
     background: #eee;
     padding: 0.25em 0.5em;
 }
+code {
+    background: #eee;
+    border-radius: 3px;
+    font-family: courier, monospace;
+    padding: 0 3px;
+}

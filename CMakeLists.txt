@@ -62,6 +62,8 @@ set(RESOURCES
     www/html5-video.php
     www/index.php
     www/loading-error.php
+    www/openssl.php
+    www/openssl-cacert.pem
     www/php-error.php
     www/phpinfo.php
     www/popup.php
@@ -162,6 +164,27 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E copy
             "${CMAKE_CURRENT_SOURCE_DIR}/php/php-cgi"
             "${PHPDESKTOP_APP}/Contents/MacOS/php-cgi"
+    COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_CURRENT_SOURCE_DIR}/php/php.ini"
+            "${PHPDESKTOP_APP}/Contents/MacOS/pho.ini"
+    COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_CURRENT_SOURCE_DIR}/php/libssl.3.dylib"
+            "${PHPDESKTOP_APP}/Contents/MacOS/libssl.3.dylib"
+    COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_CURRENT_SOURCE_DIR}/php/libcrypto.3.dylib"
+            "${PHPDESKTOP_APP}/Contents/MacOS/libcrypto.3.dylib"
+    COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_CURRENT_SOURCE_DIR}/php/libxml2.2.dylib"
+            "${PHPDESKTOP_APP}/Contents/MacOS/libxml2.2.dylib"
+    COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_CURRENT_SOURCE_DIR}/php/libsqlite3.dylib"
+            "${PHPDESKTOP_APP}/Contents/MacOS/libsqlite3.dylib"
+    COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_CURRENT_SOURCE_DIR}/php/libz.1.3.1.dylib"
+            "${PHPDESKTOP_APP}/Contents/MacOS/libz.1.3.1.dylib"
+    COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_CURRENT_SOURCE_DIR}/php/openssl.cnf"
+            "${PHPDESKTOP_APP}/Contents/MacOS/openssl.cnf"
     VERBATIM
 )
 
