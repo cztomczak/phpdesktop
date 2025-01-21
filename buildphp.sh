@@ -48,6 +48,13 @@ fi
 openssl_dir=$(realpath $(pwd))
 echo "Found OpenSSL: ${openssl_dir}"
 
+if ! cd $root_dir/php/libiconv-*/ ; then
+    echo "Can't find iconv directory"
+    exit 1
+fi
+iconv_dir=$(realpath $(pwd))
+echo "Found iconv: ${iconv_dir}"
+
 if ! cd $root_dir/php/libxml2-*/ ; then
     echo "Can't find libxml2 directory"
     exit 1
@@ -77,38 +84,40 @@ php_dir=$(realpath $(pwd))
 echo "Found PHP: ${php_dir}"
 
 echo "Configure PHP..."
+cp $sqlite_dir/dist-install/lib/libsqlite3.dylib ./libsqlite3.dylib  # To get around bug in conftest
 export EXTRA_CFLAGS="-Wno-unused-command-line-argument -lresolv"  # To get around bug: uresolved symbol "_res_9_dn_expand".
 export OPENSSL_CFLAGS="-I${openssl_dir}/dist-install/include"
 export OPENSSL_LIBS="-L${openssl_dir}/dist-install/lib -lcrypto -lssl"
 export LIBXML_CFLAGS="-I${libxml2_dir}/dist-install/include"
-export LIBXML_LIBS="-L${libxml2_dir}/dist-install-exec-prefix/lib -lxml2"
+export LIBXML_LIBS="-L${libxml2_dir}/dist-install/lib -lxml2"
 export SQLITE_CFLAGS="-I${sqlite_dir}/dist-install/include"
 export SQLITE_LIBS="-L${sqlite_dir}/dist-install/lib -lsqlite3"
 export ZLIB_CFLAGS="-I${zlib_dir}/dist-install/include"
-export ZLIB_LIBS="-L${zlib_dir}/dist-install-exec-prefix/lib -lz"
-./configure \
+export ZLIB_LIBS="-L${zlib_dir}/dist-install/lib -lz"
+./configure -v \
     --prefix=${php_dir}/dist-install \
-    --exec-prefix=${php_dir}/dist-install-exec-prefix \
+    --exec-prefix=${php_dir}/dist-install \
     --with-mysqli \
     --with-openssl \
-    --without-iconv
+    --with-iconv="$iconv_dir/dist-install"
 echo "Build PHP..."
 make install
 
-cp ./dist-install-exec-prefix/bin/php-cgi ./../php-cgi
+cp ./dist-install/bin/php-cgi ./../php-cgi
 cp $root_dir/php.ini $root_dir/php/php.ini
 
 cd $root_dir/php/
 
 install_name_tool -rpath $openssl_dir/dist-install/lib  @loader_path/. php-cgi
-install_name_tool -delete_rpath $libxml2_dir/dist-install-exec-prefix/lib php-cgi
+install_name_tool -delete_rpath $libxml2_dir/dist-install/lib php-cgi
 install_name_tool -delete_rpath $sqlite_dir/dist-install/lib php-cgi
-install_name_tool -delete_rpath $zlib_dir/dist-install-exec-prefix/lib php-cgi
+install_name_tool -delete_rpath $zlib_dir/dist-install/lib php-cgi
 
 install_name_tool -change $openssl_dir/dist-install/lib/libcrypto.3.dylib libcrypto.3.dylib php-cgi
 install_name_tool -change $openssl_dir/dist-install/lib/libssl.3.dylib libssl.3.dylib php-cgi
-install_name_tool -change $libxml2_dir/dist-install-exec-prefix/lib/libxml2.2.dylib libxml2.2.dylib php-cgi
+install_name_tool -change $iconv_dir/dist-install/lib/libiconv.2.dylib libiconv.2.dylib php-cgi
+install_name_tool -change $libxml2_dir/dist-install/lib/libxml2.2.dylib libxml2.2.dylib php-cgi
 install_name_tool -change $sqlite_dir/dist-install/lib/libsqlite3.dylib libsqlite3.dylib php-cgi
-install_name_tool -change $zlib_dir/dist-install-exec-prefix/lib/libz.1.dylib libz.1.3.1.dylib php-cgi
+install_name_tool -change $zlib_dir/dist-install/lib/libz.1.dylib libz.1.3.1.dylib php-cgi
 
 echo "Done."

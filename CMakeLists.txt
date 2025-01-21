@@ -174,6 +174,9 @@ add_custom_command(
             "${CMAKE_CURRENT_SOURCE_DIR}/php/libcrypto.3.dylib"
             "${PHPDESKTOP_APP}/Contents/MacOS/libcrypto.3.dylib"
     COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_CURRENT_SOURCE_DIR}/php/libiconv.2.dylib"
+            "${PHPDESKTOP_APP}/Contents/MacOS/libiconv.2.dylib"        
+    COMMAND ${CMAKE_COMMAND} -E copy
             "${CMAKE_CURRENT_SOURCE_DIR}/php/libxml2.2.dylib"
             "${PHPDESKTOP_APP}/Contents/MacOS/libxml2.2.dylib"
     COMMAND ${CMAKE_COMMAND} -E copy

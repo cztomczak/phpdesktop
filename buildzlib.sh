@@ -28,11 +28,11 @@ echo "Found zlib: ${zlib_dir}"
 echo "Configure zlib..."
 ./configure \
     --prefix=${zlib_dir}/dist-install \
-    --eprefix=${zlib_dir}/dist-install-exec-prefix
+    --eprefix=${zlib_dir}/dist-install
 echo "Build zlib..."
 make install
 
-cp ./dist-install-exec-prefix/lib/libz.1.3.1.dylib ./../libz.1.3.1.dylib
+cp ./dist-install/lib/libz.1.3.1.dylib ./../libz.1.3.1.dylib
 install_name_tool -id libz.1.3.1.dylib ./../libz.1.3.1.dylib
 
 echo "Done."

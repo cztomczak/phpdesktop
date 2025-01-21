@@ -18,6 +18,13 @@ if ! cd $root_dir/php/ ; then
 fi
 rm -f libxml2.2.dylib
 
+if ! cd $root_dir/php/libiconv-*/ ; then
+    echo "Can't find iconv directory"
+    exit 1
+fi
+iconv_dir=$(realpath $(pwd))
+echo "Found iconv: ${iconv_dir}"
+
 if ! cd $root_dir/php/libxml2-*/ ; then
     echo "Can't find libxml2 directory"
     exit 1
@@ -28,12 +35,14 @@ echo "Found Libxml2: ${libxml2_dir}"
 echo "Configure libxml2..."
 ./configure \
     --prefix=${libxml2_dir}/dist-install \
-    --exec-prefix=${libxml2_dir}/dist-install-exec-prefix \
-    --without-python
+    --exec-prefix=${libxml2_dir}/dist-install \
+    --without-python \
+    --with-iconv="$iconv_dir/dist-install"
 echo "Build libxml2..."
 make install
 
-cp ./dist-install-exec-prefix/lib/libxml2.2.dylib ./../libxml2.2.dylib
+cp ./dist-install/lib/libxml2.2.dylib ./../libxml2.2.dylib
 install_name_tool -id libxml2.2.dylib ./../libxml2.2.dylib
+install_name_tool -change $iconv_dir/dist-install/lib/libiconv.2.dylib libiconv.2.dylib ./../libxml2.2.dylib
 
 echo "Done."
