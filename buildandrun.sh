@@ -2,6 +2,7 @@ SCRIPT=$(realpath "$0")
 ROOTDIR=$(dirname "$SCRIPT")
 clear && printf '\e[3J'
 set -o xtrace
+touch $ROOTDIR/app.cpp  # To force copying resources if changed.
 cd $ROOTDIR/build
 ninja -j 8 phpdesktop
 retval=$?

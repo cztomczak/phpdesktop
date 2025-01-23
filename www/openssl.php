@@ -3,12 +3,15 @@
 | <a href="<?php echo $_SERVER["REQUEST_URI"];?>">Refresh</a>
 <br><br>
 
-For SSL to work you have to provide a Certificate Authority file and you should keep that file up to date.
-For example you can download the Mozilla CA certificate store in PEM fornat from here:
-<a href="https://curl.se/docs/caextract.html">https://curl.se/docs/caextract.html</a>
-<br>
-Then you have to set it in "php.ini" file using "openssl.cafile" option.
-If using curl extension also set the "curl.cainfo" option.
+<p>
+    For SSL to work you have to provide a Certificate Authority file and you should keep that file up to date.
+    For example you can download the Mozilla CA certificate store in PEM fornat from here:
+    <a href="https://curl.se/docs/caextract.html">https://curl.se/docs/caextract.html</a>
+</p>
+<p>
+    Then you have to set it in "php.ini" file using "openssl.cafile" option.
+    If using curl extension also set the "curl.cainfo" option.
+</p>
 
 <h3>Test 1</h3>
 

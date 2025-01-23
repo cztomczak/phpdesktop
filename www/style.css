@@ -1,14 +1,27 @@
+:root {
+    color-scheme: light dark;
+}
+a:link, a:visited {
+    color: light-dark(#2679e6, #91bdf7);
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
 body {
-    font-family: Arial;
-    font-size: 13px;
+    font-family: BlinkMacSystemFont;
+    font-size: 15px;
+    background: light-dark(#fff, #222);
+    color: light-dark(#000, #ddd);
 }
 pre {
-    background: #eee;
+    font-family: Menlo, monospace;
+    background: light-dark(#eee, #666);
     padding: 0.25em 0.5em;
 }
 code {
-    background: #eee;
+    font-family: Menlo, monospace;
+    background: light-dark(#eee, #666);
     border-radius: 3px;
-    font-family: courier, monospace;
     padding: 0 3px;
 }

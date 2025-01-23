@@ -28,11 +28,12 @@ foreach ($files as $file) {
     if ($file and $file[0] == "_") {
         continue;
     }
-	printf("<a href='%s'>%s</a><br>", $file, $file);
+	printf("<li><a href='%s'>%s</a><br>", $file, $file);
 }
 
 ?>
 
+<br>
 <hr>
 Project website:
 <a href="http://github.com/cztomczak/phpdesktop">
