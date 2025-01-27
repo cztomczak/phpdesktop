@@ -12,5 +12,5 @@
 </p>
 
 <p>
-<a href="index.php" target="_blank">target="_blank"</a>
+  <a href="index.php" target="_blank">target="_blank"</a>
 </p>

@@ -6,6 +6,7 @@
 #include "settings.h"
 
 #include "include/cef_app.h"
+#include "include/cef_command_ids.h"
 #include "include/wrapper/cef_helpers.h"
 
 namespace {
@@ -153,6 +154,17 @@ bool Client::OnDragEnter(CefRefPtr<CefBrowser> browser,
 void Client::OnAfterCreated(CefRefPtr<CefBrowser> browser)
 {
     CEF_REQUIRE_UI_THREAD();
+    // URL is not set at this moment.
+    LOG(INFO) << "New browser created";
+    if (popup_queue_.size()) {
+        CefString url = std::move(popup_queue_.front());
+        popup_queue_.erase(popup_queue_.begin());
+        LOG(INFO) << "Load URL from popup queue: " << url;
+        if (popup_queue_.size()) {
+            LOG(INFO) << "There are still more URLs in popup queue";
+        }
+        browser->GetMainFrame()->LoadURL(url);
+    }
     // Add to the list of existing browsers.
     browser_list_.push_back(browser);
 }
@@ -178,6 +190,33 @@ void Client::OnBeforeClose(CefRefPtr<CefBrowser> browser)
         // All browser windows have closed. Quit the application message loop.
         LOG(INFO) << "Quit message loop";
         CefQuitMessageLoop();
+    }
+}
+
+bool Client::OnBeforePopup(CefRefPtr<CefBrowser> browser,
+                             CefRefPtr<CefFrame> frame,
+                             const CefString& target_url,
+                             const CefString& target_frame_name,
+                             WindowOpenDisposition target_disposition,
+                             bool user_gesture,
+                             const CefPopupFeatures& popupFeatures,
+                             CefWindowInfo& windowInfo,
+                             CefRefPtr<CefClient>& client,
+                             CefBrowserSettings& setxtings,
+                             CefRefPtr<CefDictionaryValue>& extra_info,
+                             bool* no_javascript_access)
+{
+    LOG(INFO) << "New popup requested: " << target_url;
+    json_value* app_settings = Settings();
+    std::string runtime_style((*app_settings)["chrome"]["runtime_style"]);
+    if (runtime_style == "chrome") {
+        // Open popups in new tabs. Issue #338: https://github.com/cztomczak/phpdesktop/issues/338
+        popup_queue_.push_back(target_url);
+        browser->GetHost()->ExecuteChromeCommand(IDC_NEW_TAB, CEF_WOD_CURRENT_TAB);
+        return true;
+    } else {
+        // Allow popup creation.
+        return false;
     }
 }
 
