@@ -7,8 +7,13 @@
 #include <fstream>
 #include <iostream>
 
+#include "settings.h"
+
+#import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
 #include <mach-o/dyld.h>
+
+#include "include/internal/cef_types_mac.h"
 
 std::string RealPath(std::string path)
 {
@@ -112,5 +117,18 @@ int Random(unsigned int min, unsigned int max, int recursion_level)
         return min + base_random/bucket;
     } else {
         return Random(min, max, recursion_level + 1);
+    }
+}
+
+void ConfigureNSWindow(CefRefPtr<CefBrowser> browser) {
+    json_value* app_settings = Settings();
+    std::string runtime_style((*app_settings)["chrome"]["runtime_style"]);
+    if (runtime_style == "alloy") {
+        // Hide "Show Tab Bar" and "Show All Tabs" from View menu.
+        NSView* view = CAST_CEF_WINDOW_HANDLE_TO_NSVIEW(browser->GetHost()->GetWindowHandle());
+        NSWindow* window = [view window];
+        if ([window respondsToSelector:@selector(setTabbingMode:)]) {
+            [window setTabbingMode:NSWindowTabbingModeDisallowed];
+        }
     }
 }

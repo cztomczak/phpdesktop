@@ -4,6 +4,7 @@
 
 #include "client.h"
 #include "settings.h"
+#include "utils.h"
 
 #include "include/cef_app.h"
 #include "include/cef_command_ids.h"
@@ -156,6 +157,7 @@ void Client::OnAfterCreated(CefRefPtr<CefBrowser> browser)
     CEF_REQUIRE_UI_THREAD();
     // URL is not set at this moment.
     LOG(INFO) << "New browser created";
+    ConfigureNSWindow(browser);
     if (popup_queue_.size()) {
         CefString url = std::move(popup_queue_.front());
         popup_queue_.erase(popup_queue_.begin());

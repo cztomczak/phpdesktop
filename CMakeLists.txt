@@ -1,6 +1,8 @@
 # Versions
 set(PHPDESKTOP_VERSION "130.0")
 set(CEF_VERSION "130.1.16+g5a7e5ed+chromium-130.0.6723.117")
+set(PHPDESKTOP_ID "phpdesktop")
+set(PHPDESKTOP_NAME "PHP Desktop")
 cmake_minimum_required(VERSION 3.21)
 
 # Project and general options
@@ -51,6 +53,7 @@ set(HELPER_SOURCES
 )
 set(RESOURCES
     icon.icns
+    MainMenu.xib
     settings.json
     www/_pdo.php
     www/cookies.php
