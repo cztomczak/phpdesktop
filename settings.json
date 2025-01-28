@@ -5,7 +5,7 @@
     "main_window": {
         "title": "PHP Desktop",
         "icon": "app-icon.png",
-        "default_size": [800, 600],
+        "default_size": [1000, 750],
         "center_on_screen": true,
     },
     "web_server": {

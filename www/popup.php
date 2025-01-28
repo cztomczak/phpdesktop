@@ -6,8 +6,13 @@
 <h1>Popup</h1>
 
 <p>
-  <a href="javascript:window.open('index.php', '', 'width=800,height=600')">
-    window.open('index.php', '', 'width=800,height=600')
+  Window size:
+  <script>document.write(window.innerWidth + " x " + window.innerHeight);</script>
+</p>
+
+<p>
+  <a href="javascript:window.open('popup.php', '', 'width=600,height=400')">
+    window.open('popup.php', '', 'width=600,height=400')
   </a>
 </p>
 

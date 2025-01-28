@@ -37,10 +37,8 @@ void CreateMainBrowser()
     // bool center_on_screen = (*app_settings)["main_window"]["center_on_screen"];
     // const char* title = (*Settings())["main_window"]["title"];
 
-    int default_width = static_cast<int>(
-            (*app_settings)["main_window"]["default_size"][0]);
-    int default_height = static_cast<int>(
-            (*app_settings)["main_window"]["default_size"][1]);
+    int_fast64_t default_width = (*app_settings)["main_window"]["default_size"][0];
+    int_fast64_t default_height = (*app_settings)["main_window"]["default_size"][1];
     CefRect browser_rect(0, 0, default_width, default_height);
     window_info.SetAsChild(nullptr, browser_rect);
 

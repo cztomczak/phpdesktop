@@ -58,7 +58,6 @@ bool mongoose_start() {
     // ip_address, port_str
     std::string ip_address((*app_settings)["web_server"]["listen_on"][0]);
     int_fast64_t port_int = (*app_settings)["web_server"]["listen_on"][1];
-    LOG(INFO) << "port_int=" << port_int;
     if (ip_address.empty()) {
         ip_address = "127.0.0.1";
     }

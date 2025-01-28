@@ -227,8 +227,7 @@ int main(int argc, char **argv) {
     CefString(&cef_settings.cache_path) = cache_path;
 
     // remote_debugging_port
-    int remote_debugging_port(
-            (*app_settings)["chrome"]["remote_debugging_port"]);
+    int_fast64_t remote_debugging_port = (*app_settings)["chrome"]["remote_debugging_port"];
     if (remote_debugging_port == 0) {
         remote_debugging_port = Random(49152, 65535+1);
         int i = 100;
