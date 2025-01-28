@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.phpdesktop.${PRODUCT_NAME}.helper${BUNDLE_ID_SUFFIX}</string>
+	<string>org.phpdesktop.helper${BUNDLE_ID_SUFFIX}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -17,9 +17,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleVersion</key>
-	<string>${VERSION_SHORT}</string>
+	<string>${PHPDESKTOP_VERSION}</string>
 	<key>CFBundleShortVersionString</key>
-	<string>${VERSION_SHORT}</string>
+	<string>${PHPDESKTOP_VERSION}</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>LSEnvironment</key>
