@@ -198,7 +198,7 @@ int main(int argc, char **argv) {
 
     // Specify CEF global settings here
     CefSettings cef_settings;
-    cef_settings.no_sandbox = true;
+    cef_settings.no_sandbox = false;
 
     // log_file
     std::string log_file((*app_settings)["chrome"]["log_file"]);

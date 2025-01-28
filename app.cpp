@@ -109,5 +109,8 @@ void App::OnBeforeCommandLineProcessing(const CefString& process_type,
 void App::OnContextInitialized()
 {
     CEF_REQUIRE_UI_THREAD();
+    LOG(INFO) << "Chromium initialized";
+    LOG(INFO) << "Chromium command line string: "
+              << CefCommandLine::GetGlobalCommandLine()->GetCommandLineString();
     CreateMainBrowser();
 }
