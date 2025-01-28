@@ -156,6 +156,9 @@ foreach(_suffix_list ${CEF_HELPER_APP_SUFFIXES})
     add_custom_command(
         TARGET phpdesktop
         POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+                "${CMAKE_CURRENT_SOURCE_DIR}/icon.icns"
+                "${PHPDESKTOP_OUT_DIR}/${_helper_output_name}.app/Contents/Resources/icon.icns"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
                 "${PHPDESKTOP_OUT_DIR}/${_helper_output_name}.app"
                 "${PHPDESKTOP_APP}/Contents/Frameworks/${_helper_output_name}.app"
