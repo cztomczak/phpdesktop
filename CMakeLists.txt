@@ -1,5 +1,5 @@
 # Versions
-set(PHPDESKTOP_VERSION "130.0")
+set(PHPDESKTOP_VERSION "130.1")
 set(CEF_VERSION "130.1.16+g5a7e5ed+chromium-130.0.6723.117")
 set(PHPDESKTOP_ID "phpdesktop")
 set(PHPDESKTOP_NAME "PHP Desktop")

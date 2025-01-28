@@ -9,7 +9,7 @@
 	<key>CFBundleIconFile</key>
 	<string>icon.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.${PHPDESKTOP_ID}.${PHPDESKTOP_NAME}</string>
+	<string>org.${PHPDESKTOP_ID}.${PHPDESKTOP_ID}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
