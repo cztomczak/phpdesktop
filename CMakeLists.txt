@@ -9,7 +9,10 @@ cmake_minimum_required(VERSION 3.21)
 project(phpdesktop)
 set(DOWNLOADS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/downloads")
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
-add_definitions(-DPHPDESKTOP_VERSION="${PHPDESKTOP_VERSION}")
+add_definitions(
+    -DPHPDESKTOP_VERSION="${PHPDESKTOP_VERSION}"
+    -DPHPDESKTOP_ARCH="${PROJECT_ARCH}"
+)
 set(CMAKE_CXX_FLAGS "-std=c++20 -Wfatal-errors")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -DDEBUG_CONFIGURATION")

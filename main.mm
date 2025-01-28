@@ -119,6 +119,7 @@ int main(int argc, char **argv) {
         // If there is no --type flag then this is main process
         LOG(INFO) << "PHP Desktop version: " << PHPDESKTOP_VERSION;
         LOG(INFO) << "Chrome version: " << CEF_VERSION;
+        LOG(INFO) << "Architecture: " << PHPDESKTOP_ARCH;
         LOG(INFO) << "Launching Browser process (main process)\n";
     } else {
         const std::string& process_type = cmdline->GetSwitchValue("type");

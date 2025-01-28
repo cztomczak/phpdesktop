@@ -1,4 +1,5 @@
-build/
+build_arm64/
+build_x86_64/
 downloads/
 php/
 .DS_STORE
