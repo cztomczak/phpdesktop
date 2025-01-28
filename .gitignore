@@ -2,5 +2,6 @@ build_arm64/
 build_x86_64/
 downloads/
 php/
+php-*/
 .DS_STORE
 .vscode/

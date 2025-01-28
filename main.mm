@@ -226,6 +226,7 @@ int main(int argc, char **argv) {
     std::string cache_path((*app_settings)["chrome"]["cache_path"]);
     cache_path = GetFullPath(cache_path);
     CefString(&cef_settings.cache_path) = cache_path;
+    LOG(INFO) << "Chromium web cache: " << cache_path;
 
     // remote_debugging_port
     int_fast64_t remote_debugging_port = (*app_settings)["chrome"]["remote_debugging_port"];
