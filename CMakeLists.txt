@@ -89,6 +89,7 @@ set_target_properties(phpdesktop PROPERTIES
                         ARCHIVE_OUTPUT_DIRECTORY "${PHPDESKTOP_OUT_DIR}"
                         RUNTIME_OUTPUT_DIRECTORY "${PHPDESKTOP_OUT_DIR}"
                         LIBRARY_OUTPUT_DIRECTORY "${PHPDESKTOP_OUT_DIR}"
+                        XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME YES  # required to notarize app
                         OUTPUT_NAME "PHP Desktop"
 )
 add_dependencies(phpdesktop libcef_dll_wrapper)
@@ -138,7 +139,8 @@ foreach(_suffix_list ${CEF_HELPER_APP_SUFFIXES})
     set_target_properties(${_helper_target} PROPERTIES
                             ARCHIVE_OUTPUT_DIRECTORY "${PHPDESKTOP_OUT_DIR}"
                             RUNTIME_OUTPUT_DIRECTORY "${PHPDESKTOP_OUT_DIR}"
-                            LIBRARY_OUTPUT_DIRECTORY "${PHPDESKTOP_OUT_DIR}")
+                            LIBRARY_OUTPUT_DIRECTORY "${PHPDESKTOP_OUT_DIR}"
+                            XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME YES)  # required for notarization
     # add_dependencies(${_helper_target} shared_helper)
     # target_link_libraries(${_helper_target} shared_helper)
     add_dependencies(${_helper_target} libcef_dll_wrapper)
