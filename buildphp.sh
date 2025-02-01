@@ -99,7 +99,8 @@ export ZLIB_LIBS="-L${zlib_dir}/dist-install/lib -lz"
     --exec-prefix=${php_dir}/dist-install \
     --with-mysqli \
     --with-openssl \
-    --with-iconv="$iconv_dir/dist-install"
+    --with-iconv="$iconv_dir/dist-install" \
+    --with-zlib="$zlib_dir/dist-install"
 echo "Build PHP..."
 make install
 
