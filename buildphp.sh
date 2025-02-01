@@ -109,16 +109,17 @@ cp $root_dir/php.ini $root_dir/php/php.ini
 
 cd $root_dir/php/
 
-install_name_tool -rpath $openssl_dir/dist-install/lib  @loader_path/. php-cgi
-install_name_tool -delete_rpath $libxml2_dir/dist-install/lib php-cgi
-install_name_tool -delete_rpath $sqlite_dir/dist-install/lib php-cgi
-install_name_tool -delete_rpath $zlib_dir/dist-install/lib php-cgi
+install_name_tool -rpath $openssl_dir/dist-install/lib  @loader_path/. ./php-cgi
+install_name_tool -delete_rpath $iconv_dir/dist-install/lib ./php-cgi
+install_name_tool -delete_rpath $libxml2_dir/dist-install/lib ./php-cgi
+install_name_tool -delete_rpath $sqlite_dir/dist-install/lib ./php-cgi
+install_name_tool -delete_rpath $zlib_dir/dist-install/lib ./php-cgi
 
-install_name_tool -change $openssl_dir/dist-install/lib/libcrypto.3.dylib libcrypto.3.dylib php-cgi
-install_name_tool -change $openssl_dir/dist-install/lib/libssl.3.dylib libssl.3.dylib php-cgi
-install_name_tool -change $iconv_dir/dist-install/lib/libiconv.2.dylib libiconv.2.dylib php-cgi
-install_name_tool -change $libxml2_dir/dist-install/lib/libxml2.2.dylib libxml2.2.dylib php-cgi
-install_name_tool -change $sqlite_dir/dist-install/lib/libsqlite3.dylib libsqlite3.dylib php-cgi
-install_name_tool -change $zlib_dir/dist-install/lib/libz.1.dylib libz.1.3.1.dylib php-cgi
+install_name_tool -change $openssl_dir/dist-install/lib/libcrypto.3.dylib libcrypto.3.dylib ./php-cgi
+install_name_tool -change $openssl_dir/dist-install/lib/libssl.3.dylib libssl.3.dylib ./php-cgi
+install_name_tool -change $iconv_dir/dist-install/lib/libiconv.2.dylib libiconv.2.dylib ./php-cgi
+install_name_tool -change $libxml2_dir/dist-install/lib/libxml2.2.dylib libxml2.2.dylib ./php-cgi
+install_name_tool -change $sqlite_dir/dist-install/lib/libsqlite3.dylib libsqlite3.dylib ./php-cgi
+install_name_tool -change $zlib_dir/dist-install/lib/libz.1.dylib libz.1.3.1.dylib ./php-cgi
 
 echo "Done."
