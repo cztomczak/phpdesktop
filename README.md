@@ -96,7 +96,7 @@ New Linux release with latest Chromium | $0 of $1,000 | [Issue #358](https://git
 ## Support development
 
 If you would like to support PHP Desktop general development efforts by
-making a donation please click the Donate button below:
+making a donation please click the PayPal Donate button below:
 
 [![Donate](https://raw.githubusercontent.com/wiki/cztomczak/cefpython/images/donate.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JQSTPDRRM8AQ8)
 
