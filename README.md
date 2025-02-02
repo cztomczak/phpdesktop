@@ -88,9 +88,9 @@ There are two ways to be notified about new releases:
 
 Here is a list of ongoing fundings for new features in PHP Desktop:
 
-Feature | Funds gathered | Issue | Status
+Feature | Funds gathered | Announced | Status
 --- | --- | --- | ---
-New Linux release with latest Chromium | $0 of $1,000 | [Issue #358](https://github.com/cztomczak/phpdesktop/issues/358) | Ongoing funding 
+New Linux release with latest Chromium | $0 of $1,000 | [Discussion #359](https://github.com/cztomczak/phpdesktop/discussions/359) | Ongoing funding 
 
 
 ## Support development
