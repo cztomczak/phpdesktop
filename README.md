@@ -93,19 +93,6 @@ Feature | Funds gathered | Issue | Status
 New Linux release with latest Chromium | $0 of $1,000 | [Issue #358](https://github.com/cztomczak/phpdesktop/issues/358) | Ongoing funding 
 
 
-Below is a list of completed fundings with features already implemented:
-
-Feature | Funds gathered | Issue | Status
---- | --- | --- | ---
-Initial Mac release | $2,000 of $2,000 | [Issue #208](https://github.com/cztomczak/phpdesktop/issues/208) | Done
-Chrome v130 release for Windows | $2,000 of $2,000 | [Issue #227](https://github.com/cztomczak/phpdesktop/issues/227) | Done
-Initial Linux release | $1,500 of $1,500 | [Issue #221](https://github.com/cztomczak/phpdesktop/issues/221) | Done
-
-Fundings for other features submitted in the issue tracker and the ones presented on the
-[PHP Desktop Pro](https://github.com/cztomczak/phpdesktop/wiki/PHP-Desktop-Pro)
-wiki page are also possible, just let know Czarek.
-
-
 ## Support development
 
 If you would like to support PHP Desktop general development efforts by
