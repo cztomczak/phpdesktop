@@ -98,7 +98,7 @@ New Linux release with latest Chromium | [Discussion #359](https://github.com/cz
 If you would like to support PHP Desktop general development efforts by
 making a donation please click the PayPal Donate button below:
 
-[![Donate](https://raw.githubusercontent.com/wiki/cztomczak/cefpython/images/donate.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JQSTPDRRM8AQ8)
+[![Donate](https://raw.githubusercontent.com/wiki/cztomczak/phpdesktop/donate.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JQSTPDRRM8AQ8)
 
 
 ## Seeking sponsors
