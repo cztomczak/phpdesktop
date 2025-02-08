@@ -204,15 +204,63 @@ bool Client::OnBeforePopup(CefRefPtr<CefBrowser> browser,
                              const CefPopupFeatures& popupFeatures,
                              CefWindowInfo& windowInfo,
                              CefRefPtr<CefClient>& client,
-                             CefBrowserSettings& setxtings,
+                             CefBrowserSettings& settings,
                              CefRefPtr<CefDictionaryValue>& extra_info,
                              bool* no_javascript_access)
 {
     LOG(INFO) << "New popup requested: " << target_url;
     json_value* app_settings = Settings();
     std::string runtime_style((*app_settings)["chrome"]["runtime_style"]);
+
+    CefString window_name = CefString(&windowInfo.window_name);
+    LOG(INFO) << "Popup variables: isPopup: " << popupFeatures.isPopup
+                << " widthSet: " << popupFeatures.widthSet
+                << " width: " << popupFeatures.width
+                << " xSet: " << popupFeatures.xSet
+                << " x: " << popupFeatures.x
+                << " window_name: " << window_name
+                << " target_disposition: " << target_disposition
+                << " target_frame_name: " << target_frame_name
+                << " user_gesture: " << user_gesture
+                << " runtime_style: " << windowInfo.runtime_style;
+
+    // When running with chrome runtime style, the first popup's windowInfo.runtime_style
+    // is set to CEF_RUNTIME_STYLE_DEFAULT. If we create an alloy popup browser then
+    // from now on any _blank links and popups from that alloy browser will create always
+    // alloy popup browsers.
+    if (windowInfo.runtime_style == CEF_RUNTIME_STYLE_ALLOY) {
+        runtime_style = "alloy";
+    }
+
+    if (runtime_style == "chrome" && popupFeatures.isPopup && popupFeatures.widthSet
+            && popupFeatures.heightSet && target_disposition == CEF_WOD_NEW_POPUP && user_gesture)
+    {
+        windowInfo.runtime_style = CEF_RUNTIME_STYLE_ALLOY;
+        LOG(INFO) << "New popup will be created with Alloy runtime style";
+        
+        // If we allow to create alloy popup implicitilly then it crashes with last stack frame
+        // in cef_browser_host_create_browser_sync(). Work around this bug by creating new popup
+        // browser explicitilly.
+
+        int x = 0;
+        int y = 0;
+        if (popupFeatures.xSet) {
+            x = popupFeatures.x;
+        }
+        if (popupFeatures.ySet) {
+            y = popupFeatures.y;
+        }
+        CefRect browser_rect(x, y, popupFeatures.width, popupFeatures.height);
+        windowInfo.SetAsChild(windowInfo.view, browser_rect);
+
+        CefBrowserHost::CreateBrowser(windowInfo, client, target_url, settings, nullptr, nullptr);
+
+        // Cancel popup creation since we created it explicitilly.
+        return true;
+    }
+
     if (runtime_style == "chrome") {
-        // Open popups in new tabs. Issue #338: https://github.com/cztomczak/phpdesktop/issues/338
+        // Open _blank links in new tabs. Issue #338: https://github.com/cztomczak/phpdesktop/issues/338
         popup_queue_.push_back(target_url);
         browser->GetHost()->ExecuteChromeCommand(IDC_NEW_TAB, CEF_WOD_CURRENT_TAB);
         return true;
