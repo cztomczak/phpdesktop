@@ -1,5 +1,5 @@
 # Versions
-set(PHPDESKTOP_VERSION "130.1")
+set(PHPDESKTOP_VERSION "130.2")
 set(CEF_VERSION "130.1.16+g5a7e5ed+chromium-130.0.6723.117")
 set(PHPDESKTOP_ID "phpdesktop")
 set(PHPDESKTOP_NAME "PHP Desktop")
@@ -173,31 +173,31 @@ add_custom_command(
     TARGET phpdesktop
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
-            "${CMAKE_CURRENT_SOURCE_DIR}/php/php-cgi"
+            "${CMAKE_CURRENT_SOURCE_DIR}/php-${PROJECT_ARCH}/php-cgi"
             "${PHPDESKTOP_APP}/Contents/MacOS/php-cgi"
     COMMAND ${CMAKE_COMMAND} -E copy
-            "${CMAKE_CURRENT_SOURCE_DIR}/php/php.ini"
+            "${CMAKE_CURRENT_SOURCE_DIR}/php-${PROJECT_ARCH}/php.ini"
             "${PHPDESKTOP_APP}/Contents/MacOS/php.ini"
     COMMAND ${CMAKE_COMMAND} -E copy
-            "${CMAKE_CURRENT_SOURCE_DIR}/php/libssl.3.dylib"
+            "${CMAKE_CURRENT_SOURCE_DIR}/php-${PROJECT_ARCH}/libssl.3.dylib"
             "${PHPDESKTOP_APP}/Contents/MacOS/libssl.3.dylib"
     COMMAND ${CMAKE_COMMAND} -E copy
-            "${CMAKE_CURRENT_SOURCE_DIR}/php/libcrypto.3.dylib"
+            "${CMAKE_CURRENT_SOURCE_DIR}/php-${PROJECT_ARCH}/libcrypto.3.dylib"
             "${PHPDESKTOP_APP}/Contents/MacOS/libcrypto.3.dylib"
     COMMAND ${CMAKE_COMMAND} -E copy
-            "${CMAKE_CURRENT_SOURCE_DIR}/php/libiconv.2.dylib"
+            "${CMAKE_CURRENT_SOURCE_DIR}/php-${PROJECT_ARCH}/libiconv.2.dylib"
             "${PHPDESKTOP_APP}/Contents/MacOS/libiconv.2.dylib"        
     COMMAND ${CMAKE_COMMAND} -E copy
-            "${CMAKE_CURRENT_SOURCE_DIR}/php/libxml2.2.dylib"
+            "${CMAKE_CURRENT_SOURCE_DIR}/php-${PROJECT_ARCH}/libxml2.2.dylib"
             "${PHPDESKTOP_APP}/Contents/MacOS/libxml2.2.dylib"
     COMMAND ${CMAKE_COMMAND} -E copy
-            "${CMAKE_CURRENT_SOURCE_DIR}/php/libsqlite3.dylib"
+            "${CMAKE_CURRENT_SOURCE_DIR}/php-${PROJECT_ARCH}/libsqlite3.dylib"
             "${PHPDESKTOP_APP}/Contents/MacOS/libsqlite3.dylib"
     COMMAND ${CMAKE_COMMAND} -E copy
-            "${CMAKE_CURRENT_SOURCE_DIR}/php/libz.1.3.1.dylib"
+            "${CMAKE_CURRENT_SOURCE_DIR}/php-${PROJECT_ARCH}/libz.1.3.1.dylib"
             "${PHPDESKTOP_APP}/Contents/MacOS/libz.1.3.1.dylib"
     COMMAND ${CMAKE_COMMAND} -E copy
-            "${CMAKE_CURRENT_SOURCE_DIR}/php/openssl.cnf"
+            "${CMAKE_CURRENT_SOURCE_DIR}/php-${PROJECT_ARCH}/openssl.cnf"
             "${PHPDESKTOP_APP}/Contents/MacOS/openssl.cnf"
     VERBATIM
 )

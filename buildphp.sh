@@ -2,8 +2,9 @@
 
 # This script builds with PHP extensions enabled: mysqli, openssl.
 
-# Download PHP sources from http://php.net/downloads.php and extract them to "phpdesktop/php/" directory,
-# so you you should have "phpdesktop/php/php-x.x.x" directory.
+# Download PHP sources from http://php.net/downloads.php and extract them in the
+# "phpdesktop/php-$arch/" directory, so you you should have a "phpdesktop/php-$arch/php-x.x.x"
+# directory.
 #
 # Then run buildphp.sh script.
 #
@@ -14,7 +15,7 @@
 # Check if everything is okay:
 # php-cgi --version
 
-# How to enable other extensions? Go to the build/php-xx/ directory and run the help command:
+# How to enable other extensions? Go to the php-x.x.x/ directory and run the help command:
 # >> ./configure --help
 # Find the flag to enable the extension you want and add it in the code below.
 #
@@ -31,57 +32,69 @@ set -x
 
 clear && clear
 
+if [[ $(uname -m) == "arm64" ]]; then
+    arch="arm64"
+elif [[ $(uname -m) == "x86_64" ]]; then
+    arch="x86_64"
+else
+    echo "Unknown architecture"
+    exit 1
+fi
+
 root_dir=$(realpath $(dirname $0))
 echo "root_dir=$root_dir"
 
-if ! cd $root_dir/php/ ; then
-    echo "php/ directory doesn't exist"
+if ! cd $root_dir/php-$arch/ ; then
+    echo "Can't find PHP directory"
     exit 1
 fi
+php_dir=$(realpath $(pwd))
+echo "Found PHP: ${php_dir}"
+
 rm -f php-cgi
 rm -f php.ini
 
-if ! cd $root_dir/php/openssl-*/ ; then
+if ! cd $php_dir/openssl-*/ ; then
     echo "Can't find openssl directory"
     exit 1
 fi
 openssl_dir=$(realpath $(pwd))
 echo "Found OpenSSL: ${openssl_dir}"
 
-if ! cd $root_dir/php/libiconv-*/ ; then
+if ! cd $php_dir/libiconv-*/ ; then
     echo "Can't find iconv directory"
     exit 1
 fi
 iconv_dir=$(realpath $(pwd))
 echo "Found iconv: ${iconv_dir}"
 
-if ! cd $root_dir/php/libxml2-*/ ; then
+if ! cd $php_dir/libxml2-*/ ; then
     echo "Can't find libxml2 directory"
     exit 1
 fi
 libxml2_dir=$(realpath $(pwd))
 echo "Found libxml2: ${libxml2_dir}"
 
-if ! cd $root_dir/php/sqlite-*/ ; then
+if ! cd $php_dir/sqlite-*/ ; then
     echo "Can't find sqlite directory"
     exit 1
 fi
 sqlite_dir=$(realpath $(pwd))
 echo "Found sqlite: ${sqlite_dir}"
 
-if ! cd $root_dir/php/zlib-*/ ; then
+if ! cd $php_dir/zlib-*/ ; then
     echo "Can't find zlib directory"
     exit 1
 fi
 zlib_dir=$(realpath $(pwd))
 echo "Found zlib: ${zlib_dir}"
 
-if ! cd $root_dir/php/php-*/ ; then
-    echo "Can't find php directory"
+if ! cd $php_dir/php-*/ ; then
+    echo "Can't find PHP sources directory"
     exit 1
 fi
-php_dir=$(realpath $(pwd))
-echo "Found PHP: ${php_dir}"
+php_sources_dir=$(realpath $(pwd))
+echo "Found PHP sources: ${php_sources_dir}"
 
 echo "Configure PHP..."
 cp $sqlite_dir/dist-install/lib/libsqlite3.dylib ./libsqlite3.dylib  # To get around bug in conftest
@@ -104,10 +117,8 @@ export ZLIB_LIBS="-L${zlib_dir}/dist-install/lib -lz"
 echo "Build PHP..."
 make install
 
-cp ./dist-install/bin/php-cgi ./../php-cgi
-cp $root_dir/php.ini $root_dir/php/php.ini
-
-cd $root_dir/php/
+cp ./dist-install/bin/php-cgi $php_dir/php-cgi
+cp $root_dir/php.ini $php_dir/php.ini
 
 install_name_tool -rpath $openssl_dir/dist-install/lib  @loader_path/. ./php-cgi
 install_name_tool -delete_rpath $iconv_dir/dist-install/lib ./php-cgi
