@@ -202,6 +202,12 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E copy
             "${CMAKE_CURRENT_SOURCE_DIR}/php-${PROJECT_ARCH}/libpng.dylib"
             "${PHPDESKTOP_APP}/Contents/MacOS/libpng.dylib"
+    COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_CURRENT_SOURCE_DIR}/php-${PROJECT_ARCH}/libjpeg.dylib"
+            "${PHPDESKTOP_APP}/Contents/MacOS/libjpeg.dylib"
+    COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_CURRENT_SOURCE_DIR}/php-${PROJECT_ARCH}/libonig.dylib"
+            "${PHPDESKTOP_APP}/Contents/MacOS/libonig.dylib"
     VERBATIM
 )
 

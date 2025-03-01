@@ -96,6 +96,20 @@ fi
 png_dir=$(realpath $(pwd))
 echo "Found PNG: ${png_dir}"
 
+if ! cd $php_dir/jpeg-*/ ; then
+    echo "Can't find jpeg directory"
+    exit 1
+fi
+jpeg_dir=$(realpath $(pwd))
+echo "Found JPEG: ${jpeg_dir}"
+
+if ! cd $php_dir/onig-*/ ; then
+    echo "Can't find onig directory"
+    exit 1
+fi
+onig_dir=$(realpath $(pwd))
+echo "Found onig: ${onig_dir}"
+
 if ! cd $php_dir/php-*/ ; then
     echo "Can't find PHP sources directory"
     exit 1
@@ -116,25 +130,36 @@ export ZLIB_CFLAGS="-I${zlib_dir}/dist-install/include"
 export ZLIB_LIBS="-L${zlib_dir}/dist-install/lib -lz"
 export PNG_CFLAGS="-I${png_dir}/dist-install/include"
 export PNG_LIBS="-L${png_dir}/dist-install/lib -lpng"
+export JPEG_CFLAGS="-I${jpeg_dir}/dist-install/include"
+export JPEG_LIBS="-L${jpeg_dir}/dist-install/lib -ljpeg"
+export ONIG_CFLAGS="-I${onig_dir}/dist-install/include"
+export ONIG_LIBS="-L${onig_dir}/dist-install/lib -lonig"
 ./configure -v \
-    --prefix=${php_dir}/dist-install \
-    --exec-prefix=${php_dir}/dist-install \
+    --prefix=${php_sources_dir}/dist-install \
+    --exec-prefix=${php_sources_dir}/dist-install \
     --with-mysqli \
     --with-openssl \
     --with-iconv="$iconv_dir/dist-install" \
-    --with-zlib="$zlib_dir/dist-install" \
-    --enable-gd
+    --with-zlib="$zlib_dir/dist-install"  \
+    --enable-gd \
+    --with-jpeg \
+    --enable-mbstring
 echo "Build PHP..."
 make install
 
 cp ./dist-install/bin/php-cgi $php_dir/php-cgi
 cp $root_dir/php.ini $php_dir/php.ini
 
+cd $php_dir
+
 install_name_tool -rpath $openssl_dir/dist-install/lib  @loader_path/. ./php-cgi
 install_name_tool -delete_rpath $iconv_dir/dist-install/lib ./php-cgi
 install_name_tool -delete_rpath $libxml2_dir/dist-install/lib ./php-cgi
 install_name_tool -delete_rpath $sqlite_dir/dist-install/lib ./php-cgi
 install_name_tool -delete_rpath $zlib_dir/dist-install/lib ./php-cgi
+install_name_tool -delete_rpath $png_dir/dist-install/lib ./php-cgi
+install_name_tool -delete_rpath $jpeg_dir/dist-install/lib ./php-cgi
+install_name_tool -delete_rpath $onig_dir/dist-install/lib ./php-cgi
 
 install_name_tool -change $openssl_dir/dist-install/lib/libcrypto.3.dylib libcrypto.3.dylib ./php-cgi
 install_name_tool -change $openssl_dir/dist-install/lib/libssl.3.dylib libssl.3.dylib ./php-cgi
@@ -142,5 +167,8 @@ install_name_tool -change $iconv_dir/dist-install/lib/libiconv.2.dylib libiconv.
 install_name_tool -change $libxml2_dir/dist-install/lib/libxml2.2.dylib libxml2.2.dylib ./php-cgi
 install_name_tool -change $sqlite_dir/dist-install/lib/libsqlite3.dylib libsqlite3.dylib ./php-cgi
 install_name_tool -change $zlib_dir/dist-install/lib/libz.1.dylib libz.1.dylib ./php-cgi
+install_name_tool -change $png_dir/dist-install/lib/libpng16.16.dylib libpng.dylib ./php-cgi
+install_name_tool -change $jpeg_dir/dist-install/lib/libjpeg.9.dylib libjpeg.dylib ./php-cgi
+install_name_tool -change $onig_dir/dist-install/lib/libonig.5.dylib libonig.dylib ./php-cgi
 
 echo "Done."
