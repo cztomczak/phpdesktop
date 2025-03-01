@@ -89,6 +89,13 @@ fi
 zlib_dir=$(realpath $(pwd))
 echo "Found zlib: ${zlib_dir}"
 
+if ! cd $php_dir/libpng-*/ ; then
+    echo "Can't find libpng directory"
+    exit 1
+fi
+png_dir=$(realpath $(pwd))
+echo "Found PNG: ${png_dir}"
+
 if ! cd $php_dir/php-*/ ; then
     echo "Can't find PHP sources directory"
     exit 1
@@ -107,13 +114,16 @@ export SQLITE_CFLAGS="-I${sqlite_dir}/dist-install/include"
 export SQLITE_LIBS="-L${sqlite_dir}/dist-install/lib -lsqlite3"
 export ZLIB_CFLAGS="-I${zlib_dir}/dist-install/include"
 export ZLIB_LIBS="-L${zlib_dir}/dist-install/lib -lz"
+export PNG_CFLAGS="-I${png_dir}/dist-install/include"
+export PNG_LIBS="-L${png_dir}/dist-install/lib -lpng"
 ./configure -v \
     --prefix=${php_dir}/dist-install \
     --exec-prefix=${php_dir}/dist-install \
     --with-mysqli \
     --with-openssl \
     --with-iconv="$iconv_dir/dist-install" \
-    --with-zlib="$zlib_dir/dist-install"
+    --with-zlib="$zlib_dir/dist-install" \
+    --enable-gd
 echo "Build PHP..."
 make install
 
@@ -131,6 +141,6 @@ install_name_tool -change $openssl_dir/dist-install/lib/libssl.3.dylib libssl.3.
 install_name_tool -change $iconv_dir/dist-install/lib/libiconv.2.dylib libiconv.2.dylib ./php-cgi
 install_name_tool -change $libxml2_dir/dist-install/lib/libxml2.2.dylib libxml2.2.dylib ./php-cgi
 install_name_tool -change $sqlite_dir/dist-install/lib/libsqlite3.dylib libsqlite3.dylib ./php-cgi
-install_name_tool -change $zlib_dir/dist-install/lib/libz.1.dylib libz.1.3.1.dylib ./php-cgi
+install_name_tool -change $zlib_dir/dist-install/lib/libz.1.dylib libz.1.dylib ./php-cgi
 
 echo "Done."

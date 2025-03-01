@@ -15,11 +15,13 @@
 1. Download libxml2 official distribution tarball (tar.xz) and extract in the PHP directory. See https://gitlab.gnome.org/GNOME/libxml2/-/releases .
 1. Download zlib 1.3.1 sources and extract in the PHP directory. See https://github.com/madler/zlib/releases .
 1. Download sqlite sources and extract in the PHP directory. See https://www.sqlite.org/download.html .
+1. Download libpng sources and extract in the PHP Directory. See http://www.libpng.org/pub/png/libpng.html .
 1. Download PHP sources and extract it in the PHP directory. See https://www.php.net/downloads.php .
 1. RUn `buildopenssl.sh` script.
 1. Run `buildiconv.sh` script.
 1. Run `buildxml.sh`script.
 1. Run `buildzlib.sh` script.
 1. Run `buildsqlite.sh` script.
+1. Run `builpng.sh` script.
 1. Run `buildphp.sh` script, but before running see the script comments to install requirements.
 1. Run `cleanbuild.sh` script.

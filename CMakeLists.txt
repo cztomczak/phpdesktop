@@ -194,11 +194,14 @@ add_custom_command(
             "${CMAKE_CURRENT_SOURCE_DIR}/php-${PROJECT_ARCH}/libsqlite3.dylib"
             "${PHPDESKTOP_APP}/Contents/MacOS/libsqlite3.dylib"
     COMMAND ${CMAKE_COMMAND} -E copy
-            "${CMAKE_CURRENT_SOURCE_DIR}/php-${PROJECT_ARCH}/libz.1.3.1.dylib"
-            "${PHPDESKTOP_APP}/Contents/MacOS/libz.1.3.1.dylib"
+            "${CMAKE_CURRENT_SOURCE_DIR}/php-${PROJECT_ARCH}/libz.1.dylib"
+            "${PHPDESKTOP_APP}/Contents/MacOS/libz.1.dylib"
     COMMAND ${CMAKE_COMMAND} -E copy
             "${CMAKE_CURRENT_SOURCE_DIR}/php-${PROJECT_ARCH}/openssl.cnf"
             "${PHPDESKTOP_APP}/Contents/MacOS/openssl.cnf"
+    COMMAND ${CMAKE_COMMAND} -E copy
+            "${CMAKE_CURRENT_SOURCE_DIR}/php-${PROJECT_ARCH}/libpng.dylib"
+            "${PHPDESKTOP_APP}/Contents/MacOS/libpng.dylib"
     VERBATIM
 )
 

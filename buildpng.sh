@@ -1,6 +1,3 @@
-# Download zlib 1.3.1 sources from: https://github.com/madler/zlib/releases
-# Then extract in the PHP directory.
-
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
@@ -28,7 +25,7 @@ fi
 php_dir=$(realpath $(pwd))
 echo "Found PHP: ${php_dir}"
 
-rm -f libz.1.dylib
+rm -f libpng.dylib
 
 if ! cd $php_dir/zlib-*/ ; then
     echo "Can't find zlib directory"
@@ -37,14 +34,24 @@ fi
 zlib_dir=$(realpath $(pwd))
 echo "Found zlib: ${zlib_dir}"
 
-echo "Configure zlib..."
-./configure \
-    --prefix=${zlib_dir}/dist-install \
-    --eprefix=${zlib_dir}/dist-install
-echo "Build zlib..."
+if ! cd $php_dir/libpng-*/ ; then
+    echo "Can't find libpng directory"
+    exit 1
+fi
+png_dir=$(realpath $(pwd))
+echo "Found PNG: ${png_dir}"
+
+echo "Configure PNG..."
+./Configure \
+    --prefix=${png_dir}/dist-install \
+    --exec-prefix=${png_dir}/dist-install
+echo "Build PNG..."
 make install
 
-cp ./dist-install/lib/libz.1.dylib ./../libz.1.dylib
-install_name_tool -id libz.1.dylib ./../libz.1.dylib
+cp ./dist-install/lib/libpng.dylib ./../libpng.dylib
+
+install_name_tool -id libpng.dylib ./../libpng.dylib
+install_name_tool -change $png_dir/dist-install/lib/libpng.dylib libpng.dylib ./../libpng.dylib
+install_name_tool -change /usr/lib/libz.1.dylib libz.1.dylib ./../libpng.dylib
 
 echo "Done."
